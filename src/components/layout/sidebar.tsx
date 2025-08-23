@@ -24,7 +24,6 @@ const navigation = [
   { name: "Test Suites", href: "/suites", icon: TestTube },
   { name: "Reference Files", href: "/reference-files", icon: FileText },
   { name: "Standards", href: "/standards", icon: BookOpen },
-  { name: "Team", href: "/team", icon: Users },
 ];
 
 export function Sidebar({ className }: SidebarProps) {

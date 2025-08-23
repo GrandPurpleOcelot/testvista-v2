@@ -185,38 +185,6 @@ export default function ProjectManagement() {
               />
             </div>
 
-            {/* Quick Recommendations */}
-            {activeFilter === "all" && !searchQuery && (
-              <Card className="border-border/50">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Zap className="h-5 w-5 text-primary" />
-                    Quick Actions
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {projectRecommendations.map((rec) => (
-                      <div
-                        key={rec.id}
-                        className="p-4 bg-card/50 rounded-lg border border-border/30 hover:border-primary/20 transition-colors cursor-pointer"
-                        onClick={() => navigate(`/suite/${rec.projectId}`)}
-                      >
-                        <div className="flex items-start gap-3">
-                          {rec.type === "continue" && <Clock className="h-4 w-4 text-warning mt-1" />}
-                          {rec.type === "collaborate" && <Users className="h-4 w-4 text-blue-500 mt-1" />}
-                          {rec.type === "similar" && <Star className="h-4 w-4 text-primary mt-1" />}
-                          <div>
-                            <h4 className="font-medium text-sm">{rec.title}</h4>
-                            <p className="text-xs text-muted-foreground">{rec.description}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
 
             {/* Recent Activity */}
             {activeFilter === "recent" && !searchQuery && (
