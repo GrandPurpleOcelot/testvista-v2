@@ -177,8 +177,8 @@ export default function CreateSuite() {
   return (
     <div className="min-h-screen bg-workspace-bg">
       {/* Clean Header */}
-      <header className="bg-card">
-        <div className="max-w-3xl mx-auto px-6 py-6 flex items-center justify-between">
+      <header className="bg-background border-b border-border/50 h-16">
+        <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button 
               variant="ghost" 

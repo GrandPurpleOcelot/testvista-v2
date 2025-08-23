@@ -275,7 +275,7 @@ export default function SuiteWorkspace() {
   return (
     <div className="h-screen flex flex-col bg-workspace-bg">
       {/* Header */}
-      <header className="flex items-center justify-between p-4 bg-workspace-sidebar border-b border-border/50">
+      <header className="flex items-center justify-between px-6 py-4 bg-background border-b border-border/50 h-16">
         <div className="flex items-center gap-4">
           <Button 
             variant="ghost" 

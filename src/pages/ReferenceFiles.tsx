@@ -88,13 +88,13 @@ export default function ReferenceFiles() {
   };
 
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex h-screen bg-workspace-bg">
       <Sidebar />
       
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="flex h-16 items-center justify-between px-6">
+        <header className="border-b border-border/50 bg-background h-16">
+          <div className="flex items-center justify-between px-6 py-4">
             <div>
               <h1 className="text-2xl font-semibold text-foreground">Reference Files</h1>
               <p className="text-sm text-muted-foreground">
