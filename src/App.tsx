@@ -9,6 +9,7 @@ import CreateSuite from "./pages/CreateSuite";
 import TestSuites from "./pages/TestSuites";
 import SuiteWorkspace from "./pages/SuiteWorkspace";
 import ReferenceFiles from "./pages/ReferenceFiles";
+import Standards from "./pages/Standards";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/suites" element={<TestSuites />} />
           <Route path="/suite/:id" element={<SuiteWorkspace />} />
           <Route path="/reference-files" element={<ReferenceFiles />} />
+          <Route path="/standards" element={<Standards />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
