@@ -292,46 +292,6 @@ export default function SuiteWorkspace() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Status:</span>
-            <span className={`text-sm font-medium ${
-              suiteStatus === "running" ? "text-success" : 
-              suiteStatus === "paused" ? "text-warning" : "text-muted-foreground"
-            }`}>
-              {suiteStatus.charAt(0).toUpperCase() + suiteStatus.slice(1)}
-            </span>
-          </div>
-          
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={toggleSuiteStatus}
-            className="gap-2"
-          >
-            {suiteStatus === "running" ? (
-              <>
-                <Pause className="h-4 w-4" />
-                Pause
-              </>
-            ) : (
-              <>
-                <Play className="h-4 w-4" />
-                {suiteStatus === "paused" ? "Resume" : "Start"}
-              </>
-            )}
-          </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={resetSuite}
-            className="gap-2"
-          >
-            <RotateCcw className="h-4 w-4" />
-            Reset
-          </Button>
-        </div>
       </header>
 
       {/* Main Content - Split Screen */}
