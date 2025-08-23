@@ -8,7 +8,7 @@ export function DashboardHeader() {
       <div className="flex items-center gap-6">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground">Manage your test projects and suites</p>
+          <p className="text-muted-foreground">Manage your test folders and suites</p>
         </div>
       </div>
 
@@ -16,7 +16,7 @@ export function DashboardHeader() {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input 
-            placeholder="Search projects..." 
+            placeholder="Search folders..." 
             className="pl-10 w-64 bg-workspace-bg border-border/50 focus:border-primary/50"
           />
         </div>
@@ -28,7 +28,7 @@ export function DashboardHeader() {
 
         <Button className="gap-2 bg-gradient-to-r from-primary to-secondary hover:from-primary-hover hover:to-secondary-hover shadow-sm">
           <Plus className="h-4 w-4" />
-          New Project
+          New Folder
         </Button>
       </div>
     </header>

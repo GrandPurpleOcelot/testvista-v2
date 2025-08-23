@@ -1,5 +1,5 @@
 import { StatsCard } from "@/components/dashboard/stats-card";
-import { ProjectCard } from "@/components/dashboard/project-card";
+import { FolderCard } from "@/components/dashboard/folder-card";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +15,7 @@ import {
   Plus
 } from "lucide-react";
 
-const mockProjects = [
+const mockFolders = [
   {
     id: "1",
     name: "E-commerce Platform Testing",
@@ -66,7 +66,7 @@ const recentActivity = [
   { id: "1", type: "suite_completed", message: "E-commerce Checkout Suite completed", time: "2 hours ago" },
   { id: "2", type: "test_case_added", message: "15 new test cases added to Security Testing", time: "4 hours ago" },
   { id: "3", type: "coverage_improved", message: "API Testing coverage increased to 95%", time: "6 hours ago" },
-  { id: "4", type: "project_created", message: "New Performance Testing project created", time: "1 day ago" }
+  { id: "4", type: "folder_created", message: "New Performance Testing folder created", time: "1 day ago" }
 ];
 
 export default function Dashboard() {
@@ -81,9 +81,9 @@ export default function Dashboard() {
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatsCard
-              title="Total Projects"
+              title="Total Folders"
               value="24"
-              description="4 active projects"
+              description="4 active folders"
               icon={FolderOpen}
               trend={{ value: 12, label: "this month" }}
             />
@@ -112,9 +112,9 @@ export default function Dashboard() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Projects Grid */}
-            <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-foreground">Recent Projects</h2>
+                <h2 className="text-xl font-semibold text-foreground">Recent Folders</h2>
                 <Button variant="outline" size="sm" className="gap-2">
                   <Plus className="h-4 w-4" />
                   View All
@@ -122,8 +122,8 @@ export default function Dashboard() {
               </div>
               
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                {mockProjects.map((project) => (
-                  <ProjectCard key={project.id} project={project} />
+                {mockFolders.map((folder) => (
+                  <FolderCard key={folder.id} folder={folder} />
                 ))}
               </div>
             </div>
@@ -144,7 +144,7 @@ export default function Dashboard() {
                         {activity.type === "suite_completed" && <CheckCircle className="h-4 w-4 text-success" />}
                         {activity.type === "test_case_added" && <Plus className="h-4 w-4 text-primary" />}
                         {activity.type === "coverage_improved" && <TrendingUp className="h-4 w-4 text-secondary" />}
-                        {activity.type === "project_created" && <FolderOpen className="h-4 w-4 text-warning" />}
+                        {activity.type === "folder_created" && <FolderOpen className="h-4 w-4 text-warning" />}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm text-card-foreground">{activity.message}</p>
@@ -165,7 +165,7 @@ export default function Dashboard() {
                 <CardContent className="space-y-3">
                   <Button variant="outline" className="w-full justify-start gap-2">
                     <Plus className="h-4 w-4" />
-                    Create New Project
+                    Create New Folder
                   </Button>
                   <Button variant="outline" className="w-full justify-start gap-2">
                     <TestTube className="h-4 w-4" />

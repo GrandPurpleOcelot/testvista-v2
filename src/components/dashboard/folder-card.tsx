@@ -5,8 +5,8 @@ import { MoreHorizontal, TestTube, Users, Calendar, TrendingUp } from "lucide-re
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
-interface ProjectCardProps {
-  project: {
+interface FolderCardProps {
+  folder: {
     id: string;
     name: string;
     description: string;
@@ -20,7 +20,7 @@ interface ProjectCardProps {
   className?: string;
 }
 
-export function ProjectCard({ project, className }: ProjectCardProps) {
+export function FolderCard({ folder, className }: FolderCardProps) {
   const navigate = useNavigate();
   
   const statusColors = {
@@ -30,7 +30,7 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
   };
 
   const handleClick = () => {
-    navigate(`/suite/${project.id}`);
+    navigate(`/suite/${folder.id}`);
   };
 
   return (
@@ -45,15 +45,15 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
         <div className="flex items-start justify-between">
           <div className="space-y-1 flex-1 mr-2">
             <h3 className="font-semibold text-lg text-card-foreground group-hover:text-primary transition-colors">
-              {project.name}
+              {folder.name}
             </h3>
             <p className="text-sm text-muted-foreground line-clamp-2">
-              {project.description}
+              {folder.description}
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary" className={statusColors[project.status]}>
-              {project.status}
+            <Badge variant="secondary" className={statusColors[folder.status]}>
+              {folder.status}
             </Badge>
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
               <MoreHorizontal className="h-4 w-4" />
@@ -67,37 +67,37 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
           <div className="flex items-center gap-2 text-sm">
             <TestTube className="h-4 w-4 text-primary" />
             <span className="text-muted-foreground">Suites:</span>
-            <span className="font-medium">{project.suites}</span>
+            <span className="font-medium">{folder.suites}</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <Users className="h-4 w-4 text-secondary" />
             <span className="text-muted-foreground">Members:</span>
-            <span className="font-medium">{project.members}</span>
+            <span className="font-medium">{folder.members}</span>
           </div>
         </div>
         
         <div className="space-y-3">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Test Cases</span>
-            <span className="font-medium">{project.testCases.toLocaleString()}</span>
+            <span className="font-medium">{folder.testCases.toLocaleString()}</span>
           </div>
           
           <div className="space-y-1">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Coverage</span>
-              <span className="font-medium">{project.coverage}%</span>
+              <span className="font-medium">{folder.coverage}%</span>
             </div>
             <div className="w-full bg-muted rounded-full h-2">
               <div 
                 className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full transition-all duration-300"
-                style={{ width: `${project.coverage}%` }}
+                style={{ width: `${folder.coverage}%` }}
               />
             </div>
           </div>
           
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Calendar className="h-3 w-3" />
-            <span>Last activity: {project.lastActivity}</span>
+            <span>Last activity: {folder.lastActivity}</span>
           </div>
         </div>
       </CardContent>

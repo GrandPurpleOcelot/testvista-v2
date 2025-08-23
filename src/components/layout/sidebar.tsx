@@ -19,7 +19,7 @@ interface SidebarProps {
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard, current: true },
-  { name: "Projects", href: "/projects", icon: FolderOpen, current: false },
+  { name: "Folders", href: "/folders", icon: FolderOpen, current: false },
   { name: "Test Suites", href: "/suites", icon: TestTube, current: false },
   { name: "Standards", href: "/standards", icon: BookOpen, current: false },
   { name: "Team", href: "/team", icon: Users, current: false },
@@ -76,7 +76,7 @@ export function Sidebar({ className }: SidebarProps) {
             )}
           >
             <Plus className="h-4 w-4 flex-shrink-0" />
-            {!collapsed && <span>New Project</span>}
+            {!collapsed && <span>New Folder</span>}
           </Button>
         </div>
       </nav>
