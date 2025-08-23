@@ -126,14 +126,18 @@ export default function CreateSuite() {
     
     setIsCreating(true);
     
-    // Simulate AI processing
+    // Simulate AI processing and redirect to suite workspace
     setTimeout(() => {
       toast({
         title: "Suite Created",
         description: `"${suiteName}" has been created successfully`
       });
       navigate(`/suite/new-${Date.now()}`);
-    }, 2000);
+    }, 1500);
+  };
+
+  const handleCreateSuite = () => {
+    handleChatSubmit(); // Use the same logic as chat submit
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -225,7 +229,7 @@ export default function CreateSuite() {
               />
             </div>
             <Button 
-              onClick={handleChatSubmit}
+              onClick={handleCreateSuite}
               disabled={!suiteName.trim() || !chatInput.trim() || isCreating}
               className="bg-primary hover:bg-primary/90"
             >
@@ -318,7 +322,7 @@ export default function CreateSuite() {
                   
                   <Button
                     onClick={handleChatSubmit}
-                    disabled={!chatInput.trim() || !suiteName.trim()}
+                    disabled={!chatInput.trim() || !suiteName.trim() || isCreating}
                     size="sm"
                     className="h-8 w-8 p-0"
                   >
