@@ -122,7 +122,7 @@ export default function CreateSuite() {
   };
 
   const handleChatSubmit = () => {
-    if (!chatInput.trim() || !suiteName.trim()) return;
+    if (!suiteName.trim()) return;
     
     setIsCreating(true);
     
@@ -230,7 +230,7 @@ export default function CreateSuite() {
             </div>
             <Button 
               onClick={handleCreateSuite}
-              disabled={!suiteName.trim() || !chatInput.trim() || isCreating}
+              disabled={!suiteName.trim() || isCreating}
               className="bg-primary hover:bg-primary/90"
             >
               {isCreating ? "Creating..." : "Create Suite"}
@@ -322,7 +322,7 @@ export default function CreateSuite() {
                   
                   <Button
                     onClick={handleChatSubmit}
-                    disabled={!chatInput.trim() || !suiteName.trim() || isCreating}
+                    disabled={!suiteName.trim() || isCreating}
                     size="sm"
                     className="h-8 w-8 p-0"
                   >
