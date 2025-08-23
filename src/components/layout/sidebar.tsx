@@ -53,6 +53,21 @@ export function Sidebar({ className }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2">
+        {/* New Test Suite Button */}
+        <Button
+          variant="outline" 
+          className={cn(
+            "w-full gap-3 h-10 border-dashed border-primary/50 text-primary hover:bg-primary-light mb-4",
+            collapsed && "px-2"
+          )}
+          asChild
+        >
+          <Link to="/create-suite">
+            <Plus className="h-4 w-4 flex-shrink-0" />
+            {!collapsed && <span>New Test Suite</span>}
+          </Link>
+        </Button>
+
         <div className="space-y-1">
           {navigation.map((item) => {
             const isActive = location.pathname === item.href;
@@ -74,19 +89,6 @@ export function Sidebar({ className }: SidebarProps) {
               </Button>
             );
           })}
-        </div>
-
-        <div className="border-t border-border/50 pt-4 mt-6">
-          <Button
-            variant="outline" 
-            className={cn(
-              "w-full gap-3 h-10 border-dashed border-primary/50 text-primary hover:bg-primary-light",
-              collapsed && "px-2"
-            )}
-          >
-            <Plus className="h-4 w-4 flex-shrink-0" />
-            {!collapsed && <span>New Suite</span>}
-          </Button>
         </div>
       </nav>
 
