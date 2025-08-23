@@ -44,7 +44,7 @@ export function ProjectFilters({
 }: ProjectFiltersProps) {
   const filterOptions = [
     { value: 'all' as ProjectFilter, label: 'All Projects', icon: FolderOpen },
-    { value: 'my-projects' as ProjectFilter, label: 'My Projects', icon: FolderOpen },
+    { value: 'my-projects' as ProjectFilter, label: 'My Space', icon: FolderOpen },
     { value: 'shared-projects' as ProjectFilter, label: 'Shared Projects', icon: Users },
     { value: 'recent' as ProjectFilter, label: 'Recent', icon: Clock },
     { value: 'favorites' as ProjectFilter, label: 'Favorites', icon: Star }
