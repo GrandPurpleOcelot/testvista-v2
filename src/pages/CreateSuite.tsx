@@ -167,52 +167,6 @@ export default function CreateSuite() {
       {/* Main Content */}
       <main className="p-6">
         <div className="max-w-4xl mx-auto space-y-6">
-          {/* Basic Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Suite Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="suite-name">Suite Name *</Label>
-                  <Input
-                    id="suite-name"
-                    placeholder="e.g., User Authentication Testing"
-                    value={suiteName}
-                    onChange={(e) => setSuiteName(e.target.value)}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="folder-select">Folder</Label>
-                  <select
-                    id="folder-select"
-                    className="w-full h-10 px-3 py-2 text-sm border border-border rounded-md bg-background"
-                    value={selectedFolder}
-                    onChange={(e) => setSelectedFolder(e.target.value)}
-                  >
-                    <option value="">Select a folder</option>
-                    {folders.map(folder => (
-                      <option key={folder.id} value={folder.id}>{folder.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="suite-description">Description</Label>
-                <Textarea
-                  id="suite-description"
-                  placeholder="Describe what this test suite will cover..."
-                  value={suiteDescription}
-                  onChange={(e) => setsuiteDescription(e.target.value)}
-                  rows={3}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
           {/* File Upload */}
           <Card>
             <CardHeader>
@@ -269,6 +223,52 @@ export default function CreateSuite() {
                   ))}
                 </div>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Test Suite Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Test Suite Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="suite-name">Suite Name *</Label>
+                  <Input
+                    id="suite-name"
+                    placeholder="e.g., User Authentication Testing"
+                    value={suiteName}
+                    onChange={(e) => setSuiteName(e.target.value)}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="folder-select">Folder</Label>
+                  <select
+                    id="folder-select"
+                    className="w-full h-10 px-3 py-2 text-sm border border-border rounded-md bg-background"
+                    value={selectedFolder}
+                    onChange={(e) => setSelectedFolder(e.target.value)}
+                  >
+                    <option value="">Select a folder</option>
+                    {folders.map(folder => (
+                      <option key={folder.id} value={folder.id}>{folder.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="suite-description">Description</Label>
+                <Textarea
+                  id="suite-description"
+                  placeholder="Describe what this test suite will cover..."
+                  value={suiteDescription}
+                  onChange={(e) => setsuiteDescription(e.target.value)}
+                  rows={3}
+                />
+              </div>
             </CardContent>
           </Card>
 
