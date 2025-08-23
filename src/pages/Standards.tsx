@@ -16,7 +16,9 @@ import {
   Eye,
   Trash2,
   FileText,
-  Download
+  Download,
+  Save,
+  X
 } from "lucide-react";
 
 interface StandardTemplate {
@@ -178,7 +180,9 @@ export default function Standards() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<StandardTemplate | null>(null);
+  const [editingTemplate, setEditingTemplate] = useState<StandardTemplate | null>(null);
   const [newTemplate, setNewTemplate] = useState({
     name: "",
     description: "",
@@ -224,6 +228,45 @@ export default function Standards() {
   const handleViewTemplate = (template: StandardTemplate) => {
     setSelectedTemplate(template);
     setIsViewDialogOpen(true);
+  };
+
+  const handleEditTemplate = (template: StandardTemplate) => {
+    setEditingTemplate({ ...template });
+    setIsEditDialogOpen(true);
+    setIsViewDialogOpen(false); // Close view dialog if open
+  };
+
+  const handleSaveTemplate = () => {
+    if (editingTemplate) {
+      setTemplates(templates.map(t => 
+        t.id === editingTemplate.id 
+          ? { ...editingTemplate, lastModified: new Date().toISOString().split('T')[0] }
+          : t
+      ));
+      setIsEditDialogOpen(false);
+      setEditingTemplate(null);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditDialogOpen(false);
+    setEditingTemplate(null);
+  };
+
+  // Simple markdown to HTML converter for preview
+  const markdownToHtml = (markdown: string) => {
+    return markdown
+      .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+      .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+      .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+      .replace(/^\- (.*$)/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/`(.*?)`/g, '<code>$1</code>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/^(?!<[h|u|l])/gm, '<p>')
+      .replace(/(?<![>])$/gm, '</p>');
   };
 
   return (
@@ -381,7 +424,11 @@ export default function Standards() {
                       <Eye className="h-3 w-3 mr-1" />
                       View
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleEditTemplate(template)}
+                    >
                       <Edit className="h-3 w-3" />
                     </Button>
                     <Button variant="outline" size="sm">
@@ -438,7 +485,7 @@ export default function Standards() {
                 </pre>
               </div>
               <div className="flex gap-2 justify-end">
-                <Button variant="outline">
+                <Button variant="outline" onClick={() => handleEditTemplate(selectedTemplate)}>
                   <Edit className="h-4 w-4 mr-2" />
                   Edit
                 </Button>
@@ -449,6 +496,114 @@ export default function Standards() {
                 <Button onClick={() => setIsViewDialogOpen(false)}>
                   Close
                 </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Template Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-7xl max-h-[90vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between">
+              <span>Edit Template: {editingTemplate?.name}</span>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={handleCancelEdit}>
+                  <X className="h-4 w-4 mr-2" />
+                  Cancel
+                </Button>
+                <Button size="sm" onClick={handleSaveTemplate}>
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Changes
+                </Button>
+              </div>
+            </DialogTitle>
+            <DialogDescription>
+              Edit template information and content with live preview
+            </DialogDescription>
+          </DialogHeader>
+          {editingTemplate && (
+            <div className="flex flex-col space-y-4 h-[calc(90vh-120px)]">
+              {/* Template Info */}
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Template Name</label>
+                  <Input
+                    value={editingTemplate.name}
+                    onChange={(e) => setEditingTemplate({
+                      ...editingTemplate,
+                      name: e.target.value
+                    })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Description</label>
+                  <Input
+                    value={editingTemplate.description}
+                    onChange={(e) => setEditingTemplate({
+                      ...editingTemplate,
+                      description: e.target.value
+                    })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Category</label>
+                  <select
+                    value={editingTemplate.category}
+                    onChange={(e) => setEditingTemplate({
+                      ...editingTemplate,
+                      category: e.target.value as StandardTemplate["category"]
+                    })}
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="test-case">Test Case</option>
+                    <option value="viewpoint">Viewpoint</option>
+                    <option value="requirement">Requirement</option>
+                    <option value="coverage">Coverage</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Side-by-side Editor */}
+              <div className="flex-1 grid grid-cols-2 gap-4 min-h-0">
+                {/* Editor Panel */}
+                <div className="flex flex-col">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-medium">Markdown Editor</h3>
+                    <Badge variant="outline" className="text-xs">
+                      Live editing
+                    </Badge>
+                  </div>
+                  <Textarea
+                    value={editingTemplate.content}
+                    onChange={(e) => setEditingTemplate({
+                      ...editingTemplate,
+                      content: e.target.value
+                    })}
+                    className="flex-1 font-mono text-sm resize-none"
+                    placeholder="Enter your template content in Markdown format..."
+                  />
+                </div>
+
+                {/* Preview Panel */}
+                <div className="flex flex-col">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-medium">Live Preview</h3>
+                    <Badge variant="outline" className="text-xs">
+                      Rendered
+                    </Badge>
+                  </div>
+                  <div className="flex-1 border rounded-md p-4 bg-muted/20 overflow-y-auto">
+                    <div 
+                      className="prose prose-sm max-w-none dark:prose-invert"
+                      dangerouslySetInnerHTML={{ 
+                        __html: markdownToHtml(editingTemplate.content || '') 
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           )}
