@@ -94,7 +94,6 @@ const mockTestSuites: TestSuite[] = [
 export default function TestSuites() {
   const [testSuites] = useState<TestSuite[]>(mockTestSuites);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [sortField, setSortField] = useState<keyof TestSuite>("lastModified");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
@@ -103,8 +102,7 @@ export default function TestSuites() {
       const matchesSearch = suite.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            suite.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            suite.folder.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = selectedStatus === "all" || suite.status === selectedStatus;
-      return matchesSearch && matchesStatus;
+      return matchesSearch;
     })
     .sort((a, b) => {
       const aValue = a[sortField];
@@ -192,17 +190,6 @@ export default function TestSuites() {
                 className="pl-10"
               />
             </div>
-            
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="draft">Draft</option>
-              <option value="archived">Archived</option>
-            </select>
           </div>
 
           {/* Test Suites Table */}
@@ -285,12 +272,12 @@ export default function TestSuites() {
               <TestTube className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">No test suites found</h3>
               <p className="text-muted-foreground mb-4">
-                {searchTerm || selectedStatus !== "all" 
-                  ? "Try adjusting your search or filters"
+                {searchTerm 
+                  ? "Try adjusting your search"
                   : "Create your first test suite to get started"
                 }
               </p>
-              {(!searchTerm && selectedStatus === "all") && (
+              {!searchTerm && (
                 <Button asChild>
                   <Link to="/create-suite">
                     <Plus className="h-4 w-4 mr-2" />
