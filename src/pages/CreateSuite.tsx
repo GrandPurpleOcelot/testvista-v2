@@ -1,21 +1,14 @@
 import { useState, useRef } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { 
   Upload, 
-  FileText, 
   X, 
   ArrowLeft,
-  Sparkles,
-  Target,
-  Zap,
   Plus,
-  Check,
-  BookOpen
+  Check
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
@@ -57,6 +50,7 @@ export default function CreateSuite() {
   const [selectedReferenceFiles, setSelectedReferenceFiles] = useState<string[]>([]);
   const [selectedStandardFiles, setSelectedStandardFiles] = useState<string[]>([]);
   const [aiInstructions, setAiInstructions] = useState("");
+  const [aiTemplate, setAiTemplate] = useState("");
   const [isCreating, setIsCreating] = useState(false);
 
   const referenceFiles: ReferenceFile[] = [
@@ -75,6 +69,12 @@ export default function CreateSuite() {
     { id: "1", name: "E-commerce Platform" },
     { id: "2", name: "Mobile App Testing" },
     { id: "3", name: "API Integration" }
+  ];
+
+  const aiTemplates = [
+    { value: "comprehensive", label: "Comprehensive Testing", description: "Complete test coverage including positive, negative, and edge cases" },
+    { value: "security", label: "Security Focus", description: "Security testing with authentication, authorization, and data protection" },
+    { value: "performance", label: "Performance & Load", description: "Performance testing, load testing, and system bottlenecks" }
   ];
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,306 +166,246 @@ export default function CreateSuite() {
     }, 2000);
   };
 
-  const aiPromptTemplates = [
-    {
-      icon: Target,
-      title: "Comprehensive Testing",
-      description: "Generate complete test coverage including positive, negative, and edge cases"
-    },
-    {
-      icon: Zap,
-      title: "Security Focus",
-      description: "Emphasize security testing with authentication, authorization, and data protection"
-    },
-    {
-      icon: Sparkles,
-      title: "Performance & Load",
-      description: "Focus on performance testing, load testing, and system bottlenecks"
+  const handleTemplateChange = (template: string) => {
+    setAiTemplate(template);
+    const selectedTemplate = aiTemplates.find(t => t.value === template);
+    if (selectedTemplate) {
+      setAiInstructions(selectedTemplate.description);
     }
-  ];
+  };
 
   return (
-    <div className="min-h-screen bg-workspace-bg">
-      {/* Header */}
-      <header className="flex items-center justify-between p-6 bg-background border-b border-border/50">
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => navigate("/my-space")}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to My Space
-          </Button>
-          <div>
-            <h1 className="font-semibold text-xl">Create New Test Suite</h1>
-            <p className="text-sm text-muted-foreground">Upload requirements and let AI generate test cases</p>
+    <div className="min-h-screen bg-background">
+      {/* Simplified Header */}
+      <header className="border-b">
+        <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => navigate("/my-space")}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            <h1 className="text-lg font-semibold">Create Test Suite</h1>
           </div>
-        </div>
 
-        <Button 
-          onClick={handleCreateSuite}
-          disabled={!suiteName.trim() || isCreating}
-          className="gap-2 bg-gradient-to-r from-primary to-secondary hover:from-primary-hover hover:to-secondary-hover"
-        >
-          <Sparkles className="h-4 w-4" />
-          {isCreating ? "Creating..." : "Create Suite"}
-        </Button>
+          <Button 
+            onClick={handleCreateSuite}
+            disabled={!suiteName.trim() || isCreating}
+          >
+            {isCreating ? "Creating..." : "Create Suite"}
+          </Button>
+        </div>
       </header>
 
-      {/* Main Content */}
-      <main className="p-6">
-        <div className="max-w-4xl mx-auto space-y-6">
-          {/* File Upload */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Upload className="h-5 w-5" />
-                Upload Requirements
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div
-                className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <p className="text-lg font-medium mb-2">Drop files here or click to upload</p>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Supports PDF, Word, Excel, and text files (max 10MB each)
-                </p>
-                <Button variant="outline">
-                  Choose Files
+      {/* Main Content - Single Column Layout */}
+      <main className="max-w-3xl mx-auto p-6 space-y-8">
+        
+        {/* Suite Name - Priority */}
+        <div className="space-y-2">
+          <Label htmlFor="suite-name" className="text-base font-medium">Suite Name</Label>
+          <Input
+            id="suite-name"
+            placeholder="e.g., User Authentication Testing"
+            value={suiteName}
+            onChange={(e) => setSuiteName(e.target.value)}
+            className="text-base"
+          />
+        </div>
+
+        {/* File Upload - Simplified */}
+        <div className="space-y-4">
+          <Label className="text-base font-medium">Files</Label>
+          
+          {/* Upload Area */}
+          <div
+            className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+            <p className="font-medium mb-1">Upload files or select from library</p>
+            <p className="text-sm text-muted-foreground">
+              PDF, Word, Excel, Text files (max 10MB)
+            </p>
+          </div>
+          
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.md"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+
+          {/* File Selection Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            {/* Reference Files */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Reference Files</span>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate("/reference-files")}
+                  className="h-6 px-2 text-xs"
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  Add
                 </Button>
               </div>
               
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.md"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-
-              {/* Reference Files and Standards Section */}
-              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Reference Files */}
-                <div className="space-y-4">
-                  <h4 className="font-medium text-sm flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    Reference Files
-                  </h4>
-                  
-                  <div className="space-y-2 max-h-48 overflow-y-auto border border-border/50 rounded-lg p-3">
-                    {/* Upload New Reference Files Item */}
-                    <div 
-                      className="flex items-center space-x-3 p-2 hover:bg-muted/30 rounded-md cursor-pointer border border-dashed border-border/50"
-                      onClick={() => navigate("/reference-files")}
-                    >
-                      <div className="w-4 h-4 flex items-center justify-center">
-                        <Plus className="h-3 w-3 text-primary" />
-                      </div>
-                      <span className="text-sm">📁</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-primary">Upload New Reference Files</p>
-                        <p className="text-xs text-muted-foreground">Add new reference files to your library</p>
-                      </div>
-                    </div>
-                    
-                    {/* Existing Reference Files */}
-                    {referenceFiles.map((file) => (
-                      <div key={file.id} className="flex items-center space-x-3 p-2 hover:bg-muted/30 rounded-md">
-                        <Checkbox
-                          id={`ref-${file.id}`}
-                          checked={selectedReferenceFiles.includes(file.id)}
-                          onCheckedChange={() => toggleReferenceFile(file.id)}
-                        />
-                        <span className="text-sm">{getFileIcon(file.type)}</span>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{file.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {formatFileSize(file.size)} • {file.uploadedDate}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {selectedReferenceFiles.length > 0 && (
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Check className="h-3 w-3" />
-                      {selectedReferenceFiles.length} reference file(s) selected
-                    </div>
-                  )}
-                </div>
-
-                {/* Standards */}
-                <div className="space-y-4">
-                  <h4 className="font-medium text-sm flex items-center gap-2">
-                    <BookOpen className="h-4 w-4" />
-                    Standards
-                  </h4>
-                  
-                  <div className="space-y-2 max-h-48 overflow-y-auto border border-border/50 rounded-lg p-3">
-                    {/* Upload New Standards Item */}
-                    <div 
-                      className="flex items-center space-x-3 p-2 hover:bg-muted/30 rounded-md cursor-pointer border border-dashed border-border/50"
-                      onClick={() => navigate("/standards")}
-                    >
-                      <div className="w-4 h-4 flex items-center justify-center">
-                        <Plus className="h-3 w-3 text-primary" />
-                      </div>
-                      <span className="text-sm">📋</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-primary">Upload New Standards</p>
-                        <p className="text-xs text-muted-foreground">Add new standards to your library</p>
-                      </div>
-                    </div>
-                    
-                    {/* Existing Standards */}
-                    {standardFiles.map((file) => (
-                      <div key={file.id} className="flex items-center space-x-3 p-2 hover:bg-muted/30 rounded-md">
-                        <Checkbox
-                          id={`std-${file.id}`}
-                          checked={selectedStandardFiles.includes(file.id)}
-                          onCheckedChange={() => toggleStandardFile(file.id)}
-                        />
-                        <span className="text-sm">📋</span>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{file.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {file.category} • {file.uploadedDate}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {selectedStandardFiles.length > 0 && (
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Check className="h-3 w-3" />
-                      {selectedStandardFiles.length} standard(s) selected
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {uploadedFiles.length > 0 && (
-                <div className="mt-6 space-y-3">
-                  <h4 className="font-medium text-sm">Uploaded Files</h4>
-                  {uploadedFiles.map((file, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <span className="text-lg">{getFileIcon(file.type)}</span>
-                        <div>
-                          <p className="font-medium text-sm">{file.name}</p>
-                          <p className="text-xs text-muted-foreground">{formatFileSize(file.size)}</p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeFile(index)}
-                        className="h-6 w-6 p-0"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Test Suite Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Test Suite Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="suite-name">Suite Name *</Label>
-                  <Input
-                    id="suite-name"
-                    placeholder="e.g., User Authentication Testing"
-                    value={suiteName}
-                    onChange={(e) => setSuiteName(e.target.value)}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="folder-select">Folder</Label>
-                  <select
-                    id="folder-select"
-                    className="w-full h-10 px-3 py-2 text-sm border border-border rounded-md bg-background"
-                    value={selectedFolder}
-                    onChange={(e) => setSelectedFolder(e.target.value)}
-                  >
-                    <option value="">Select a folder</option>
-                    {folders.map(folder => (
-                      <option key={folder.id} value={folder.id}>{folder.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="suite-description">Description</Label>
-                <Textarea
-                  id="suite-description"
-                  placeholder="Describe what this test suite will cover..."
-                  value={suiteDescription}
-                  onChange={(e) => setsuiteDescription(e.target.value)}
-                  rows={3}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* AI Instructions */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5" />
-                AI Instructions
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {aiPromptTemplates.map((template, index) => (
-                  <Card 
-                    key={index} 
-                    className="cursor-pointer border-border/50 hover:border-primary/50 transition-colors"
-                    onClick={() => setAiInstructions(template.description)}
-                  >
-                    <CardContent className="p-4 text-center">
-                      <template.icon className="h-8 w-8 mx-auto text-primary mb-3" />
-                      <h4 className="font-medium text-sm mb-2">{template.title}</h4>
-                      <p className="text-xs text-muted-foreground">{template.description}</p>
-                    </CardContent>
-                  </Card>
+              <div className="border rounded-lg p-2 max-h-32 overflow-y-auto space-y-1">
+                {referenceFiles.map((file) => (
+                  <label key={file.id} className="flex items-center space-x-2 p-1 hover:bg-muted/50 rounded cursor-pointer">
+                    <Checkbox
+                      checked={selectedReferenceFiles.includes(file.id)}
+                      onCheckedChange={() => toggleReferenceFile(file.id)}
+                    />
+                    <span className="text-xs truncate">{file.name}</span>
+                  </label>
                 ))}
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="ai-instructions">Custom Instructions for AI</Label>
-                <Textarea
-                  id="ai-instructions"
-                  placeholder="Tell the AI how you want your test cases generated. For example: 'Focus on edge cases and error handling scenarios. Generate both positive and negative test cases. Include boundary value testing for all input fields.'"
-                  value={aiInstructions}
-                  onChange={(e) => setAiInstructions(e.target.value)}
-                  rows={4}
-                />
-                <p className="text-xs text-muted-foreground">
-                  The more specific your instructions, the better the AI can tailor the test cases to your needs.
-                </p>
+              {selectedReferenceFiles.length > 0 && (
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Check className="h-3 w-3" />
+                  {selectedReferenceFiles.length} selected
+                </div>
+              )}
+            </div>
+
+            {/* Standards */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Standards</span>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate("/standards")}
+                  className="h-6 px-2 text-xs"
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  Add
+                </Button>
               </div>
-            </CardContent>
-          </Card>
+              
+              <div className="border rounded-lg p-2 max-h-32 overflow-y-auto space-y-1">
+                {standardFiles.map((file) => (
+                  <label key={file.id} className="flex items-center space-x-2 p-1 hover:bg-muted/50 rounded cursor-pointer">
+                    <Checkbox
+                      checked={selectedStandardFiles.includes(file.id)}
+                      onCheckedChange={() => toggleStandardFile(file.id)}
+                    />
+                    <span className="text-xs truncate">{file.name}</span>
+                  </label>
+                ))}
+              </div>
+              
+              {selectedStandardFiles.length > 0 && (
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Check className="h-3 w-3" />
+                  {selectedStandardFiles.length} selected
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Uploaded Files Display */}
+          {uploadedFiles.length > 0 && (
+            <div className="space-y-2">
+              <span className="text-sm font-medium">Uploaded Files</span>
+              <div className="space-y-1">
+                {uploadedFiles.map((file, index) => (
+                  <div key={index} className="flex items-center justify-between p-2 bg-muted/30 rounded">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">{getFileIcon(file.type)}</span>
+                      <span className="text-sm truncate">{file.name}</span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeFile(index)}
+                      className="h-6 w-6 p-0"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
+
+        {/* Optional Fields - Collapsible */}
+        <details className="space-y-4">
+          <summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
+            Optional: Description & Folder
+          </summary>
+          
+          <div className="space-y-4 pt-2">
+            <div className="space-y-2">
+              <Label htmlFor="suite-description">Description</Label>
+              <Textarea
+                id="suite-description"
+                placeholder="Describe what this test suite will cover..."
+                value={suiteDescription}
+                onChange={(e) => setsuiteDescription(e.target.value)}
+                rows={2}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="folder-select">Folder</Label>
+              <select
+                id="folder-select"
+                className="w-full h-9 px-3 text-sm border rounded-md bg-background"
+                value={selectedFolder}
+                onChange={(e) => setSelectedFolder(e.target.value)}
+              >
+                <option value="">Select a folder</option>
+                {folders.map(folder => (
+                  <option key={folder.id} value={folder.id}>{folder.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </details>
+
+        {/* AI Instructions - Simplified */}
+        <div className="space-y-4">
+          <Label className="text-base font-medium">AI Instructions</Label>
+          
+          <div className="space-y-2">
+            <Label htmlFor="ai-template" className="text-sm">Template</Label>
+            <select
+              id="ai-template"
+              className="w-full h-9 px-3 text-sm border rounded-md bg-background"
+              value={aiTemplate}
+              onChange={(e) => handleTemplateChange(e.target.value)}
+            >
+              <option value="">Choose a template or write custom instructions</option>
+              {aiTemplates.map(template => (
+                <option key={template.value} value={template.value}>{template.label}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="ai-instructions">Custom Instructions</Label>
+            <Textarea
+              id="ai-instructions"
+              placeholder="Tell the AI how you want your test cases generated..."
+              value={aiInstructions}
+              onChange={(e) => setAiInstructions(e.target.value)}
+              rows={3}
+            />
+          </div>
+        </div>
+
       </main>
     </div>
   );
