@@ -175,7 +175,7 @@ export default function CreateSuite() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-workspace-bg">
       {/* Clean Header */}
       <header className="bg-card">
         <div className="max-w-3xl mx-auto px-6 py-6 flex items-center justify-between">
