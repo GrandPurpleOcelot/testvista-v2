@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import MySpace from "./pages/MySpace";
 import CreateSuite from "./pages/CreateSuite";
+import TestSuites from "./pages/TestSuites";
 import SuiteWorkspace from "./pages/SuiteWorkspace";
 import ReferenceFiles from "./pages/ReferenceFiles";
 import NotFound from "./pages/NotFound";
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/my-space" element={<MySpace />} />
           <Route path="/create-suite" element={<CreateSuite />} />
+          <Route path="/suites" element={<TestSuites />} />
           <Route path="/suite/:id" element={<SuiteWorkspace />} />
           <Route path="/reference-files" element={<ReferenceFiles />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
