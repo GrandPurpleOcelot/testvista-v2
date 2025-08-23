@@ -23,7 +23,7 @@ const navigation = [
   { name: "Projects", href: "/projects", icon: FolderOpen },
   { name: "Test Suites", href: "/suites", icon: TestTube },
   { name: "Reference Files", href: "/reference-files", icon: FileText },
-  { name: "Standards", href: "/standards", icon: BookOpen },
+  { name: "Prompt Templates", href: "/standards", icon: BookOpen },
 ];
 
 export function Sidebar({ className }: SidebarProps) {
