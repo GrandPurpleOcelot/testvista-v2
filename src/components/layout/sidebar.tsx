@@ -9,7 +9,8 @@ import {
   Users, 
   BookOpen,
   Plus,
-  Bell
+  Bell,
+  FileText
 } from "lucide-react";
 import { useState } from "react";
 
@@ -20,6 +21,7 @@ interface SidebarProps {
 const navigation = [
   { name: "My Space", href: "/my-space", icon: LayoutDashboard, current: true },
   { name: "Test Suites", href: "/suites", icon: TestTube, current: false },
+  { name: "Reference Files", href: "/reference-files", icon: FileText, current: false },
   { name: "Standards", href: "/standards", icon: BookOpen, current: false },
   { name: "Team", href: "/team", icon: Users, current: false },
 ];
