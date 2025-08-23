@@ -60,17 +60,15 @@ export default function CreateSuite() {
   const [isCreating, setIsCreating] = useState(false);
 
   const referenceFiles: ReferenceFile[] = [
-    { id: "1", name: "API Documentation.pdf", type: "application/pdf", size: 2048576, uploadedDate: "2024-01-15" },
-    { id: "2", name: "User Requirements.docx", type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", size: 1024000, uploadedDate: "2024-01-10" },
-    { id: "3", name: "Database Schema.xlsx", type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", size: 512000, uploadedDate: "2024-01-08" },
-    { id: "4", name: "System Architecture.md", type: "text/markdown", size: 256000, uploadedDate: "2024-01-05" }
+    { id: "1", name: "Banking System Architecture.pdf", type: "application/pdf", size: 2411724, uploadedDate: "2024-01-15" },
+    { id: "2", name: "API Design Patterns.docx", type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", size: 1887436, uploadedDate: "2024-01-12" },
+    { id: "3", name: "Financial Domain Glossary.xlsx", type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", size: 967680, uploadedDate: "2024-01-10" }
   ];
 
   const standardFiles: StandardFile[] = [
-    { id: "1", name: "ISO 29119 Test Standard", type: "application/pdf", category: "Testing Standard", uploadedDate: "2024-01-12" },
-    { id: "2", name: "OWASP Security Guidelines", type: "application/pdf", category: "Security", uploadedDate: "2024-01-09" },
-    { id: "3", name: "API Testing Best Practices", type: "text/markdown", category: "API", uploadedDate: "2024-01-07" },
-    { id: "4", name: "Accessibility WCAG 2.1", type: "application/pdf", category: "Accessibility", uploadedDate: "2024-01-03" }
+    { id: "1", name: "Test Case Prompt Template.md", type: "text/markdown", category: "Test Case", uploadedDate: "2024-01-15" },
+    { id: "2", name: "Domain Common Viewpoint.md", type: "text/markdown", category: "Viewpoint", uploadedDate: "2024-01-12" },
+    { id: "3", name: "Requirement Analysis Template.md", type: "text/markdown", category: "Requirement", uploadedDate: "2024-01-10" }
   ];
 
   const folders = [
