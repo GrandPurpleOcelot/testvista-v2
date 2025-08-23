@@ -24,8 +24,12 @@ import {
   Plus,
   Download,
   Lock,
-  Unlock
+  Unlock,
+  Link2,
+  AlertTriangle
 } from "lucide-react";
+import { RelationshipIndicator } from "@/components/ui/relationship-indicator";
+import { TraceabilityMatrix } from "@/components/ui/traceability-matrix";
 import { cn } from "@/lib/utils";
 
 interface Requirement {
@@ -33,6 +37,15 @@ interface Requirement {
   description: string;
   priority: "High" | "Medium" | "Low";
   status: "Parsed" | "Reviewed" | "Approved";
+  linkedViewpoints: string[];
+  linkedTestCases: string[];
+  lastModified: Date;
+  changeHistory: Array<{
+    timestamp: Date;
+    field: string;
+    oldValue: string;
+    newValue: string;
+  }>;
 }
 
 interface Viewpoint {
@@ -41,6 +54,15 @@ interface Viewpoint {
   intent: string;
   dataVariants: string;
   notes: string;
+  linkedRequirements: string[];
+  linkedTestCases: string[];
+  lastModified: Date;
+  changeHistory: Array<{
+    timestamp: Date;
+    field: string;
+    oldValue: string;
+    newValue: string;
+  }>;
 }
 
 interface TestCase {
@@ -50,17 +72,28 @@ interface TestCase {
   expectedResult: string;
   severity: "High" | "Medium" | "Low";
   reqIds: string[];
+  viewpointIds: string[];
   tags: string[];
   locked: boolean;
+  lastModified: Date;
+  changeHistory: Array<{
+    timestamp: Date;
+    field: string;
+    oldValue: string;
+    newValue: string;
+  }>;
 }
 
 interface ArtifactsPanelProps {
   requirements: Requirement[];
   viewpoints: Viewpoint[];
   testCases: TestCase[];
-  onUpdateRequirement: (id: string, data: Partial<Requirement>) => void;
-  onUpdateViewpoint: (id: string, data: Partial<Viewpoint>) => void;
-  onUpdateTestCase: (id: string, data: Partial<TestCase>) => void;
+  onUpdateRequirement: (id: string, data: Partial<Requirement>, field?: string, oldValue?: string) => void;
+  onUpdateViewpoint: (id: string, data: Partial<Viewpoint>, field?: string, oldValue?: string) => void;
+  onUpdateTestCase: (id: string, data: Partial<TestCase>, field?: string, oldValue?: string) => void;
+  onLinkArtifacts: (sourceType: string, sourceId: string, targetType: string, targetId: string) => void;
+  selectedArtifact: {type: string, id: string} | null;
+  onSelectArtifact: (artifact: {type: string, id: string} | null) => void;
   onExport: (format: string) => void;
 }
 
@@ -71,6 +104,9 @@ export function ArtifactsPanel({
   onUpdateRequirement,
   onUpdateViewpoint,
   onUpdateTestCase,
+  onLinkArtifacts,
+  selectedArtifact,
+  onSelectArtifact,
   onExport 
 }: ArtifactsPanelProps) {
   const [activeTab, setActiveTab] = useState("requirements");
@@ -83,14 +119,30 @@ export function ArtifactsPanel({
   };
 
   const saveEdit = (type: string, id: string, field: string) => {
+    const oldValue = getCurrentValue(type, id, field);
+    
     if (type === "requirement") {
-      onUpdateRequirement(id, { [field]: editValue });
+      onUpdateRequirement(id, { [field]: editValue }, field, oldValue);
     } else if (type === "viewpoint") {
-      onUpdateViewpoint(id, { [field]: editValue });
+      onUpdateViewpoint(id, { [field]: editValue }, field, oldValue);
     } else if (type === "testCase") {
-      onUpdateTestCase(id, { [field]: editValue });
+      onUpdateTestCase(id, { [field]: editValue }, field, oldValue);
     }
     setEditingCell(null);
+  };
+
+  const getCurrentValue = (type: string, id: string, field: string): string => {
+    if (type === "requirement") {
+      const req = requirements.find(r => r.id === id);
+      return req ? req[field as keyof Requirement] as string : "";
+    } else if (type === "viewpoint") {
+      const vp = viewpoints.find(v => v.id === id);
+      return vp ? vp[field as keyof Viewpoint] as string : "";
+    } else if (type === "testCase") {
+      const tc = testCases.find(t => t.id === id);
+      return tc ? tc[field as keyof TestCase] as string : "";
+    }
+    return "";
   };
 
   const cancelEdit = () => {
@@ -240,11 +292,21 @@ export function ArtifactsPanel({
                     <TableHead>Description</TableHead>
                     <TableHead className="w-24">Priority</TableHead>
                     <TableHead className="w-24">Status</TableHead>
+                    <TableHead className="w-32">Relationships</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {requirements.map((req) => (
-                    <TableRow key={req.id} className="hover:bg-muted/50">
+                {requirements.map((req) => (
+                    <TableRow 
+                      key={req.id} 
+                      className={cn(
+                        "hover:bg-muted/50 cursor-pointer",
+                        selectedArtifact?.type === "requirement" && selectedArtifact?.id === req.id 
+                          ? "bg-primary/10 border-l-4 border-l-primary" 
+                          : ""
+                      )}
+                      onClick={() => onSelectArtifact({ type: "requirement", id: req.id })}
+                    >
                       <TableCell className="font-mono text-xs">{req.id}</TableCell>
                       <TableCell>
                         <EditableCell
@@ -265,6 +327,15 @@ export function ArtifactsPanel({
                         <Badge className={getStatusColor(req.status)}>
                           {req.status}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <RelationshipIndicator
+                          artifactType="requirement"
+                          artifactId={req.id}
+                          linkedViewpoints={req.linkedViewpoints}
+                          linkedTestCases={req.linkedTestCases}
+                          onShowRelationships={(type, id) => onSelectArtifact({ type, id })}
+                        />
                       </TableCell>
                     </TableRow>
                   ))}
@@ -432,95 +503,19 @@ export function ArtifactsPanel({
         </TabsContent>
 
         <TabsContent value="coverage" className="flex-1 m-0 p-4">
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5" />
-                  Coverage Overview
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span>Requirements Coverage</span>
-                    <span className="font-bold">{coveragePercentage}%</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-3">
-                    <div 
-                      className="bg-gradient-to-r from-primary to-secondary h-3 rounded-full transition-all duration-300"
-                      style={{ width: `${coveragePercentage}%` }}
-                    />
-                  </div>
-                  <div className="grid grid-cols-3 gap-4 text-sm">
-                    <div className="text-center">
-                      <div className="font-bold text-success">{coveredReqs.size}</div>
-                      <div className="text-muted-foreground">Covered</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="font-bold text-destructive">{requirements.length - coveredReqs.size}</div>
-                      <div className="text-muted-foreground">Uncovered</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="font-bold">{testCases.length}</div>
-                      <div className="text-muted-foreground">Test Cases</div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Coverage Matrix</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Requirement</TableHead>
-                      <TableHead>Covering Test Cases</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {requirements.map((req) => {
-                      const coveringTCs = testCases.filter(tc => tc.reqIds.includes(req.id));
-                      const isCovered = coveringTCs.length > 0;
-                      
-                      return (
-                        <TableRow key={req.id} className={cn(
-                          "hover:bg-muted/50",
-                          !isCovered && "bg-destructive/5"
-                        )}>
-                          <TableCell>
-                            <div>
-                              <span className="font-mono text-xs text-muted-foreground">{req.id}</span>
-                              <p className="text-sm">{req.description}</p>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex flex-wrap gap-1">
-                              {coveringTCs.map((tc) => (
-                                <Badge key={tc.id} variant="outline" className="text-xs">
-                                  {tc.id}
-                                </Badge>
-                              ))}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge className={isCovered ? "bg-success text-success-foreground" : "bg-destructive text-destructive-foreground"}>
-                              {isCovered ? "Covered" : "Uncovered"}
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </div>
+          <TraceabilityMatrix
+            requirements={requirements}
+            viewpoints={viewpoints}
+            testCases={testCases}
+            onNavigateToArtifact={(type, id) => {
+              onSelectArtifact({ type, id });
+              // Switch to appropriate tab
+              if (type === "requirement") setActiveTab("requirements");
+              else if (type === "viewpoint") setActiveTab("viewpoints");
+              else if (type === "testcase") setActiveTab("testcases");
+            }}
+            showViewpointLayer={true}
+          />
         </TabsContent>
       </Tabs>
     </div>
