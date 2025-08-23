@@ -479,10 +479,13 @@ export default function Standards() {
                 <span>Created by {selectedTemplate.createdBy}</span>
                 <span>Last modified: {new Date(selectedTemplate.lastModified).toLocaleDateString()}</span>
               </div>
-              <div className="border rounded-md p-4 bg-muted/50">
-                <pre className="whitespace-pre-wrap text-sm font-mono overflow-x-auto">
-                  {selectedTemplate.content}
-                </pre>
+              <div className="border rounded-md p-6 bg-muted/20 max-h-96 overflow-y-auto">
+                <div 
+                  className="prose prose-sm max-w-none dark:prose-invert"
+                  dangerouslySetInnerHTML={{ 
+                    __html: markdownToHtml(selectedTemplate.content || '') 
+                  }}
+                />
               </div>
               <div className="flex gap-2 justify-end">
                 <Button variant="outline" onClick={() => handleEditTemplate(selectedTemplate)}>
