@@ -2,19 +2,18 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Upload, 
   X, 
   ArrowLeft,
   Plus,
-  Check,
+  Send,
   FileText,
-  BookOpen,
-  Settings2
+  MessageSquare,
+  AtSign,
+  PaperclipIcon
 } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -46,16 +45,15 @@ export default function CreateSuite() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const chatInputRef = useRef<HTMLTextAreaElement>(null);
   
   const [suiteName, setSuiteName] = useState("");
-  const [suiteDescription, setsuiteDescription] = useState("");
-  const [selectedFolder, setSelectedFolder] = useState("");
+  const [chatInput, setChatInput] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const [selectedReferenceFiles, setSelectedReferenceFiles] = useState<string[]>([]);
-  const [selectedStandardFiles, setSelectedStandardFiles] = useState<string[]>([]);
-  const [aiInstructions, setAiInstructions] = useState("");
-  const [aiTemplate, setAiTemplate] = useState("");
+  const [mentionedFiles, setMentionedFiles] = useState<string[]>([]);
+  const [showMentionDropdown, setShowMentionDropdown] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
 
   const referenceFiles: ReferenceFile[] = [
     { id: "1", name: "Banking System Architecture.pdf", type: "application/pdf", size: 2411724, uploadedDate: "2024-01-15" },
@@ -69,16 +67,9 @@ export default function CreateSuite() {
     { id: "3", name: "Requirement Analysis Template.md", type: "text/markdown", category: "Requirement", uploadedDate: "2024-01-10" }
   ];
 
-  const folders = [
-    { id: "1", name: "E-commerce Platform" },
-    { id: "2", name: "Mobile App Testing" },
-    { id: "3", name: "API Integration" }
-  ];
-
-  const aiTemplates = [
-    { value: "comprehensive", label: "Comprehensive Testing", description: "Complete test coverage including positive, negative, and edge cases" },
-    { value: "security", label: "Security Focus", description: "Security testing with authentication, authorization, and data protection" },
-    { value: "performance", label: "Performance & Load", description: "Performance testing, load testing, and system bottlenecks" }
+  const allAvailableFiles = [
+    ...referenceFiles.map(f => ({ ...f, category: 'Reference' })),
+    ...standardFiles.map(f => ({ ...f, category: f.category }))
   ];
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,22 +105,6 @@ export default function CreateSuite() {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const toggleReferenceFile = (fileId: string) => {
-    setSelectedReferenceFiles(prev =>
-      prev.includes(fileId)
-        ? prev.filter(id => id !== fileId)
-        : [...prev, fileId]
-    );
-  };
-
-  const toggleStandardFile = (fileId: string) => {
-    setSelectedStandardFiles(prev =>
-      prev.includes(fileId)
-        ? prev.filter(id => id !== fileId)
-        : [...prev, fileId]
-    );
-  };
-
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return "0 B";
     const k = 1024;
@@ -146,49 +121,93 @@ export default function CreateSuite() {
     return "📁";
   };
 
-  const handleCreateSuite = async () => {
-    if (!suiteName.trim()) {
-      toast({
-        title: "Missing information",
-        description: "Please enter a suite name",
-        variant: "destructive"
-      });
-      return;
-    }
-
+  const handleChatSubmit = () => {
+    if (!chatInput.trim() || !suiteName.trim()) return;
+    
     setIsCreating(true);
-
-    // Simulate suite creation
+    
+    // Simulate AI processing
     setTimeout(() => {
       toast({
         title: "Suite Created",
         description: `"${suiteName}" has been created successfully`
       });
-      
-      // Navigate to the new suite workspace
       navigate(`/suite/new-${Date.now()}`);
     }, 2000);
   };
 
-  const handleTemplateChange = (template: string) => {
-    setAiTemplate(template);
-    const selectedTemplate = aiTemplates.find(t => t.value === template);
-    if (selectedTemplate) {
-      setAiInstructions(selectedTemplate.description);
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleChatSubmit();
+    }
+  };
+
+  const handleMentionClick = () => {
+    setShowMentionDropdown(!showMentionDropdown);
+    setChatInput(prev => prev + '@');
+  };
+
+  const handleMentionFile = (file: ReferenceFile | StandardFile) => {
+    setChatInput(prev => prev.replace(/@$/, `@${file.name} `));
+    setMentionedFiles(prev => [...prev, file.id]);
+    setShowMentionDropdown(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    const files = e.dataTransfer.files;
+    if (files) {
+      Array.from(files).forEach(file => {
+        if (file.size > 10 * 1024 * 1024) {
+          toast({
+            title: "File too large",
+            description: `${file.name} is larger than 10MB`,
+            variant: "destructive"
+          });
+          return;
+        }
+
+        const newFile: UploadedFile = {
+          name: file.name,
+          size: file.size,
+          type: file.type
+        };
+
+        setUploadedFiles(prev => [...prev, newFile]);
+      });
     }
   };
 
   return (
-    <div className="min-h-screen bg-workspace-bg">
-      {/* Clean Header */}
+    <div 
+      className={cn(
+        "min-h-screen bg-background transition-all duration-200",
+        isDragOver && "bg-primary/5"
+      )}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {/* Simplified Header */}
       <header className="bg-background border-b border-border/50 h-16">
-        <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button 
               variant="ghost" 
               size="sm"
               onClick={() => navigate("/my-space")}
-              className="hover:bg-muted/50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
@@ -196,270 +215,251 @@ export default function CreateSuite() {
             <h1 className="text-xl font-medium">Create Test Suite</h1>
           </div>
 
-          <Button 
-            onClick={handleCreateSuite}
-            disabled={!suiteName.trim() || isCreating}
-            className="bg-primary hover:bg-primary/90"
-          >
-            {isCreating ? "Creating..." : "Create Suite"}
-          </Button>
+          <div className="flex items-center gap-3">
+            <div className="w-64">
+              <Input
+                placeholder="Suite name"
+                value={suiteName}
+                onChange={(e) => setSuiteName(e.target.value)}
+                className="h-9"
+              />
+            </div>
+            <Button 
+              onClick={handleChatSubmit}
+              disabled={!suiteName.trim() || !chatInput.trim() || isCreating}
+              className="bg-primary hover:bg-primary/90"
+            >
+              {isCreating ? "Creating..." : "Create Suite"}
+            </Button>
+          </div>
         </div>
       </header>
 
-      {/* Main Content with Clear Sections */}
-      <main className="max-w-4xl mx-auto px-6 py-8 space-y-8">
+      {/* Main Layout: Chat + File Sidebar */}
+      <main className="flex max-w-7xl mx-auto h-[calc(100vh-4rem)]">
         
-        {/* 1. Essential Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <FileText className="h-5 w-5 text-primary" />
-              Essential Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-3">
-              <Label htmlFor="suite-name" className="text-base font-medium">Suite Name *</Label>
-              <Input
-                id="suite-name"
-                placeholder="e.g., User Authentication Testing"
-                value={suiteName}
-                onChange={(e) => setSuiteName(e.target.value)}
-                className="text-base h-11"
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 2. File Management */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Upload className="h-5 w-5 text-primary" />
-              Files & Resources
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            
-            {/* Upload Area */}
-            <div
-              className="border-2 border-dashed border-primary/20 rounded-lg p-8 text-center hover:border-primary/40 hover:bg-primary/5 transition-all cursor-pointer group"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Upload className="h-8 w-8 mx-auto text-primary group-hover:scale-110 transition-transform mb-4" />
-              <p className="text-base font-medium mb-2">Upload New Files</p>
+        {/* Chat Section - 80% */}
+        <div className="flex-1 flex flex-col p-6">
+          <Card className="flex-1 flex flex-col">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-primary" />
+                Describe Your Test Suite
+              </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Click to browse or drag & drop • PDF, Word, Excel, Text files (max 10MB)
+                Tell the AI what you want to test. Use @ to mention documents and + to upload files.
               </p>
-            </div>
+            </CardHeader>
             
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.md"
-              onChange={handleFileUpload}
-              className="hidden"
-            />
+            <CardContent className="flex-1 flex flex-col">
+              {/* Welcome Message */}
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center max-w-md space-y-4">
+                  <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
+                    <MessageSquare className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-medium">Let's create your test suite</h3>
+                  <p className="text-muted-foreground">
+                    Describe what you want to test, mention any relevant documents, or upload new files to get started.
+                  </p>
+                  
+                  {/* Quick Start Templates */}
+                  <div className="space-y-2 pt-4">
+                    <p className="text-sm font-medium">Quick start:</p>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {["API testing", "Security testing", "User authentication", "Performance testing"].map((template) => (
+                        <Button
+                          key={template}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setChatInput(`I want to create a comprehensive test suite for ${template.toLowerCase()}. `)}
+                          className="text-xs"
+                        >
+                          {template}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-            {/* Uploaded Files Display */}
-            {uploadedFiles.length > 0 && (
-              <div className="space-y-3">
-                <h4 className="text-sm font-medium text-foreground">Recently Uploaded</h4>
+              {/* Chat Input */}
+              <div className="relative">
+                <div className="flex items-end gap-3 p-4 border rounded-lg bg-muted/20">
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleMentionClick}
+                      className="h-8 w-8 p-0"
+                      title="Mention document"
+                    >
+                      <AtSign className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="h-8 w-8 p-0"
+                      title="Upload file"
+                    >
+                      <PaperclipIcon className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  <Textarea
+                    ref={chatInputRef}
+                    placeholder="Describe your test suite requirements, mention documents with @, or upload files with +"
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className="flex-1 min-h-[60px] max-h-32 resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                  />
+                  
+                  <Button
+                    onClick={handleChatSubmit}
+                    disabled={!chatInput.trim() || !suiteName.trim()}
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {/* Mention Dropdown */}
+                {showMentionDropdown && (
+                  <div className="absolute bottom-full left-0 right-0 mb-2 bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto z-10">
+                    <div className="p-2">
+                      <p className="text-xs font-medium text-muted-foreground mb-2">Available Documents</p>
+                      {allAvailableFiles.map((file) => (
+                        <button
+                          key={file.id}
+                          onClick={() => handleMentionFile(file)}
+                          className="w-full text-left p-2 hover:bg-muted rounded text-sm flex items-center gap-2"
+                        >
+                          <span>{getFileIcon('type' in file ? file.type : 'text/markdown')}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="truncate font-medium">{file.name}</div>
+                            <div className="text-xs text-muted-foreground">{file.category}</div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* File Sidebar - 20% */}
+        <div className="w-80 p-6 pl-0">
+          <Card className="h-full">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-sm flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Recent Files
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="h-7 w-7 p-0"
+                >
+                  <Plus className="h-3 w-3" />
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            
+            <CardContent className="space-y-4">
+              {/* Recently Uploaded Files */}
+              {uploadedFiles.length > 0 && (
                 <div className="space-y-2">
-                  {uploadedFiles.map((file, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border">
-                      <div className="flex items-center gap-3">
-                        <span className="text-lg">{getFileIcon(file.type)}</span>
-                        <div>
-                          <span className="text-sm font-medium">{file.name}</span>
-                          <span className="text-xs text-muted-foreground block">{formatFileSize(file.size)}</span>
-                        </div>
+                  <h4 className="text-xs font-medium text-muted-foreground">UPLOADED</h4>
+                  {uploadedFiles.slice(-5).map((file, index) => (
+                    <div key={index} className="flex items-center gap-2 p-2 bg-muted/30 rounded text-xs">
+                      <span className="text-sm">{getFileIcon(file.type)}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="truncate font-medium">{file.name}</div>
+                        <div className="text-muted-foreground">{formatFileSize(file.size)}</div>
                       </div>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeFile(index)}
-                        className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+                        onClick={() => removeFile(uploadedFiles.indexOf(file))}
+                        className="h-6 w-6 p-0 hover:bg-destructive/10"
                       >
-                        <X className="h-4 w-4" />
+                        <X className="h-3 w-3" />
                       </Button>
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
-
-            {/* File Library Selection */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              
-              {/* Reference Files */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-medium flex items-center gap-2">
-                    <BookOpen className="h-4 w-4" />
-                    Reference Files
-                  </h4>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => navigate("/reference-files")}
-                    className="h-8"
-                  >
-                    <Plus className="h-3 w-3 mr-1" />
-                    Manage
-                  </Button>
-                </div>
-                
-                <div className="border rounded-lg p-3 max-h-40 overflow-y-auto bg-muted/20">
-                  <div className="space-y-2">
-                    {referenceFiles.map((file) => (
-                      <label key={file.id} className="flex items-start space-x-3 p-2 hover:bg-background/80 rounded cursor-pointer transition-colors">
-                        <Checkbox
-                          checked={selectedReferenceFiles.includes(file.id)}
-                          onCheckedChange={() => toggleReferenceFile(file.id)}
-                          className="mt-0.5"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <span className="text-sm font-medium block truncate">{file.name}</span>
-                          <span className="text-xs text-muted-foreground">{formatFileSize(file.size)}</span>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-                
-                {selectedReferenceFiles.length > 0 && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground bg-primary/10 px-3 py-2 rounded">
-                    <Check className="h-4 w-4 text-primary" />
-                    {selectedReferenceFiles.length} file{selectedReferenceFiles.length !== 1 ? 's' : ''} selected
-                  </div>
-                )}
-              </div>
-
-              {/* Standards */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-medium flex items-center gap-2">
-                    <Settings2 className="h-4 w-4" />
-                    Standards
-                  </h4>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => navigate("/standards")}
-                    className="h-8"
-                  >
-                    <Plus className="h-3 w-3 mr-1" />
-                    Manage
-                  </Button>
-                </div>
-                
-                <div className="border rounded-lg p-3 max-h-40 overflow-y-auto bg-muted/20">
-                  <div className="space-y-2">
-                    {standardFiles.map((file) => (
-                      <label key={file.id} className="flex items-start space-x-3 p-2 hover:bg-background/80 rounded cursor-pointer transition-colors">
-                        <Checkbox
-                          checked={selectedStandardFiles.includes(file.id)}
-                          onCheckedChange={() => toggleStandardFile(file.id)}
-                          className="mt-0.5"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <span className="text-sm font-medium block truncate">{file.name}</span>
-                          <span className="text-xs text-muted-foreground">{file.category}</span>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-                
-                {selectedStandardFiles.length > 0 && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground bg-primary/10 px-3 py-2 rounded">
-                    <Check className="h-4 w-4 text-primary" />
-                    {selectedStandardFiles.length} standard{selectedStandardFiles.length !== 1 ? 's' : ''} selected
-                  </div>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 3. Optional Configuration */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Optional Configuration</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-3">
-              <Label htmlFor="suite-description" className="text-base font-medium">Description</Label>
-              <Textarea
-                id="suite-description"
-                placeholder="Describe what this test suite will cover and its objectives..."
-                value={suiteDescription}
-                onChange={(e) => setsuiteDescription(e.target.value)}
-                rows={3}
-                className="resize-none"
-              />
-            </div>
-            
-            <div className="space-y-3">
-              <Label htmlFor="folder-select" className="text-base font-medium">Folder</Label>
-              <select
-                id="folder-select"
-                className="w-full h-11 px-3 text-base rounded-md border border-input bg-background focus:ring-2 focus:ring-primary focus:border-transparent"
-                value={selectedFolder}
-                onChange={(e) => setSelectedFolder(e.target.value)}
-              >
-                <option value="">Select a folder (optional)</option>
-                {folders.map(folder => (
-                  <option key={folder.id} value={folder.id}>{folder.name}</option>
-                ))}
-              </select>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 4. AI Instructions */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">AI Instructions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-3">
-              <Label htmlFor="ai-template" className="text-base font-medium">Template</Label>
-              <select
-                id="ai-template"
-                className="w-full h-11 px-3 text-base rounded-md border border-input bg-background focus:ring-2 focus:ring-primary focus:border-transparent"
-                value={aiTemplate}
-                onChange={(e) => handleTemplateChange(e.target.value)}
-              >
-                <option value="">Choose a template or write custom instructions</option>
-                {aiTemplates.map(template => (
-                  <option key={template.value} value={template.value}>{template.label}</option>
-                ))}
-              </select>
-              {aiTemplate && (
-                <p className="text-sm text-muted-foreground">
-                  {aiTemplates.find(t => t.value === aiTemplate)?.description}
-                </p>
               )}
-            </div>
-            
-            <div className="space-y-3">
-              <Label htmlFor="ai-instructions" className="text-base font-medium">Custom Instructions</Label>
-              <Textarea
-                id="ai-instructions"
-                placeholder="Tell the AI how you want your test cases generated. Be specific about testing approaches, edge cases, or particular focus areas..."
-                value={aiInstructions}
-                onChange={(e) => setAiInstructions(e.target.value)}
-                rows={4}
-                className="resize-none"
-              />
-            </div>
-          </CardContent>
-        </Card>
 
+              {/* Available Files */}
+              <div className="space-y-2">
+                <h4 className="text-xs font-medium text-muted-foreground">AVAILABLE</h4>
+                <div className="space-y-1 max-h-48 overflow-y-auto">
+                  {allAvailableFiles.slice(0, 8).map((file) => (
+                    <button
+                      key={file.id}
+                      onClick={() => handleMentionFile(file)}
+                      className={cn(
+                        "w-full text-left p-2 rounded text-xs hover:bg-muted/50 transition-colors",
+                        mentionedFiles.includes(file.id) && "bg-primary/10"
+                      )}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm">{getFileIcon('type' in file ? file.type : 'text/markdown')}</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="truncate font-medium">{file.name}</div>
+                          <div className="text-muted-foreground">{file.category}</div>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Upload Drop Zone */}
+              <div
+                className={cn(
+                  "border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-all",
+                  isDragOver 
+                    ? "border-primary bg-primary/10" 
+                    : "border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/20"
+                )}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
+                <p className="text-xs text-muted-foreground">Drop files here or click to upload</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Hidden File Input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.md"
+          onChange={handleFileUpload}
+          className="hidden"
+        />
       </main>
+
+      {/* Drag Overlay */}
+      {isDragOver && (
+        <div className="fixed inset-0 bg-primary/10 border-4 border-dashed border-primary z-50 flex items-center justify-center">
+          <div className="bg-background p-8 rounded-lg shadow-lg text-center">
+            <Upload className="h-12 w-12 mx-auto mb-4 text-primary" />
+            <p className="text-lg font-medium">Drop files to upload</p>
+            <p className="text-muted-foreground">PDF, Word, Excel, and Text files supported</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
