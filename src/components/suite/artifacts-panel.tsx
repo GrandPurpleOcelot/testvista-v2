@@ -316,8 +316,6 @@ export function ArtifactsPanel({
                     <TableRow>
                       <TableHead className={isFullScreen ? "w-24" : "w-20"}>Req ID</TableHead>
                       <TableHead className={isFullScreen ? "min-w-[400px]" : ""}>Description</TableHead>
-                      <TableHead className={isFullScreen ? "w-32" : "w-24"}>Priority</TableHead>
-                      <TableHead className={isFullScreen ? "w-32" : "w-24"}>Status</TableHead>
                       <TableHead className={isFullScreen ? "w-48" : "w-32"}>Relationships</TableHead>
                       {isFullScreen && <TableHead className="w-40">Last Modified</TableHead>}
                     </TableRow>
@@ -344,16 +342,6 @@ export function ArtifactsPanel({
                             field="description"
                             multiline
                           />
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={getPriorityColor(req.priority)}>
-                            {req.priority}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={getStatusColor(req.status)}>
-                            {req.status}
-                          </Badge>
                         </TableCell>
                         <TableCell>
                           <RelationshipIndicator
