@@ -220,15 +220,6 @@ export default function TestSuites() {
                     </div>
                   </TableHead>
                   <TableHead>Folder</TableHead>
-                  <TableHead 
-                    className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => handleSort("status")}
-                  >
-                    <div className="flex items-center gap-2">
-                      Status
-                      {getSortIcon("status")}
-                    </div>
-                  </TableHead>
                   <TableHead className="text-center">Test Cases</TableHead>
                   <TableHead className="text-center">Coverage</TableHead>
                   <TableHead 
@@ -258,14 +249,6 @@ export default function TestSuites() {
                     <TableCell>
                       <span className="text-sm">{suite.folder}</span>
                     </TableCell>
-                    <TableCell>
-                      <Badge className={`text-xs ${getStatusColor(suite.status)}`}>
-                        <span className="flex items-center gap-1">
-                          {getStatusIcon(suite.status)}
-                          {suite.status}
-                        </span>
-                      </Badge>
-                    </TableCell>
                     <TableCell className="text-center">
                       <span className="font-medium">{suite.testCases}</span>
                     </TableCell>
@@ -283,17 +266,11 @@ export default function TestSuites() {
                       <span className="text-sm">{suite.createdBy}</span>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center justify-center gap-2">
+                      <div className="flex items-center justify-center">
                         <Button asChild variant="outline" size="sm">
                           <Link to={`/suite/${suite.id}`}>
-                            <Settings className="h-3 w-3" />
+                            Open
                           </Link>
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Play className="h-3 w-3" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <MoreVertical className="h-3 w-3" />
                         </Button>
                       </div>
                     </TableCell>
