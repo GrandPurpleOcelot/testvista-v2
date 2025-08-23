@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, TestTube, Users, Calendar, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 interface ProjectCardProps {
   project: {
@@ -20,17 +21,26 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, className }: ProjectCardProps) {
+  const navigate = useNavigate();
+  
   const statusColors = {
     active: "bg-success text-success-foreground",
     completed: "bg-muted text-muted-foreground", 
     draft: "bg-warning text-warning-foreground"
   };
 
+  const handleClick = () => {
+    navigate(`/suite/${project.id}`);
+  };
+
   return (
-    <Card className={cn(
-      "group cursor-pointer transition-all duration-200 hover:shadow-md border-border/50 hover:border-primary/20 hover:bg-card-hover",
-      className
-    )}>
+    <Card 
+      className={cn(
+        "group cursor-pointer transition-all duration-200 hover:shadow-md border-border/50 hover:border-primary/20 hover:bg-card-hover",
+        className
+      )}
+      onClick={handleClick}
+    >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="space-y-1 flex-1 mr-2">
