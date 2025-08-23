@@ -254,10 +254,6 @@ export function ArtifactsPanel({
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold text-card-foreground">Test Artifacts</h2>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="gap-2">
-                <Plus className="h-4 w-4" />
-                Add Row
-              </Button>
               <Button variant="outline" size="sm" className="gap-2" onClick={() => onExport("csv")}>
                 <Download className="h-4 w-4" />
                 Export
