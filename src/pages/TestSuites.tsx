@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Sidebar } from "@/components/layout/sidebar";
 import { 
   Search, 
@@ -15,7 +15,10 @@ import {
   MoreVertical,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -28,6 +31,7 @@ interface TestSuite {
   testCases: number;
   coverage: number;
   lastRun: string;
+  lastModified: string;
   createdBy: string;
   createdAt: string;
 }
@@ -42,6 +46,7 @@ const mockTestSuites: TestSuite[] = [
     testCases: 24,
     coverage: 85,
     lastRun: "2024-01-20",
+    lastModified: "2024-01-20",
     createdBy: "John Doe",
     createdAt: "2024-01-15"
   },
@@ -54,6 +59,7 @@ const mockTestSuites: TestSuite[] = [
     testCases: 18,
     coverage: 92,
     lastRun: "2024-01-19",
+    lastModified: "2024-01-19",
     createdBy: "Jane Smith",
     createdAt: "2024-01-12"
   },
@@ -66,6 +72,7 @@ const mockTestSuites: TestSuite[] = [
     testCases: 12,
     coverage: 60,
     lastRun: "2024-01-18",
+    lastModified: "2024-01-18",
     createdBy: "Mike Johnson",
     createdAt: "2024-01-10"
   },
@@ -78,6 +85,7 @@ const mockTestSuites: TestSuite[] = [
     testCases: 31,
     coverage: 78,
     lastRun: "2024-01-05",
+    lastModified: "2024-01-05",
     createdBy: "Sarah Wilson",
     createdAt: "2024-01-01"
   }
@@ -87,14 +95,41 @@ export default function TestSuites() {
   const [testSuites] = useState<TestSuite[]>(mockTestSuites);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [sortField, setSortField] = useState<keyof TestSuite>("lastModified");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
-  const filteredSuites = testSuites.filter(suite => {
-    const matchesSearch = suite.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         suite.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         suite.folder.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = selectedStatus === "all" || suite.status === selectedStatus;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredAndSortedSuites = testSuites
+    .filter(suite => {
+      const matchesSearch = suite.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           suite.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           suite.folder.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = selectedStatus === "all" || suite.status === selectedStatus;
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a, b) => {
+      const aValue = a[sortField];
+      const bValue = b[sortField];
+      
+      if (sortDirection === "asc") {
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+      } else {
+        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+      }
+    });
+
+  const handleSort = (field: keyof TestSuite) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const getSortIcon = (field: keyof TestSuite) => {
+    if (sortField !== field) return <ArrowUpDown className="h-4 w-4" />;
+    return sortDirection === "asc" ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />;
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -170,89 +205,105 @@ export default function TestSuites() {
             </select>
           </div>
 
-          {/* Test Suites Grid */}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredSuites.map((suite) => (
-              <Card key={suite.id} className="group relative hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <TestTube className="h-8 w-8 text-primary" />
+          {/* Test Suites Table */}
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead 
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => handleSort("name")}
+                  >
                     <div className="flex items-center gap-2">
+                      Name
+                      {getSortIcon("name")}
+                    </div>
+                  </TableHead>
+                  <TableHead>Folder</TableHead>
+                  <TableHead 
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => handleSort("status")}
+                  >
+                    <div className="flex items-center gap-2">
+                      Status
+                      {getSortIcon("status")}
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-center">Test Cases</TableHead>
+                  <TableHead className="text-center">Coverage</TableHead>
+                  <TableHead 
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => handleSort("lastModified")}
+                  >
+                    <div className="flex items-center gap-2">
+                      Last Modified
+                      {getSortIcon("lastModified")}
+                    </div>
+                  </TableHead>
+                  <TableHead>Created By</TableHead>
+                  <TableHead className="text-center">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredAndSortedSuites.map((suite) => (
+                  <TableRow key={suite.id} className="hover:bg-muted/50">
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{suite.name}</div>
+                        <div className="text-sm text-muted-foreground line-clamp-1">
+                          {suite.description}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">{suite.folder}</span>
+                    </TableCell>
+                    <TableCell>
                       <Badge className={`text-xs ${getStatusColor(suite.status)}`}>
                         <span className="flex items-center gap-1">
                           {getStatusIcon(suite.status)}
                           {suite.status}
                         </span>
                       </Badge>
-                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                        <MoreVertical className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <CardTitle className="text-lg font-semibold leading-tight">
-                      {suite.name}
-                    </CardTitle>
-                    <CardDescription className="text-sm mt-1 line-clamp-2">
-                      {suite.description}
-                    </CardDescription>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="pt-0">
-                  <div className="space-y-3">
-                    {/* Folder */}
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">Folder: </span>
-                      <span className="font-medium">{suite.folder}</span>
-                    </div>
-
-                    {/* Stats */}
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="text-muted-foreground">Test Cases</span>
-                        <div className="font-semibold">{suite.testCases}</div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="font-medium">{suite.testCases}</span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className={`font-medium ${getCoverageColor(suite.coverage)}`}>
+                        {suite.coverage}%
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">
+                        {new Date(suite.lastModified).toLocaleDateString()}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">{suite.createdBy}</span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center justify-center gap-2">
+                        <Button asChild variant="outline" size="sm">
+                          <Link to={`/suite/${suite.id}`}>
+                            <Settings className="h-3 w-3" />
+                          </Link>
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          <Play className="h-3 w-3" />
+                        </Button>
+                        <Button variant="ghost" size="sm">
+                          <MoreVertical className="h-3 w-3" />
+                        </Button>
                       </div>
-                      <div>
-                        <span className="text-muted-foreground">Coverage</span>
-                        <div className={`font-semibold ${getCoverageColor(suite.coverage)}`}>
-                          {suite.coverage}%
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Meta info */}
-                    <div className="space-y-1 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <User className="h-3 w-3" />
-                        <span>{suite.createdBy}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-3 w-3" />
-                        <span>Last run: {new Date(suite.lastRun).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                    
-                    {/* Actions */}
-                    <div className="flex gap-2 pt-2">
-                      <Button asChild variant="default" size="sm" className="flex-1">
-                        <Link to={`/suite/${suite.id}`}>
-                          <Settings className="h-3 w-3 mr-1" />
-                          Open
-                        </Link>
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Play className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
 
-          {filteredSuites.length === 0 && (
+          {filteredAndSortedSuites.length === 0 && (
             <div className="text-center py-12">
               <TestTube className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">No test suites found</h3>
