@@ -26,10 +26,12 @@ import {
   Lock,
   Unlock,
   Link2,
-  AlertTriangle
+  AlertTriangle,
+  Maximize2
 } from "lucide-react";
 import { RelationshipIndicator } from "@/components/ui/relationship-indicator";
 import { TraceabilityMatrix } from "@/components/ui/traceability-matrix";
+import { FullScreenModal, FullScreenModalContent, FullScreenModalTrigger } from "@/components/ui/full-screen-modal";
 import { cn } from "@/lib/utils";
 
 interface Requirement {
@@ -95,6 +97,7 @@ interface ArtifactsPanelProps {
   selectedArtifact: {type: string, id: string} | null;
   onSelectArtifact: (artifact: {type: string, id: string} | null) => void;
   onExport: (format: string) => void;
+  isFullScreen?: boolean;
 }
 
 export function ArtifactsPanel({ 
@@ -107,7 +110,8 @@ export function ArtifactsPanel({
   onLinkArtifacts,
   selectedArtifact,
   onSelectArtifact,
-  onExport 
+  onExport,
+  isFullScreen = false
 }: ArtifactsPanelProps) {
   const [activeTab, setActiveTab] = useState("requirements");
   const [editingCell, setEditingCell] = useState<string | null>(null);
@@ -242,7 +246,7 @@ export function ArtifactsPanel({
     ? Math.round((coveredReqs.size / requirements.length) * 100) 
     : 0;
 
-  return (
+  const renderArtifactsContent = () => (
     <div className="h-full flex flex-col bg-background">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
         {/* Tab Headers */}
@@ -258,6 +262,31 @@ export function ArtifactsPanel({
                 <Download className="h-4 w-4" />
                 Export
               </Button>
+              {!isFullScreen && (
+                <FullScreenModal>
+                  <FullScreenModalTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Maximize2 className="h-4 w-4" />
+                      Full Screen
+                    </Button>
+                  </FullScreenModalTrigger>
+                  <FullScreenModalContent title="Test Artifacts - Full Screen View">
+                    <ArtifactsPanel
+                      requirements={requirements}
+                      viewpoints={viewpoints}
+                      testCases={testCases}
+                      onUpdateRequirement={onUpdateRequirement}
+                      onUpdateViewpoint={onUpdateViewpoint}
+                      onUpdateTestCase={onUpdateTestCase}
+                      onLinkArtifacts={onLinkArtifacts}
+                      selectedArtifact={selectedArtifact}
+                      onSelectArtifact={onSelectArtifact}
+                      onExport={onExport}
+                      isFullScreen={true}
+                    />
+                  </FullScreenModalContent>
+                </FullScreenModal>
+              )}
             </div>
           </div>
           
@@ -285,62 +314,70 @@ export function ArtifactsPanel({
         <TabsContent value="requirements" className="flex-1 m-0 p-4">
           <Card className="h-full">
             <CardContent className="p-0 h-full">
-              <Table>
-                <TableHeader className="sticky top-0 bg-muted/50">
-                  <TableRow>
-                    <TableHead className="w-20">Req ID</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead className="w-24">Priority</TableHead>
-                    <TableHead className="w-24">Status</TableHead>
-                    <TableHead className="w-32">Relationships</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                {requirements.map((req) => (
-                    <TableRow 
-                      key={req.id} 
-                      className={cn(
-                        "hover:bg-muted/50 cursor-pointer",
-                        selectedArtifact?.type === "requirement" && selectedArtifact?.id === req.id 
-                          ? "bg-primary/10 border-l-4 border-l-primary" 
-                          : ""
-                      )}
-                      onClick={() => onSelectArtifact({ type: "requirement", id: req.id })}
-                    >
-                      <TableCell className="font-mono text-xs">{req.id}</TableCell>
-                      <TableCell>
-                        <EditableCell
-                          value={req.description}
-                          cellId={`req-${req.id}-desc`}
-                          type="requirement"
-                          id={req.id}
-                          field="description"
-                          multiline
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getPriorityColor(req.priority)}>
-                          {req.priority}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(req.status)}>
-                          {req.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <RelationshipIndicator
-                          artifactType="requirement"
-                          artifactId={req.id}
-                          linkedViewpoints={req.linkedViewpoints}
-                          linkedTestCases={req.linkedTestCases}
-                          onShowRelationships={(type, id) => onSelectArtifact({ type, id })}
-                        />
-                      </TableCell>
+              <div className="h-full overflow-auto">
+                <Table>
+                  <TableHeader className="sticky top-0 bg-muted/50 z-10">
+                    <TableRow>
+                      <TableHead className={isFullScreen ? "w-24" : "w-20"}>Req ID</TableHead>
+                      <TableHead className={isFullScreen ? "min-w-[400px]" : ""}>Description</TableHead>
+                      <TableHead className={isFullScreen ? "w-32" : "w-24"}>Priority</TableHead>
+                      <TableHead className={isFullScreen ? "w-32" : "w-24"}>Status</TableHead>
+                      <TableHead className={isFullScreen ? "w-48" : "w-32"}>Relationships</TableHead>
+                      {isFullScreen && <TableHead className="w-40">Last Modified</TableHead>}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                  {requirements.map((req) => (
+                      <TableRow 
+                        key={req.id} 
+                        className={cn(
+                          "hover:bg-muted/50 cursor-pointer",
+                          selectedArtifact?.type === "requirement" && selectedArtifact?.id === req.id 
+                            ? "bg-primary/10 border-l-4 border-l-primary" 
+                            : ""
+                        )}
+                        onClick={() => onSelectArtifact({ type: "requirement", id: req.id })}
+                      >
+                        <TableCell className="font-mono text-xs">{req.id}</TableCell>
+                        <TableCell className={isFullScreen ? "max-w-[400px]" : ""}>
+                          <EditableCell
+                            value={req.description}
+                            cellId={`req-${req.id}-desc`}
+                            type="requirement"
+                            id={req.id}
+                            field="description"
+                            multiline
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={getPriorityColor(req.priority)}>
+                            {req.priority}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={getStatusColor(req.status)}>
+                            {req.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <RelationshipIndicator
+                            artifactType="requirement"
+                            artifactId={req.id}
+                            linkedViewpoints={req.linkedViewpoints}
+                            linkedTestCases={req.linkedTestCases}
+                            onShowRelationships={(type, id) => onSelectArtifact({ type, id })}
+                          />
+                        </TableCell>
+                        {isFullScreen && (
+                          <TableCell className="text-xs text-muted-foreground">
+                            {req.lastModified.toLocaleDateString()}
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -348,61 +385,90 @@ export function ArtifactsPanel({
         <TabsContent value="viewpoints" className="flex-1 m-0 p-4">
           <Card className="h-full">
             <CardContent className="p-0 h-full">
-              <Table>
-                <TableHeader className="sticky top-0 bg-muted/50">
-                  <TableRow>
-                    <TableHead className="w-20">VP ID</TableHead>
-                    <TableHead className="w-32">Feature/Area</TableHead>
-                    <TableHead>Intent</TableHead>
-                    <TableHead className="w-40">Data Variants</TableHead>
-                    <TableHead className="w-32">Notes</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {viewpoints.map((vp) => (
-                    <TableRow key={vp.id} className="hover:bg-muted/50">
-                      <TableCell className="font-mono text-xs">{vp.id}</TableCell>
-                      <TableCell>
-                        <EditableCell
-                          value={vp.area}
-                          cellId={`vp-${vp.id}-area`}
-                          type="viewpoint"
-                          id={vp.id}
-                          field="area"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <EditableCell
-                          value={vp.intent}
-                          cellId={`vp-${vp.id}-intent`}
-                          type="viewpoint"
-                          id={vp.id}
-                          field="intent"
-                          multiline
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <EditableCell
-                          value={vp.dataVariants}
-                          cellId={`vp-${vp.id}-variants`}
-                          type="viewpoint"
-                          id={vp.id}
-                          field="dataVariants"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <EditableCell
-                          value={vp.notes}
-                          cellId={`vp-${vp.id}-notes`}
-                          type="viewpoint"
-                          id={vp.id}
-                          field="notes"
-                        />
-                      </TableCell>
+              <div className="h-full overflow-auto">
+                <Table>
+                  <TableHeader className="sticky top-0 bg-muted/50 z-10">
+                    <TableRow>
+                      <TableHead className={isFullScreen ? "w-24" : "w-20"}>VP ID</TableHead>
+                      <TableHead className={isFullScreen ? "w-48" : "w-32"}>Feature/Area</TableHead>
+                      <TableHead className={isFullScreen ? "min-w-[300px]" : ""}>Intent</TableHead>
+                      <TableHead className={isFullScreen ? "w-60" : "w-40"}>Data Variants</TableHead>
+                      <TableHead className={isFullScreen ? "w-48" : "w-32"}>Notes</TableHead>
+                      {isFullScreen && <TableHead className="w-48">Relationships</TableHead>}
+                      {isFullScreen && <TableHead className="w-40">Last Modified</TableHead>}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {viewpoints.map((vp) => (
+                      <TableRow 
+                        key={vp.id} 
+                        className={cn(
+                          "hover:bg-muted/50 cursor-pointer",
+                          selectedArtifact?.type === "viewpoint" && selectedArtifact?.id === vp.id 
+                            ? "bg-primary/10 border-l-4 border-l-primary" 
+                            : ""
+                        )}
+                        onClick={() => onSelectArtifact({ type: "viewpoint", id: vp.id })}
+                      >
+                        <TableCell className="font-mono text-xs">{vp.id}</TableCell>
+                        <TableCell>
+                          <EditableCell
+                            value={vp.area}
+                            cellId={`vp-${vp.id}-area`}
+                            type="viewpoint"
+                            id={vp.id}
+                            field="area"
+                          />
+                        </TableCell>
+                        <TableCell className={isFullScreen ? "max-w-[300px]" : ""}>
+                          <EditableCell
+                            value={vp.intent}
+                            cellId={`vp-${vp.id}-intent`}
+                            type="viewpoint"
+                            id={vp.id}
+                            field="intent"
+                            multiline
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <EditableCell
+                            value={vp.dataVariants}
+                            cellId={`vp-${vp.id}-variants`}
+                            type="viewpoint"
+                            id={vp.id}
+                            field="dataVariants"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <EditableCell
+                            value={vp.notes}
+                            cellId={`vp-${vp.id}-notes`}
+                            type="viewpoint"
+                            id={vp.id}
+                            field="notes"
+                          />
+                        </TableCell>
+                        {isFullScreen && (
+                          <TableCell>
+                            <RelationshipIndicator
+                              artifactType="viewpoint"
+                              artifactId={vp.id}
+                              linkedViewpoints={[]}
+                              linkedTestCases={vp.linkedTestCases}
+                              onShowRelationships={(type, id) => onSelectArtifact({ type, id })}
+                            />
+                          </TableCell>
+                        )}
+                        {isFullScreen && (
+                          <TableCell className="text-xs text-muted-foreground">
+                            {vp.lastModified.toLocaleDateString()}
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -410,94 +476,114 @@ export function ArtifactsPanel({
         <TabsContent value="testcases" className="flex-1 m-0 p-4">
           <Card className="h-full">
             <CardContent className="p-0 h-full">
-              <Table>
-                <TableHeader className="sticky top-0 bg-muted/50">
-                  <TableRow>
-                    <TableHead className="w-16"></TableHead>
-                    <TableHead className="w-20">TC ID</TableHead>
-                    <TableHead className="w-64">Title</TableHead>
-                    <TableHead>Steps</TableHead>
-                    <TableHead className="w-48">Expected Result</TableHead>
-                    <TableHead className="w-20">Severity</TableHead>
-                    <TableHead className="w-32">Req IDs</TableHead>
-                    <TableHead className="w-32">Tags</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {testCases.map((tc) => (
-                    <TableRow key={tc.id} className="hover:bg-muted/50">
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-6 w-6 p-0"
-                          onClick={() => onUpdateTestCase(tc.id, { locked: !tc.locked })}
-                        >
-                          {tc.locked ? (
-                            <Lock className="h-3 w-3 text-warning" />
-                          ) : (
-                            <Unlock className="h-3 w-3 text-muted-foreground" />
-                          )}
-                        </Button>
-                      </TableCell>
-                      <TableCell className="font-mono text-xs">{tc.id}</TableCell>
-                      <TableCell>
-                        <EditableCell
-                          value={tc.title}
-                          cellId={`tc-${tc.id}-title`}
-                          type="testCase"
-                          id={tc.id}
-                          field="title"
-                          multiline
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <EditableCell
-                          value={tc.steps}
-                          cellId={`tc-${tc.id}-steps`}
-                          type="testCase"
-                          id={tc.id}
-                          field="steps"
-                          multiline
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <EditableCell
-                          value={tc.expectedResult}
-                          cellId={`tc-${tc.id}-result`}
-                          type="testCase"
-                          id={tc.id}
-                          field="expectedResult"
-                          multiline
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getPriorityColor(tc.severity)}>
-                          {tc.severity}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {tc.reqIds.map((reqId) => (
-                            <Badge key={reqId} variant="outline" className="text-xs">
-                              {reqId}
-                            </Badge>
-                          ))}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {tc.tags.map((tag) => (
-                            <Badge key={tag} variant="secondary" className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      </TableCell>
+              <div className="h-full overflow-auto">
+                <Table>
+                  <TableHeader className="sticky top-0 bg-muted/50 z-10">
+                    <TableRow>
+                      <TableHead className="w-16"></TableHead>
+                      <TableHead className={isFullScreen ? "w-24" : "w-20"}>TC ID</TableHead>
+                      <TableHead className={isFullScreen ? "w-80" : "w-64"}>Title</TableHead>
+                      <TableHead className={isFullScreen ? "min-w-[300px]" : ""}>Steps</TableHead>
+                      <TableHead className={isFullScreen ? "w-60" : "w-48"}>Expected Result</TableHead>
+                      <TableHead className={isFullScreen ? "w-24" : "w-20"}>Severity</TableHead>
+                      <TableHead className={isFullScreen ? "w-40" : "w-32"}>Req IDs</TableHead>
+                      <TableHead className={isFullScreen ? "w-40" : "w-32"}>Tags</TableHead>
+                      {isFullScreen && <TableHead className="w-40">Last Modified</TableHead>}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {testCases.map((tc) => (
+                      <TableRow 
+                        key={tc.id} 
+                        className={cn(
+                          "hover:bg-muted/50 cursor-pointer",
+                          selectedArtifact?.type === "testcase" && selectedArtifact?.id === tc.id 
+                            ? "bg-primary/10 border-l-4 border-l-primary" 
+                            : ""
+                        )}
+                        onClick={() => onSelectArtifact({ type: "testcase", id: tc.id })}
+                      >
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onUpdateTestCase(tc.id, { locked: !tc.locked });
+                            }}
+                          >
+                            {tc.locked ? (
+                              <Lock className="h-3 w-3 text-warning" />
+                            ) : (
+                              <Unlock className="h-3 w-3 text-muted-foreground" />
+                            )}
+                          </Button>
+                        </TableCell>
+                        <TableCell className="font-mono text-xs">{tc.id}</TableCell>
+                        <TableCell className={isFullScreen ? "max-w-[320px]" : ""}>
+                          <EditableCell
+                            value={tc.title}
+                            cellId={`tc-${tc.id}-title`}
+                            type="testCase"
+                            id={tc.id}
+                            field="title"
+                            multiline
+                          />
+                        </TableCell>
+                        <TableCell className={isFullScreen ? "max-w-[300px]" : ""}>
+                          <EditableCell
+                            value={tc.steps}
+                            cellId={`tc-${tc.id}-steps`}
+                            type="testCase"
+                            id={tc.id}
+                            field="steps"
+                            multiline
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <EditableCell
+                            value={tc.expectedResult}
+                            cellId={`tc-${tc.id}-result`}
+                            type="testCase"
+                            id={tc.id}
+                            field="expectedResult"
+                            multiline
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={getPriorityColor(tc.severity)}>
+                            {tc.severity}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {tc.reqIds.map((reqId) => (
+                              <Badge key={reqId} variant="outline" className="text-xs">
+                                {reqId}
+                              </Badge>
+                            ))}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {tc.tags.map((tag) => (
+                              <Badge key={tag} variant="secondary" className="text-xs">
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        </TableCell>
+                        {isFullScreen && (
+                          <TableCell className="text-xs text-muted-foreground">
+                            {tc.lastModified.toLocaleDateString()}
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -520,4 +606,6 @@ export function ArtifactsPanel({
       </Tabs>
     </div>
   );
+
+  return renderArtifactsContent();
 }
