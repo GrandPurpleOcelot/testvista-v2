@@ -37,16 +37,25 @@ export function Sidebar({ className }: SidebarProps) {
       className
     )}>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border/50">
+      <div className={cn(
+        "flex items-center border-b border-border/50 p-4",
+        collapsed ? "justify-center" : "justify-between"
+      )}>
         {!collapsed && <Logo size="md" />}
-        {collapsed && <Logo size="sm" />}
         <Button
           variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0"
+          className={cn(
+            "h-8 w-8 p-0 flex-shrink-0",
+            collapsed && "mx-auto"
+          )}
           onClick={() => setCollapsed(!collapsed)}
         >
-          <LayoutDashboard className="h-4 w-4" />
+          {collapsed ? (
+            <LayoutDashboard className="h-4 w-4" />
+          ) : (
+            <LayoutDashboard className="h-4 w-4" />
+          )}
         </Button>
       </div>
 
