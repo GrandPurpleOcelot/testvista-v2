@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import MySpace from "./pages/MySpace";
+import CreateSuite from "./pages/CreateSuite";
 import SuiteWorkspace from "./pages/SuiteWorkspace";
 import NotFound from "./pages/NotFound";
 
@@ -17,6 +19,8 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/my-space" element={<MySpace />} />
+          <Route path="/create-suite" element={<CreateSuite />} />
           <Route path="/suite/:id" element={<SuiteWorkspace />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

@@ -1,0 +1,270 @@
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Sidebar } from "@/components/layout/sidebar";
+import { 
+  FolderOpen, 
+  TestTube, 
+  Plus, 
+  Search,
+  MoreHorizontal,
+  Calendar,
+  Users
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
+
+interface TestSuite {
+  id: string;
+  name: string;
+  description: string;
+  status: "active" | "completed" | "draft";
+  testCases: number;
+  coverage: number;
+  lastActivity: string;
+  folderId: string;
+}
+
+interface Folder {
+  id: string;
+  name: string;
+  description: string;
+  suites: TestSuite[];
+  lastActivity: string;
+  members: number;
+}
+
+const mockFolders: Folder[] = [
+  {
+    id: "1",
+    name: "E-commerce Platform",
+    description: "Testing suite for the main e-commerce application",
+    lastActivity: "2 hours ago",
+    members: 5,
+    suites: [
+      {
+        id: "s1",
+        name: "Authentication & Login",
+        description: "User authentication and login functionality tests",
+        status: "active",
+        testCases: 47,
+        coverage: 89,
+        lastActivity: "2 hours ago",
+        folderId: "1"
+      },
+      {
+        id: "s2", 
+        name: "Checkout Flow",
+        description: "End-to-end checkout process validation",
+        status: "completed",
+        testCases: 123,
+        coverage: 95,
+        lastActivity: "1 day ago",
+        folderId: "1"
+      }
+    ]
+  },
+  {
+    id: "2",
+    name: "Mobile App Testing",
+    description: "Testing suite for mobile applications",
+    lastActivity: "1 day ago", 
+    members: 3,
+    suites: [
+      {
+        id: "s3",
+        name: "Security Testing",
+        description: "Security-focused testing for mobile app",
+        status: "active",
+        testCases: 67,
+        coverage: 78,
+        lastActivity: "6 hours ago",
+        folderId: "2"
+      }
+    ]
+  },
+  {
+    id: "3",
+    name: "API Integration",
+    description: "Third-party API and microservices testing",
+    lastActivity: "3 days ago",
+    members: 7,
+    suites: [
+      {
+        id: "s4",
+        name: "Payment Gateway",
+        description: "Payment processing API tests",
+        status: "draft",
+        testCases: 23,
+        coverage: 45,
+        lastActivity: "1 week ago",
+        folderId: "3"
+      }
+    ]
+  }
+];
+
+export default function MySpace() {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(["1"]));
+
+  const toggleFolder = (folderId: string) => {
+    const newExpanded = new Set(expandedFolders);
+    if (newExpanded.has(folderId)) {
+      newExpanded.delete(folderId);
+    } else {
+      newExpanded.add(folderId);
+    }
+    setExpandedFolders(newExpanded);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "active": return "bg-success text-success-foreground";
+      case "completed": return "bg-muted text-muted-foreground";
+      case "draft": return "bg-warning text-warning-foreground";
+      default: return "bg-muted text-muted-foreground";
+    }
+  };
+
+  const filteredFolders = mockFolders.filter(folder =>
+    folder.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    folder.suites.some(suite => suite.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  return (
+    <div className="flex h-screen bg-workspace-bg">
+      <Sidebar />
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <header className="flex items-center justify-between p-6 bg-background border-b border-border/50">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">My Space</h1>
+            <p className="text-muted-foreground">Your private folders and test suites</p>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder="Search folders and suites..." 
+                className="pl-10 w-80 bg-workspace-bg border-border/50 focus:border-primary/50"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            
+            <Button 
+              onClick={() => navigate("/create-suite")}
+              className="gap-2 bg-gradient-to-r from-primary to-secondary hover:from-primary-hover hover:to-secondary-hover shadow-sm"
+            >
+              <Plus className="h-4 w-4" />
+              New Test Suite
+            </Button>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto p-6">
+          <div className="max-w-6xl mx-auto space-y-6">
+            {filteredFolders.length === 0 && (
+              <div className="text-center py-12">
+                <FolderOpen className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
+                <h3 className="text-lg font-medium text-muted-foreground mb-2">No folders found</h3>
+                <p className="text-muted-foreground">Try adjusting your search or create a new test suite</p>
+              </div>
+            )}
+
+            {filteredFolders.map((folder) => (
+              <Card key={folder.id} className="border-border/50 shadow-sm">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center justify-between">
+                    <div 
+                      className="flex items-center gap-4 cursor-pointer flex-1"
+                      onClick={() => toggleFolder(folder.id)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <FolderOpen className="h-5 w-5 text-primary" />
+                        <div>
+                          <h3 className="font-semibold text-lg text-card-foreground">{folder.name}</h3>
+                          <p className="text-sm text-muted-foreground">{folder.description}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <TestTube className="h-4 w-4" />
+                          <span>{folder.suites.length} suites</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Users className="h-4 w-4" />
+                          <span>{folder.members} members</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />
+                          <span>{folder.lastActivity}</span>
+                        </div>
+                      </div>
+                      
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+
+                {expandedFolders.has(folder.id) && (
+                  <CardContent className="pt-0">
+                    <div className="grid gap-3">
+                      {folder.suites.map((suite) => (
+                        <div
+                          key={suite.id}
+                          className="flex items-center justify-between p-4 rounded-lg border border-border/30 hover:bg-muted/30 cursor-pointer transition-colors"
+                          onClick={() => navigate(`/suite/${suite.id}`)}
+                        >
+                          <div className="flex items-center gap-4">
+                            <TestTube className="h-4 w-4 text-secondary" />
+                            <div>
+                              <h4 className="font-medium text-card-foreground">{suite.name}</h4>
+                              <p className="text-sm text-muted-foreground">{suite.description}</p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-4">
+                            <div className="text-right text-sm">
+                              <div className="font-medium">{suite.testCases} test cases</div>
+                              <div className="text-muted-foreground">{suite.coverage}% coverage</div>
+                            </div>
+                            
+                            <Badge className={getStatusColor(suite.status)}>
+                              {suite.status}
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      <Button 
+                        variant="outline" 
+                        className="mt-2 gap-2 border-dashed"
+                        onClick={() => navigate("/create-suite")}
+                      >
+                        <Plus className="h-4 w-4" />
+                        Add New Suite to {folder.name}
+                      </Button>
+                    </div>
+                  </CardContent>
+                )}
+              </Card>
+            ))}
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}
