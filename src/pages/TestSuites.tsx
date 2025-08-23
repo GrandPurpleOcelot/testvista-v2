@@ -161,16 +161,16 @@ export default function TestSuites() {
       
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="border-b border-border/50 bg-background h-16">
-          <div className="flex items-center justify-between px-6 py-4">
-            <div>
-              <h1 className="text-2xl font-semibold text-foreground">Test Suites</h1>
-              <p className="text-sm text-muted-foreground">
+        <header className="border-b border-border/50 bg-background h-20">
+          <div className="flex items-start justify-between px-6 py-5">
+            <div className="flex-1">
+              <h1 className="text-2xl font-semibold text-foreground leading-tight">Test Suites</h1>
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
                 Manage and execute your test suites across all projects
               </p>
             </div>
             
-            <Button asChild>
+            <Button asChild className="self-start">
               <Link to="/create-suite" className="gap-2">
                 <Plus className="h-4 w-4" />
                 New Test Suite
