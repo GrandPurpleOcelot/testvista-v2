@@ -13,21 +13,23 @@ import {
   FileText
 } from "lucide-react";
 import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 interface SidebarProps {
   className?: string;
 }
 
 const navigation = [
-  { name: "My Space", href: "/my-space", icon: LayoutDashboard, current: true },
-  { name: "Test Suites", href: "/suites", icon: TestTube, current: false },
-  { name: "Reference Files", href: "/reference-files", icon: FileText, current: false },
-  { name: "Standards", href: "/standards", icon: BookOpen, current: false },
-  { name: "Team", href: "/team", icon: Users, current: false },
+  { name: "My Space", href: "/my-space", icon: LayoutDashboard },
+  { name: "Test Suites", href: "/suites", icon: TestTube },
+  { name: "Reference Files", href: "/reference-files", icon: FileText },
+  { name: "Standards", href: "/standards", icon: BookOpen },
+  { name: "Team", href: "/team", icon: Users },
 ];
 
 export function Sidebar({ className }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation();
 
   return (
     <div className={cn(
@@ -52,20 +54,26 @@ export function Sidebar({ className }: SidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2">
         <div className="space-y-1">
-          {navigation.map((item) => (
-            <Button
-              key={item.name}
-              variant={item.current ? "default" : "ghost"}
-              className={cn(
-                "w-full justify-start gap-3 h-10",
-                collapsed && "px-2",
-                item.current && "bg-primary text-primary-foreground shadow-sm"
-              )}
-            >
-              <item.icon className="h-4 w-4 flex-shrink-0" />
-              {!collapsed && <span>{item.name}</span>}
-            </Button>
-          ))}
+          {navigation.map((item) => {
+            const isActive = location.pathname === item.href;
+            return (
+              <Button
+                key={item.name}
+                variant={isActive ? "default" : "ghost"}
+                className={cn(
+                  "w-full justify-start gap-3 h-10",
+                  collapsed && "px-2",
+                  isActive && "bg-primary text-primary-foreground shadow-sm"
+                )}
+                asChild
+              >
+                <Link to={item.href}>
+                  <item.icon className="h-4 w-4 flex-shrink-0" />
+                  {!collapsed && <span>{item.name}</span>}
+                </Link>
+              </Button>
+            );
+          })}
         </div>
 
         <div className="border-t border-border/50 pt-4 mt-6">
