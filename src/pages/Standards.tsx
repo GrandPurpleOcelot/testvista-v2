@@ -278,7 +278,7 @@ export default function Standards() {
         <header className="border-b border-border/50 bg-background h-16">
           <div className="flex items-center justify-between px-6 py-4">
             <div>
-              <h1 className="text-2xl font-semibold text-foreground">Standards</h1>
+              <h1 className="text-2xl font-semibold text-foreground">Prompt Templates</h1>
               <p className="text-sm text-muted-foreground">
                 Manage prompt templates and standardized documentation
               </p>
