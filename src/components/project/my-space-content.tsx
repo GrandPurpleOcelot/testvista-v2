@@ -34,7 +34,6 @@ interface Folder {
   description: string;
   suites: TestSuite[];
   lastActivity: string;
-  members: number;
 }
 
 const mockFolders: Folder[] = [
@@ -43,7 +42,6 @@ const mockFolders: Folder[] = [
     name: "Personal Projects",
     description: "My personal testing projects and experiments",
     lastActivity: "2 hours ago",
-    members: 1,
     suites: [
       {
         id: "s1",
@@ -70,7 +68,6 @@ const mockFolders: Folder[] = [
     name: "Learning & Practice",
     description: "Test suites for learning new techniques",
     lastActivity: "1 week ago",
-    members: 1,
     suites: [
       {
         id: "s3",

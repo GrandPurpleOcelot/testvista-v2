@@ -34,7 +34,6 @@ interface Folder {
   description: string;
   suites: TestSuite[];
   lastActivity: string;
-  members: number;
 }
 
 const mockFolders: Folder[] = [
@@ -43,7 +42,6 @@ const mockFolders: Folder[] = [
     name: "E-commerce Platform",
     description: "Testing suite for the main e-commerce application",
     lastActivity: "2 hours ago",
-    members: 5,
     suites: [
       {
         id: "s1",
@@ -71,8 +69,7 @@ const mockFolders: Folder[] = [
     id: "2",
     name: "Mobile App Testing",
     description: "Testing suite for mobile applications",
-    lastActivity: "1 day ago", 
-    members: 3,
+    lastActivity: "1 day ago",
     suites: [
       {
         id: "s3",
@@ -91,7 +88,6 @@ const mockFolders: Folder[] = [
     name: "API Integration",
     description: "Third-party API and microservices testing",
     lastActivity: "3 days ago",
-    members: 7,
     suites: [
       {
         id: "s4",
@@ -217,10 +213,6 @@ export default function MySpace() {
                         <div className="flex items-center gap-1">
                           <TestTube className="h-4 w-4" />
                           <span>{folder.suites.length} suites</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Users className="h-4 w-4" />
-                          <span>{folder.members} members</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
