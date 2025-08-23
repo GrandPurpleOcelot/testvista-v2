@@ -8,33 +8,74 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Base colors */
+    --background: 250 255% 98%;
+    --foreground: 230 15% 15%;
 
+    /* Card and surfaces */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 230 15% 15%;
+    --card-hover: 250 50% 96%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 230 15% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Brand colors - TestVista palette */
+    --primary: 220 85% 55%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 220 85% 50%;
+    --primary-light: 220 80% 92%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 160 75% 45%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-hover: 160 75% 40%;
+    --secondary-light: 160 60% 92%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Neutral colors */
+    --muted: 240 10% 96%;
+    --muted-foreground: 240 5% 55%;
+    --muted-hover: 240 10% 92%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 250 45% 96%;
+    --accent-foreground: 230 15% 25%;
+    --accent-hover: 250 45% 92%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Status colors */
+    --success: 160 75% 45%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 160 60% 92%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --warning: 45 90% 55%;
+    --warning-foreground: 45 30% 15%;
+    --warning-light: 45 85% 92%;
+
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-light: 0 60% 92%;
+
+    /* Interactive elements */
+    --border: 240 15% 88%;
+    --input: 240 15% 95%;
+    --ring: 220 85% 55%;
+    --focus-ring: 220 85% 55% / 20%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(220 85% 55%), hsl(160 75% 45%));
+    --gradient-secondary: linear-gradient(135deg, hsl(250 45% 96%), hsl(240 10% 96%));
+    --gradient-hero: linear-gradient(135deg, hsl(220 85% 55% / 10%), hsl(160 75% 45% / 10%));
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px hsl(220 20% 20% / 8%);
+    --shadow-md: 0 8px 24px hsl(220 20% 20% / 12%);
+    --shadow-lg: 0 16px 40px hsl(220 20% 20% / 16%);
+    --shadow-primary: 0 8px 24px hsl(220 85% 55% / 25%);
+
+    /* Workspace specific */
+    --workspace-bg: 245 15% 98%;
+    --sidebar-bg: 0 0% 100%;
+    --chat-bg: 250 40% 98%;
+    --node-bg: 0 0% 100%;
+    --canvas-bg: 240 20% 97%;
 
     --radius: 0.5rem;
 
