@@ -12,8 +12,11 @@ import {
   ArrowLeft,
   Sparkles,
   Target,
-  Zap
+  Zap,
+  Plus,
+  Check
 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -25,6 +28,14 @@ interface UploadedFile {
   content?: string;
 }
 
+interface ReferenceFile {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  uploadedDate: string;
+}
+
 export default function CreateSuite() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -34,8 +45,16 @@ export default function CreateSuite() {
   const [suiteDescription, setsuiteDescription] = useState("");
   const [selectedFolder, setSelectedFolder] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [selectedReferenceFiles, setSelectedReferenceFiles] = useState<string[]>([]);
   const [aiInstructions, setAiInstructions] = useState("");
   const [isCreating, setIsCreating] = useState(false);
+
+  const referenceFiles: ReferenceFile[] = [
+    { id: "1", name: "API Documentation.pdf", type: "application/pdf", size: 2048576, uploadedDate: "2024-01-15" },
+    { id: "2", name: "User Requirements.docx", type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", size: 1024000, uploadedDate: "2024-01-10" },
+    { id: "3", name: "Database Schema.xlsx", type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", size: 512000, uploadedDate: "2024-01-08" },
+    { id: "4", name: "System Architecture.md", type: "text/markdown", size: 256000, uploadedDate: "2024-01-05" }
+  ];
 
   const folders = [
     { id: "1", name: "E-commerce Platform" },
@@ -74,6 +93,14 @@ export default function CreateSuite() {
 
   const removeFile = (index: number) => {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const toggleReferenceFile = (fileId: string) => {
+    setSelectedReferenceFiles(prev =>
+      prev.includes(fileId)
+        ? prev.filter(id => id !== fileId)
+        : [...prev, fileId]
+    );
   };
 
   const formatFileSize = (bytes: number) => {
@@ -198,6 +225,51 @@ export default function CreateSuite() {
                 onChange={handleFileUpload}
                 className="hidden"
               />
+
+              {/* Reference Files Section */}
+              <div className="mt-8 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium text-sm flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Reference Files
+                  </h4>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="gap-2"
+                    onClick={() => navigate("/reference-files")}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Upload New
+                  </Button>
+                </div>
+                
+                <div className="space-y-2 max-h-48 overflow-y-auto border border-border/50 rounded-lg p-3">
+                  {referenceFiles.map((file) => (
+                    <div key={file.id} className="flex items-center space-x-3 p-2 hover:bg-muted/30 rounded-md">
+                      <Checkbox
+                        id={`ref-${file.id}`}
+                        checked={selectedReferenceFiles.includes(file.id)}
+                        onCheckedChange={() => toggleReferenceFile(file.id)}
+                      />
+                      <span className="text-sm">{getFileIcon(file.type)}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{file.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatFileSize(file.size)} • {file.uploadedDate}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {selectedReferenceFiles.length > 0 && (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Check className="h-3 w-3" />
+                    {selectedReferenceFiles.length} reference file(s) selected
+                  </div>
+                )}
+              </div>
 
               {uploadedFiles.length > 0 && (
                 <div className="mt-6 space-y-3">
