@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,7 +14,7 @@ import {
   AtSign,
   PaperclipIcon
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -43,17 +43,37 @@ interface StandardFile {
 
 export default function CreateSuite() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
   
   const [suiteName, setSuiteName] = useState("");
+  const [folderName, setFolderName] = useState("");
   const [chatInput, setChatInput] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [mentionedFiles, setMentionedFiles] = useState<string[]>([]);
   const [showMentionDropdown, setShowMentionDropdown] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
+
+  // Get suite name and folder from URL params
+  useEffect(() => {
+    const nameParam = searchParams.get('name');
+    const folderParam = searchParams.get('folder');
+    
+    if (nameParam) {
+      setSuiteName(decodeURIComponent(nameParam));
+    } else {
+      // If no name param, redirect back to my-space
+      navigate('/my-space');
+    }
+    
+    if (folderParam) {
+      // You could fetch folder name from ID here
+      setFolderName(folderParam);
+    }
+  }, [searchParams, navigate]);
 
   const referenceFiles: ReferenceFile[] = [
     { id: "1", name: "Banking System Architecture.pdf", type: "application/pdf", size: 2411724, uploadedDate: "2024-01-15" },
@@ -216,18 +236,15 @@ export default function CreateSuite() {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
-            <h1 className="text-xl font-medium">Create Test Suite</h1>
+            <div>
+              <h1 className="text-xl font-medium">Creating: {suiteName}</h1>
+              {folderName && (
+                <p className="text-sm text-muted-foreground">in folder: {folderName}</p>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-64">
-              <Input
-                placeholder="Suite name"
-                value={suiteName}
-                onChange={(e) => setSuiteName(e.target.value)}
-                className="h-9"
-              />
-            </div>
             <Button 
               onClick={handleCreateSuite}
               disabled={!suiteName.trim() || isCreating}
@@ -322,7 +339,7 @@ export default function CreateSuite() {
                   
                   <Button
                     onClick={handleChatSubmit}
-                    disabled={!suiteName.trim() || isCreating}
+                    disabled={isCreating}
                     size="sm"
                     className="h-8 w-8 p-0"
                   >

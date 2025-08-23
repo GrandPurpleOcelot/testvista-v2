@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Sidebar } from "@/components/layout/sidebar";
+import { CreateSuiteModal } from "@/components/ui/create-suite-modal";
 import { 
   FolderOpen, 
   TestTube, 
@@ -110,6 +111,8 @@ export default function MySpace() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(["1"]));
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFolder, setSelectedFolder] = useState<{ id?: string; name?: string }>({});
 
   const toggleFolder = (folderId: string) => {
     const newExpanded = new Set(expandedFolders);
@@ -128,6 +131,19 @@ export default function MySpace() {
       case "draft": return "bg-warning text-warning-foreground";
       default: return "bg-muted text-muted-foreground";
     }
+  };
+
+  const handleCreateSuite = (suiteName: string, folderId?: string) => {
+    // Generate a unique ID for the new suite
+    const suiteId = `suite-${Date.now()}`;
+    
+    // Navigate to create suite page with suite name and folder info
+    navigate(`/create-suite?name=${encodeURIComponent(suiteName)}&folder=${folderId || ''}`);
+  };
+
+  const openModalForFolder = (folderId?: string, folderName?: string) => {
+    setSelectedFolder({ id: folderId, name: folderName });
+    setIsModalOpen(true);
   };
 
   const filteredFolders = mockFolders.filter(folder =>
@@ -159,7 +175,7 @@ export default function MySpace() {
             </div>
             
             <Button 
-              onClick={() => navigate("/create-suite")}
+              onClick={() => openModalForFolder()}
               className="gap-2 bg-gradient-to-r from-primary to-secondary hover:from-primary-hover hover:to-secondary-hover shadow-sm"
             >
               <Plus className="h-4 w-4" />
@@ -252,7 +268,7 @@ export default function MySpace() {
                       <Button 
                         variant="outline" 
                         className="mt-2 gap-2 border-dashed"
-                        onClick={() => navigate("/create-suite")}
+                        onClick={() => openModalForFolder(folder.id, folder.name)}
                       >
                         <Plus className="h-4 w-4" />
                         Add New Suite to {folder.name}
@@ -265,6 +281,14 @@ export default function MySpace() {
           </div>
         </main>
       </div>
+
+      <CreateSuiteModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onCreateSuite={handleCreateSuite}
+        selectedFolderId={selectedFolder.id}
+        selectedFolderName={selectedFolder.name}
+      />
     </div>
   );
 }
