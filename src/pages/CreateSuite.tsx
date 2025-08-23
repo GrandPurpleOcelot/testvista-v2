@@ -175,33 +175,35 @@ export default function CreateSuite() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Simplified Header */}
-      <header className="border-b">
-        <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen">
+      {/* Clean Header */}
+      <header className="bg-card">
+        <div className="max-w-3xl mx-auto px-6 py-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button 
               variant="ghost" 
               size="sm"
               onClick={() => navigate("/my-space")}
+              className="hover:bg-muted/50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
-            <h1 className="text-lg font-semibold">Create Test Suite</h1>
+            <h1 className="text-xl font-medium">Create Test Suite</h1>
           </div>
 
           <Button 
             onClick={handleCreateSuite}
             disabled={!suiteName.trim() || isCreating}
+            className="bg-primary hover:bg-primary/90"
           >
             {isCreating ? "Creating..." : "Create Suite"}
           </Button>
         </div>
       </header>
 
-      {/* Main Content - Single Column Layout */}
-      <main className="max-w-3xl mx-auto p-6 space-y-8">
+      {/* Clean Main Content */}
+      <main className="max-w-3xl mx-auto px-6 py-8 space-y-10">
         
         {/* Suite Name - Priority */}
         <div className="space-y-2">
@@ -221,12 +223,12 @@ export default function CreateSuite() {
           
           {/* Upload Area */}
           <div
-            className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+            className="border border-muted rounded-lg p-8 text-center hover:bg-muted/20 transition-all cursor-pointer"
             onClick={() => fileInputRef.current?.click()}
           >
-            <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-            <p className="font-medium mb-1">Upload files or select from library</p>
-            <p className="text-sm text-muted-foreground">
+            <Upload className="h-6 w-6 mx-auto text-muted-foreground mb-3" />
+            <p className="text-sm font-medium mb-1">Upload files or select from library</p>
+            <p className="text-xs text-muted-foreground">
               PDF, Word, Excel, Text files (max 10MB)
             </p>
           </div>
@@ -258,9 +260,9 @@ export default function CreateSuite() {
                 </Button>
               </div>
               
-              <div className="border rounded-lg p-2 max-h-32 overflow-y-auto space-y-1">
+              <div className="rounded-lg p-2 max-h-32 overflow-y-auto space-y-1 bg-muted/10">
                 {referenceFiles.map((file) => (
-                  <label key={file.id} className="flex items-center space-x-2 p-1 hover:bg-muted/50 rounded cursor-pointer">
+                  <label key={file.id} className="flex items-center space-x-2 p-2 hover:bg-muted/30 rounded cursor-pointer">
                     <Checkbox
                       checked={selectedReferenceFiles.includes(file.id)}
                       onCheckedChange={() => toggleReferenceFile(file.id)}
@@ -293,9 +295,9 @@ export default function CreateSuite() {
                 </Button>
               </div>
               
-              <div className="border rounded-lg p-2 max-h-32 overflow-y-auto space-y-1">
+              <div className="rounded-lg p-2 max-h-32 overflow-y-auto space-y-1 bg-muted/10">
                 {standardFiles.map((file) => (
-                  <label key={file.id} className="flex items-center space-x-2 p-1 hover:bg-muted/50 rounded cursor-pointer">
+                  <label key={file.id} className="flex items-center space-x-2 p-2 hover:bg-muted/30 rounded cursor-pointer">
                     <Checkbox
                       checked={selectedStandardFiles.includes(file.id)}
                       onCheckedChange={() => toggleStandardFile(file.id)}
@@ -360,9 +362,9 @@ export default function CreateSuite() {
             
             <div className="space-y-2">
               <Label htmlFor="folder-select">Folder</Label>
-              <select
+                <select
                 id="folder-select"
-                className="w-full h-9 px-3 text-sm border rounded-md bg-background"
+                className="w-full h-9 px-3 text-sm rounded-md bg-muted/10 border-0 focus:ring-1 focus:ring-primary"
                 value={selectedFolder}
                 onChange={(e) => setSelectedFolder(e.target.value)}
               >
@@ -383,7 +385,7 @@ export default function CreateSuite() {
             <Label htmlFor="ai-template" className="text-sm">Template</Label>
             <select
               id="ai-template"
-              className="w-full h-9 px-3 text-sm border rounded-md bg-background"
+              className="w-full h-9 px-3 text-sm rounded-md bg-muted/10 border-0 focus:ring-1 focus:ring-primary"
               value={aiTemplate}
               onChange={(e) => handleTemplateChange(e.target.value)}
             >
