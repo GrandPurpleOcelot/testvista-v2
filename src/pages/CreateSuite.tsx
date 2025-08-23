@@ -14,7 +14,8 @@ import {
   Target,
   Zap,
   Plus,
-  Check
+  Check,
+  BookOpen
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
@@ -36,6 +37,14 @@ interface ReferenceFile {
   uploadedDate: string;
 }
 
+interface StandardFile {
+  id: string;
+  name: string;
+  type: string;
+  category: string;
+  uploadedDate: string;
+}
+
 export default function CreateSuite() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -46,6 +55,7 @@ export default function CreateSuite() {
   const [selectedFolder, setSelectedFolder] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [selectedReferenceFiles, setSelectedReferenceFiles] = useState<string[]>([]);
+  const [selectedStandardFiles, setSelectedStandardFiles] = useState<string[]>([]);
   const [aiInstructions, setAiInstructions] = useState("");
   const [isCreating, setIsCreating] = useState(false);
 
@@ -54,6 +64,13 @@ export default function CreateSuite() {
     { id: "2", name: "User Requirements.docx", type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", size: 1024000, uploadedDate: "2024-01-10" },
     { id: "3", name: "Database Schema.xlsx", type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", size: 512000, uploadedDate: "2024-01-08" },
     { id: "4", name: "System Architecture.md", type: "text/markdown", size: 256000, uploadedDate: "2024-01-05" }
+  ];
+
+  const standardFiles: StandardFile[] = [
+    { id: "1", name: "ISO 29119 Test Standard", type: "application/pdf", category: "Testing Standard", uploadedDate: "2024-01-12" },
+    { id: "2", name: "OWASP Security Guidelines", type: "application/pdf", category: "Security", uploadedDate: "2024-01-09" },
+    { id: "3", name: "API Testing Best Practices", type: "text/markdown", category: "API", uploadedDate: "2024-01-07" },
+    { id: "4", name: "Accessibility WCAG 2.1", type: "application/pdf", category: "Accessibility", uploadedDate: "2024-01-03" }
   ];
 
   const folders = [
@@ -97,6 +114,14 @@ export default function CreateSuite() {
 
   const toggleReferenceFile = (fileId: string) => {
     setSelectedReferenceFiles(prev =>
+      prev.includes(fileId)
+        ? prev.filter(id => id !== fileId)
+        : [...prev, fileId]
+    );
+  };
+
+  const toggleStandardFile = (fileId: string) => {
+    setSelectedStandardFiles(prev =>
       prev.includes(fileId)
         ? prev.filter(id => id !== fileId)
         : [...prev, fileId]
@@ -226,49 +251,107 @@ export default function CreateSuite() {
                 className="hidden"
               />
 
-              {/* Reference Files Section */}
-              <div className="mt-8 space-y-4">
-                <div className="flex items-center justify-between">
+              {/* Reference Files and Standards Section */}
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Reference Files */}
+                <div className="space-y-4">
                   <h4 className="font-medium text-sm flex items-center gap-2">
                     <FileText className="h-4 w-4" />
                     Reference Files
                   </h4>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="gap-2"
-                    onClick={() => navigate("/reference-files")}
-                  >
-                    <Plus className="h-4 w-4" />
-                    Upload New
-                  </Button>
-                </div>
-                
-                <div className="space-y-2 max-h-48 overflow-y-auto border border-border/50 rounded-lg p-3">
-                  {referenceFiles.map((file) => (
-                    <div key={file.id} className="flex items-center space-x-3 p-2 hover:bg-muted/30 rounded-md">
-                      <Checkbox
-                        id={`ref-${file.id}`}
-                        checked={selectedReferenceFiles.includes(file.id)}
-                        onCheckedChange={() => toggleReferenceFile(file.id)}
-                      />
-                      <span className="text-sm">{getFileIcon(file.type)}</span>
+                  
+                  <div className="space-y-2 max-h-48 overflow-y-auto border border-border/50 rounded-lg p-3">
+                    {/* Upload New Reference Files Item */}
+                    <div 
+                      className="flex items-center space-x-3 p-2 hover:bg-muted/30 rounded-md cursor-pointer border border-dashed border-border/50"
+                      onClick={() => navigate("/reference-files")}
+                    >
+                      <div className="w-4 h-4 flex items-center justify-center">
+                        <Plus className="h-3 w-3 text-primary" />
+                      </div>
+                      <span className="text-sm">📁</span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{file.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatFileSize(file.size)} • {file.uploadedDate}
-                        </p>
+                        <p className="text-sm font-medium text-primary">Upload New Reference Files</p>
+                        <p className="text-xs text-muted-foreground">Add new reference files to your library</p>
                       </div>
                     </div>
-                  ))}
-                </div>
-                
-                {selectedReferenceFiles.length > 0 && (
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Check className="h-3 w-3" />
-                    {selectedReferenceFiles.length} reference file(s) selected
+                    
+                    {/* Existing Reference Files */}
+                    {referenceFiles.map((file) => (
+                      <div key={file.id} className="flex items-center space-x-3 p-2 hover:bg-muted/30 rounded-md">
+                        <Checkbox
+                          id={`ref-${file.id}`}
+                          checked={selectedReferenceFiles.includes(file.id)}
+                          onCheckedChange={() => toggleReferenceFile(file.id)}
+                        />
+                        <span className="text-sm">{getFileIcon(file.type)}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{file.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatFileSize(file.size)} • {file.uploadedDate}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                )}
+                  
+                  {selectedReferenceFiles.length > 0 && (
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Check className="h-3 w-3" />
+                      {selectedReferenceFiles.length} reference file(s) selected
+                    </div>
+                  )}
+                </div>
+
+                {/* Standards */}
+                <div className="space-y-4">
+                  <h4 className="font-medium text-sm flex items-center gap-2">
+                    <BookOpen className="h-4 w-4" />
+                    Standards
+                  </h4>
+                  
+                  <div className="space-y-2 max-h-48 overflow-y-auto border border-border/50 rounded-lg p-3">
+                    {/* Upload New Standards Item */}
+                    <div 
+                      className="flex items-center space-x-3 p-2 hover:bg-muted/30 rounded-md cursor-pointer border border-dashed border-border/50"
+                      onClick={() => navigate("/standards")}
+                    >
+                      <div className="w-4 h-4 flex items-center justify-center">
+                        <Plus className="h-3 w-3 text-primary" />
+                      </div>
+                      <span className="text-sm">📋</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-primary">Upload New Standards</p>
+                        <p className="text-xs text-muted-foreground">Add new standards to your library</p>
+                      </div>
+                    </div>
+                    
+                    {/* Existing Standards */}
+                    {standardFiles.map((file) => (
+                      <div key={file.id} className="flex items-center space-x-3 p-2 hover:bg-muted/30 rounded-md">
+                        <Checkbox
+                          id={`std-${file.id}`}
+                          checked={selectedStandardFiles.includes(file.id)}
+                          onCheckedChange={() => toggleStandardFile(file.id)}
+                        />
+                        <span className="text-sm">📋</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{file.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {file.category} • {file.uploadedDate}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {selectedStandardFiles.length > 0 && (
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Check className="h-3 w-3" />
+                      {selectedStandardFiles.length} standard(s) selected
+                    </div>
+                  )}
+                </div>
               </div>
 
               {uploadedFiles.length > 0 && (
