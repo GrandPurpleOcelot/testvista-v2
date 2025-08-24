@@ -153,38 +153,6 @@ export default function ProjectManagement() {
         
         <main className="flex-1 overflow-y-auto p-6">
           <div className="space-y-6">
-            {/* Overview Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <StatsCard
-                title="My Space"
-                value={stats.myProjects.toString()}
-                description="Private projects"
-                icon={FolderOpen}
-                trend={{ value: 2, label: "this month" }}
-              />
-              <StatsCard
-                title="Shared Projects"
-                value={stats.sharedProjects.toString()}
-                description="Collaborative projects"
-                icon={Users}
-                trend={{ value: 3, label: "new invites" }}
-              />
-              <StatsCard
-                title="Total Test Cases"
-                value={stats.totalTestCases.toLocaleString()}
-                description="Across all projects"
-                icon={Target}
-                trend={{ value: 15, label: "this week" }}
-              />
-              <StatsCard
-                title="Avg Coverage"
-                value={`${stats.avgCoverage}%`}
-                description="All projects"
-                icon={TrendingUp}
-                trend={{ value: 4, label: "improvement" }}
-              />
-            </div>
-
 
             {/* Recent Activity */}
             {activeFilter === "recent" && !searchQuery && (
