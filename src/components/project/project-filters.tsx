@@ -26,7 +26,6 @@ interface ProjectFiltersProps {
   onFilterChange: (filter: ProjectFilter) => void;
   sortBy: ProjectSort;
   onSortChange: (sort: ProjectSort) => void;
-  onCreateProject: () => void;
   totalCount: number;
   filteredCount: number;
 }
@@ -38,7 +37,6 @@ export function ProjectFilters({
   onFilterChange,
   sortBy,
   onSortChange,
-  onCreateProject,
   totalCount,
   filteredCount
 }: ProjectFiltersProps) {
@@ -56,22 +54,16 @@ export function ProjectFilters({
   ];
 
   return (
-    <div className="space-y-4">
-      {/* Search and Create */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            placeholder="Search projects..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <Button onClick={onCreateProject} className="gap-2 shrink-0">
-          <Plus className="h-4 w-4" />
-          New Project
-        </Button>
+    <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+      {/* Search */}
+      <div className="relative flex-1 max-w-md">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+        <Input
+          placeholder="Search projects..."
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="pl-10"
+        />
       </div>
 
       {/* Filter Tabs */}
@@ -95,26 +87,24 @@ export function ProjectFilters({
       </div>
 
       {/* Sort and Results Count */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Select value={sortBy} onValueChange={(value) => onSortChange(value as ProjectSort)}>
-            <SelectTrigger className="w-[180px]">
-              <Filter className="h-4 w-4 mr-2" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {sortOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <Badge variant="secondary" className="gap-1">
-            {filteredCount} of {totalCount} projects
-          </Badge>
-        </div>
+      <div className="flex items-center gap-3">
+        <Select value={sortBy} onValueChange={(value) => onSortChange(value as ProjectSort)}>
+          <SelectTrigger className="w-[140px]">
+            <Filter className="h-4 w-4 mr-2" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {sortOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        
+        <Badge variant="secondary" className="shrink-0">
+          {filteredCount} of {totalCount}
+        </Badge>
       </div>
     </div>
   );

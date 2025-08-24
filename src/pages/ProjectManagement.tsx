@@ -177,7 +177,7 @@ export default function ProjectManagement() {
             {/* Project Filters */}
             <Card className="border-border/50">
               <CardContent className="p-6">
-                <ProjectFilters searchQuery={searchQuery} onSearchChange={setSearchQuery} activeFilter={activeFilter} onFilterChange={setActiveFilter} sortBy={sortBy} onSortChange={setSortBy} onCreateProject={handleCreateProject} totalCount={mockProjects.filter(p => p.type === "shared").length} filteredCount={filteredAndSortedProjects.filter(p => p.type === "shared").length} />
+                <ProjectFilters searchQuery={searchQuery} onSearchChange={setSearchQuery} activeFilter={activeFilter} onFilterChange={setActiveFilter} sortBy={sortBy} onSortChange={setSortBy} totalCount={mockProjects.filter(p => p.type === "shared").length} filteredCount={filteredAndSortedProjects.filter(p => p.type === "shared").length} />
               </CardContent>
             </Card>
 
