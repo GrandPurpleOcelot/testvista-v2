@@ -26,29 +26,12 @@ export function Logo({ className, size = "md" }: LogoProps) {
 
   return (
     <div className={cn("flex items-center gap-3", className)}>
-      {/* Geometric Logo Icon */}
-      <div className={cn(iconSize[size], "relative")}>
-        <svg viewBox="0 0 32 32" className="w-full h-full" fill="none">
-          {/* Main diamond shape */}
-          <path 
-            d="M16 2 L28 8 L24 16 L16 22 L8 16 L4 8 Z" 
-            fill="hsl(var(--primary))" 
-            className="opacity-90"
-          />
-          {/* Inner geometric detail */}
-          <path 
-            d="M16 6 L22 10 L20 16 L16 18 L12 16 L10 10 Z" 
-            fill="hsl(var(--primary))" 
-            className="opacity-70"
-          />
-          {/* Highlight accent */}
-          <path 
-            d="M16 2 L20 6 L16 10 L12 6 Z" 
-            fill="hsl(var(--primary-foreground))" 
-            className="opacity-20"
-          />
-        </svg>
-      </div>
+      {/* Logo Image */}
+      <img 
+        src="/lovable-uploads/8f1b7e00-43c6-40df-9a5a-393392e76de0.png"
+        alt="TestVista Logo"
+        className={cn(iconSize[size], "object-contain")}
+      />
       
       <div className="flex flex-col">
         <span className={cn(
