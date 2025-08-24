@@ -411,7 +411,7 @@ export default function ProjectFolders() {
                   <p className="text-sm text-muted-foreground mb-3">
                     Access your uploaded reference files and documents
                   </p>
-                  <Button variant="outline" size="sm" onClick={() => navigate('/reference-files')} className="w-full">
+                  <Button variant="outline" size="sm" onClick={() => navigate(`/reference-files?from=${projectId}`)} className="w-full">
                     View Files
                   </Button>
                 </CardContent>
@@ -428,7 +428,7 @@ export default function ProjectFolders() {
                   <p className="text-sm text-muted-foreground mb-3">
                     Manage your reusable prompt templates
                   </p>
-                  <Button variant="outline" size="sm" onClick={() => navigate('/standards')} className="w-full">
+                  <Button variant="outline" size="sm" onClick={() => navigate(`/standards?from=${projectId}`)} className="w-full">
                     View Templates
                   </Button>
                 </CardContent>

@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Sidebar } from "@/components/layout/sidebar";
 import { 
   Upload, 
@@ -12,7 +14,8 @@ import {
   Trash2, 
   Eye,
   Calendar,
-  User
+  User,
+  ArrowLeft
 } from "lucide-react";
 
 interface ReferenceFile {
@@ -70,6 +73,25 @@ export default function ReferenceFiles() {
   const [files] = useState<ReferenceFile[]>(mockFiles);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
+  // Determine which project context we came from
+  const fromProject = searchParams.get('from') || 'my-space';
+  const getProjectName = (projectId: string) => {
+    switch (projectId) {
+      case 'my-space': return 'My Space';
+      case 'p1': return 'Project A';
+      case 'p2': return 'Project B'; 
+      case 'p3': return 'Project C';
+      case 'p4': return 'Project D';
+      default: return 'My Space';
+    }
+  };
+  
+  const getBackUrl = () => {
+    return `/project/${fromProject}/folders`;
+  };
 
   const filteredFiles = files.filter(file => {
     const matchesSearch = file.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -93,19 +115,48 @@ export default function ReferenceFiles() {
       
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="border-b border-border/50 bg-background h-20">
-          <div className="flex items-start justify-between px-6 py-5">
-            <div className="flex-1">
-              <h1 className="text-2xl font-semibold text-foreground leading-tight">Reference Files</h1>
-              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                Upload and manage system documentation for AI-powered testing insights
-              </p>
+        <header className="border-b border-border/50 bg-background">
+          <div className="px-6 py-4">
+            {/* Breadcrumb Navigation */}
+            <div className="flex items-center gap-4 mb-4">
+              <Button variant="ghost" size="sm" onClick={() => navigate(getBackUrl())} className="gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Back to {getProjectName(fromProject)}
+              </Button>
+              
+              <div className="border-l border-border/50 h-6" />
+              
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href="/projects">All Projects</BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href={getBackUrl()}>{getProjectName(fromProject)}</BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage className="font-semibold">Uploaded Files</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
             </div>
-            
-            <Button className="gap-2 self-start">
-              <Upload className="h-4 w-4" />
-              Upload Files
-            </Button>
+
+            {/* Page Title */}
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h1 className="text-2xl font-semibold text-foreground leading-tight">Reference Files</h1>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Upload and manage system documentation for AI-powered testing insights
+                </p>
+              </div>
+              
+              <Button className="gap-2 self-start">
+                <Upload className="h-4 w-4" />
+                Upload Files
+              </Button>
+            </div>
           </div>
         </header>
 

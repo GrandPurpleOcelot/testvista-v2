@@ -191,7 +191,7 @@ export function MySpaceContent() {
             <p className="text-sm text-muted-foreground mb-3">
               Access your uploaded reference files and documents
             </p>
-            <Button variant="outline" size="sm" onClick={() => navigate('/reference-files')} className="w-full">
+            <Button variant="outline" size="sm" onClick={() => navigate('/reference-files?from=my-space')} className="w-full">
               View Files
             </Button>
           </CardContent>
@@ -208,7 +208,7 @@ export function MySpaceContent() {
             <p className="text-sm text-muted-foreground mb-3">
               Manage your reusable prompt templates
             </p>
-            <Button variant="outline" size="sm" onClick={() => navigate('/standards')} className="w-full">
+            <Button variant="outline" size="sm" onClick={() => navigate('/standards?from=my-space')} className="w-full">
               View Templates
             </Button>
           </CardContent>
