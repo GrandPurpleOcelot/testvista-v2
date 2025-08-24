@@ -42,6 +42,9 @@ interface Requirement {
   status: "Parsed" | "Reviewed" | "Approved";
   linkedViewpoints: string[];
   linkedTestCases: string[];
+  sourceDocument?: string;
+  sourceSection?: string;
+  extractedContent?: string;
   lastModified: Date;
   changeHistory: Array<{
     timestamp: Date;

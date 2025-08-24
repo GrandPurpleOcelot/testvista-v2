@@ -41,6 +41,9 @@ interface Requirement {
   status: "Parsed" | "Reviewed" | "Approved";
   linkedViewpoints: string[];
   linkedTestCases: string[];
+  sourceDocument?: string;
+  sourceSection?: string;
+  extractedContent?: string;
   lastModified: Date;
   changeHistory: Array<{
     timestamp: Date;
@@ -95,6 +98,9 @@ const mockRequirements: Requirement[] = [
     status: "Parsed",
     linkedViewpoints: ["VP-01"],
     linkedTestCases: ["TC-01", "TC-02", "TC-03"],
+    sourceDocument: "User Requirements Specification v2.1",
+    sourceSection: "Section 3.1.1 - User Registration",
+    extractedContent: "The system shall allow new users to create an account using a valid email address and a password that meets the security policy requirements. The registration process shall include email verification to confirm account ownership.",
     lastModified: new Date(),
     changeHistory: []
   },
@@ -105,6 +111,9 @@ const mockRequirements: Requirement[] = [
     status: "Parsed",
     linkedViewpoints: ["VP-01", "VP-02"],
     linkedTestCases: ["TC-04", "TC-05", "TC-06"],
+    sourceDocument: "User Requirements Specification v2.1",
+    sourceSection: "Section 3.1.2 - User Authentication",
+    extractedContent: "Registered users shall be able to authenticate themselves using their email address and password. The system shall provide clear feedback for successful and failed login attempts, including appropriate error messages for various failure scenarios.",
     lastModified: new Date(),
     changeHistory: []
   },
@@ -115,6 +124,9 @@ const mockRequirements: Requirement[] = [
     status: "Parsed",
     linkedViewpoints: ["VP-02"],
     linkedTestCases: ["TC-07", "TC-08"],
+    sourceDocument: "Security Requirements Document v1.3",
+    sourceSection: "Section 4.2 - Password Recovery",
+    extractedContent: "Users who have forgotten their password shall be able to reset it through a secure email-based recovery process. The system shall send a time-limited recovery link to the user's registered email address.",
     lastModified: new Date(),
     changeHistory: []
   },
@@ -125,6 +137,9 @@ const mockRequirements: Requirement[] = [
     status: "Reviewed",
     linkedViewpoints: ["VP-10"],
     linkedTestCases: ["TC-25", "TC-26"],
+    sourceDocument: "User Interface Specifications v1.5",
+    sourceSection: "Section 2.3 - Profile Management",
+    extractedContent: "Authenticated users shall have access to a profile management interface where they can view and modify their personal information including name, email address, phone number, and billing address. Changes shall be validated and saved immediately.",
     lastModified: new Date(),
     changeHistory: []
   },
@@ -135,6 +150,9 @@ const mockRequirements: Requirement[] = [
     status: "Approved",
     linkedViewpoints: ["VP-07"],
     linkedTestCases: ["TC-15", "TC-16", "TC-17"],
+    sourceDocument: "Product Catalog Requirements v3.0",
+    sourceSection: "Section 1.2 - Search Functionality",
+    extractedContent: "The product catalog shall provide comprehensive search capabilities allowing users to find products using text keywords, category filters, and price range selections. Search results shall be relevant and properly ranked by relevance and popularity.",
     lastModified: new Date(),
     changeHistory: []
   },
@@ -145,6 +163,9 @@ const mockRequirements: Requirement[] = [
     status: "Approved",
     linkedViewpoints: ["VP-03"],
     linkedTestCases: ["TC-09", "TC-10"],
+    sourceDocument: "E-commerce Functional Requirements v2.4",
+    sourceSection: "Section 5.1 - Shopping Cart Operations",
+    extractedContent: "Users shall be able to add products to their shopping cart from product detail pages or search results. The cart shall maintain product selections across user sessions and provide immediate feedback on cart contents and totals.",
     lastModified: new Date(),
     changeHistory: []
   },
@@ -155,6 +176,9 @@ const mockRequirements: Requirement[] = [
     status: "Reviewed",
     linkedViewpoints: ["VP-03"],
     linkedTestCases: ["TC-11", "TC-12"],
+    sourceDocument: "E-commerce Functional Requirements v2.4",
+    sourceSection: "Section 5.2 - Cart Management",
+    extractedContent: "Users shall be able to modify product quantities in their shopping cart, including increasing, decreasing, or removing items entirely. The system shall update cart totals and availability in real-time and handle inventory limitations gracefully.",
     lastModified: new Date(),
     changeHistory: []
   },
@@ -165,6 +189,9 @@ const mockRequirements: Requirement[] = [
     status: "Approved",
     linkedViewpoints: ["VP-04"],
     linkedTestCases: ["TC-13", "TC-14"],
+    sourceDocument: "Business Requirements Document v1.8",
+    sourceSection: "Section 3.4 - Guest User Experience",
+    extractedContent: "To reduce checkout friction, the system shall allow users to complete purchases without creating an account. Guest users shall provide only essential information required for order fulfillment and payment processing.",
     lastModified: new Date(),
     changeHistory: []
   },
@@ -175,6 +202,9 @@ const mockRequirements: Requirement[] = [
     status: "Approved",
     linkedViewpoints: ["VP-05"],
     linkedTestCases: ["TC-18", "TC-19", "TC-20"],
+    sourceDocument: "Payment Integration Specification v2.0",
+    sourceSection: "Section 2.1 - Credit Card Processing",
+    extractedContent: "The system shall integrate with certified payment gateways to process credit card transactions securely. Support shall include major card types (Visa, MasterCard, American Express) with proper validation, encryption, and PCI compliance.",
     lastModified: new Date(),
     changeHistory: []
   },
