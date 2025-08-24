@@ -24,59 +24,59 @@ export const mockProjects: Project[] = [
   // Other private projects
   {
     id: "p1",
-    name: "E-commerce Testing",
-    description: "Testing suite for checkout flow",
+    name: "Project A",
+    description: "Testing suite for core application features",
     type: "private",
     role: "owner",
     status: "active",
-    testSuites: 3,
-    testCases: 45,
+    testSuites: 8,
+    testCases: 156,
     coverage: 87,
     lastActivity: "2 hours ago",
     memberCount: 1,
     isFavorite: true,
-    tags: ["ecommerce", "checkout"]
+    tags: ["core", "features"]
   },
   {
     id: "p2",
-    name: "Authentication Flow",
-    description: "User login and registration tests",
+    name: "Project B",
+    description: "User interface and authentication testing",
     type: "private",
     role: "owner",
     status: "completed",
-    testSuites: 2,
-    testCases: 23,
+    testSuites: 5,
+    testCases: 89,
     coverage: 95,
     lastActivity: "1 day ago",
     memberCount: 1,
-    tags: ["auth", "security"]
+    tags: ["ui", "auth"]
   },
   {
     id: "p3",
-    name: "API Testing Practice",
-    description: "Learning REST API testing",
+    name: "Project C",
+    description: "API integration and security testing",
     type: "private",
     role: "owner",
     status: "draft",
-    testSuites: 1,
-    testCases: 12,
-    coverage: 34,
+    testSuites: 3,
+    testCases: 34,
+    coverage: 45,
     lastActivity: "1 week ago",
     memberCount: 1,
-    tags: ["api", "learning"]
+    tags: ["api", "security"]
   },
   
   // Shared projects
   {
     id: "sp1",
-    name: "E-commerce Platform",
-    description: "Comprehensive testing for the main e-commerce application",
+    name: "Project D",
+    description: "Large-scale collaborative testing project",
     type: "shared",
     role: "admin",
     status: "active",
-    testSuites: 15,
-    testCases: 342,
-    coverage: 87,
+    testSuites: 18,
+    testCases: 445,
+    coverage: 89,
     lastActivity: "1 hour ago",
     memberCount: 8,
     isFavorite: true,
@@ -89,17 +89,17 @@ export const mockProjects: Project[] = [
       { name: "Mike Johnson", initials: "MJ", role: "viewer" },
       { name: "Lisa Wang", initials: "LW", role: "collaborator" }
     ],
-    tags: ["ecommerce", "production"]
+    tags: ["collaborative", "enterprise"]
   },
   {
     id: "sp2",
-    name: "Mobile App Testing",
-    description: "Cross-platform mobile application testing suite",
+    name: "Project E",
+    description: "Mobile and cross-platform testing suite",
     type: "shared",
     role: "collaborator",
     status: "active",
-    testSuites: 8,
-    testCases: 156,
+    testSuites: 12,
+    testCases: 298,
     coverage: 92,
     lastActivity: "3 hours ago",
     memberCount: 5,
@@ -115,14 +115,14 @@ export const mockProjects: Project[] = [
   },
   {
     id: "sp3",
-    name: "API Integration Tests",
-    description: "Testing suite for microservices and API endpoints",
+    name: "Project F",
+    description: "Backend services and database testing",
     type: "shared",
     role: "viewer",
     status: "completed",
-    testSuites: 22,
-    testCases: 445,
-    coverage: 95,
+    testSuites: 25,
+    testCases: 567,
+    coverage: 96,
     lastActivity: "2 days ago",
     memberCount: 12,
     owner: {
@@ -133,18 +133,18 @@ export const mockProjects: Project[] = [
       { name: "Anna Lee", initials: "AL", role: "admin" },
       { name: "Chris Brown", initials: "CB", role: "collaborator" }
     ],
-    tags: ["api", "microservices"]
+    tags: ["backend", "database"]
   },
   {
     id: "sp4",
-    name: "UI Component Library",
-    description: "Testing suite for reusable UI components",
+    name: "Project G",
+    description: "Component library and design system testing",
     type: "shared",
     role: "owner",
     status: "active",
-    testSuites: 12,
-    testCases: 89,
-    coverage: 78,
+    testSuites: 15,
+    testCases: 234,
+    coverage: 84,
     lastActivity: "5 hours ago",
     memberCount: 6,
     isFavorite: true,
@@ -157,7 +157,7 @@ export const mockProjects: Project[] = [
       { name: "James Wilson", initials: "JW", role: "collaborator" },
       { name: "Sophie Chen", initials: "SC", role: "viewer" }
     ],
-    tags: ["ui", "components", "library"]
+    tags: ["components", "design-system"]
   }
 ];
 
@@ -165,28 +165,28 @@ export const mockProjects: Project[] = [
 export const recentActivity = [
   {
     projectId: "sp1",
-    projectName: "E-commerce Platform",
+    projectName: "Project D",
     user: "John Doe",
-    action: "completed test case 'Payment Flow Validation'",
+    action: "completed test case 'Core Feature Validation'",
     timestamp: "1 hour ago"
   },
   {
     projectId: "p1",
-    projectName: "E-commerce Testing",
+    projectName: "Project A",
     user: "You",
-    action: "updated test suite 'Checkout Process'",
+    action: "updated test suite 'User Interface'",
     timestamp: "2 hours ago"
   },
   {
     projectId: "sp2",
-    projectName: "Mobile App Testing",
+    projectName: "Project E",
     user: "Emma Davis",
-    action: "added new test case 'Biometric Authentication'",
+    action: "added new test case 'Mobile Navigation'",
     timestamp: "3 hours ago"
   },
   {
     projectId: "sp4",
-    projectName: "UI Component Library",
+    projectName: "Project G",
     user: "Maria Garcia",
     action: "reviewed and approved test results",
     timestamp: "4 hours ago"
@@ -198,7 +198,7 @@ export const projectRecommendations = [
   {
     id: "rec1",
     type: "continue",
-    title: "Continue working on E-commerce Testing",
+    title: "Continue working on Project A",
     description: "You have 3 pending test cases to review",
     projectId: "p1"
   },
@@ -206,14 +206,14 @@ export const projectRecommendations = [
     id: "rec2",
     type: "collaborate",
     title: "Review shared project updates",
-    description: "5 new updates in E-commerce Platform",
+    description: "5 new updates in Project D",
     projectId: "sp1"
   },
   {
     id: "rec3",
     type: "similar",
-    title: "Similar to your API Testing Practice",
-    description: "API Integration Tests might interest you",
+    title: "Similar to your Project C",
+    description: "Project F might interest you",
     projectId: "sp3"
   }
 ];

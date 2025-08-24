@@ -40,24 +40,24 @@ const mockFolders: Folder[] = [
   {
     id: "1",
     name: "Personal Projects",
-    description: "My personal testing projects and experiments",
+    description: "My individual testing projects and experiments",
     lastActivity: "2 hours ago",
     suites: [
       {
         id: "s1",
-        name: "E-commerce Testing",
-        description: "Testing suite for checkout flow",
+        name: "Core Testing Suite",
+        description: "Main application functionality tests",
         status: "active",
-        testCases: 45,
-        coverage: 87,
+        testCases: 47,
+        coverage: 89,
         lastActivity: "2 hours ago"
       },
       {
         id: "s2",
-        name: "Authentication Flow",
-        description: "User login and registration tests",
+        name: "User Interface Tests",
+        description: "UI component and interaction validation",
         status: "completed",
-        testCases: 23,
+        testCases: 123,
         coverage: 95,
         lastActivity: "1 day ago"
       }
@@ -66,16 +66,33 @@ const mockFolders: Folder[] = [
   {
     id: "2",
     name: "Learning & Practice",
-    description: "Test suites for learning new techniques",
-    lastActivity: "1 week ago",
+    description: "Educational testing projects and skill development",
+    lastActivity: "1 day ago",
     suites: [
       {
         id: "s3",
         name: "API Testing Practice",
-        description: "Learning REST API testing",
+        description: "Learning REST API testing techniques",
+        status: "active",
+        testCases: 67,
+        coverage: 78,
+        lastActivity: "6 hours ago"
+      }
+    ]
+  },
+  {
+    id: "3",
+    name: "Security Testing",
+    description: "Security-focused test cases and vulnerability testing",
+    lastActivity: "3 days ago",
+    suites: [
+      {
+        id: "s4",
+        name: "Authentication Security",
+        description: "User authentication and authorization tests",
         status: "draft",
-        testCases: 12,
-        coverage: 34,
+        testCases: 23,
+        coverage: 45,
         lastActivity: "1 week ago"
       }
     ]

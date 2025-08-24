@@ -44,14 +44,14 @@ const getProjectFolders = (projectId: string): Folder[] => {
     return [
       {
         id: "1",
-        name: "E-commerce Platform",
-        description: "Testing suite for the main e-commerce application",
+        name: "Personal Projects",
+        description: "My individual testing projects and experiments",
         lastActivity: "2 hours ago",
         suites: [
           {
             id: "s1",
-            name: "Authentication & Login",
-            description: "User authentication and login functionality tests",
+            name: "Core Testing Suite",
+            description: "Main application functionality tests",
             status: "active",
             testCases: 47,
             coverage: 89,
@@ -60,8 +60,8 @@ const getProjectFolders = (projectId: string): Folder[] => {
           },
           {
             id: "s2", 
-            name: "Checkout Flow",
-            description: "End-to-end checkout process validation",
+            name: "User Interface Tests",
+            description: "UI component and interaction validation",
             status: "completed",
             testCases: 123,
             coverage: 95,
@@ -72,14 +72,14 @@ const getProjectFolders = (projectId: string): Folder[] => {
       },
       {
         id: "2",
-        name: "Mobile App Testing",
-        description: "Testing suite for mobile applications",
+        name: "Learning & Practice",
+        description: "Educational testing projects and skill development",
         lastActivity: "1 day ago",
         suites: [
           {
             id: "s3",
-            name: "Security Testing",
-            description: "Security-focused testing for mobile app",
+            name: "API Testing Practice",
+            description: "Learning REST API testing techniques",
             status: "active",
             testCases: 67,
             coverage: 78,
@@ -90,14 +90,14 @@ const getProjectFolders = (projectId: string): Folder[] => {
       },
       {
         id: "3",
-        name: "API Integration",
-        description: "Third-party API and microservices testing",
+        name: "Security Testing",
+        description: "Security-focused test cases and vulnerability testing",
         lastActivity: "3 days ago",
         suites: [
           {
             id: "s4",
-            name: "Payment Gateway",
-            description: "Payment processing API tests",
+            name: "Authentication Security",
+            description: "User authentication and authorization tests",
             status: "draft",
             testCases: 23,
             coverage: 45,
@@ -108,8 +108,192 @@ const getProjectFolders = (projectId: string): Folder[] => {
       }
     ];
   }
+
+  // Project A folders
+  if (projectId === "p1") {
+    return [
+      {
+        id: "f1",
+        name: "Core Features",
+        description: "Main application functionality",
+        lastActivity: "2 hours ago",
+        suites: [
+          {
+            id: "s10",
+            name: "User Management",
+            description: "User account and profile testing",
+            status: "active",
+            testCases: 45,
+            coverage: 92,
+            lastActivity: "2 hours ago",
+            folderId: "f1"
+          },
+          {
+            id: "s11",
+            name: "Data Processing",
+            description: "Core data handling and validation",
+            status: "active",
+            testCases: 38,
+            coverage: 87,
+            lastActivity: "4 hours ago",
+            folderId: "f1"
+          }
+        ]
+      },
+      {
+        id: "f2",
+        name: "User Interface",
+        description: "Frontend components and interactions",
+        lastActivity: "1 day ago",
+        suites: [
+          {
+            id: "s12",
+            name: "Navigation Tests",
+            description: "Menu and routing functionality",
+            status: "completed",
+            testCases: 28,
+            coverage: 98,
+            lastActivity: "1 day ago",
+            folderId: "f2"
+          },
+          {
+            id: "s13",
+            name: "Form Validation",
+            description: "Input validation and error handling",
+            status: "active",
+            testCases: 35,
+            coverage: 85,
+            lastActivity: "1 day ago",
+            folderId: "f2"
+          }
+        ]
+      },
+      {
+        id: "f3",
+        name: "Integration",
+        description: "External service integrations",
+        lastActivity: "3 days ago",
+        suites: [
+          {
+            id: "s14",
+            name: "API Connections",
+            description: "Third-party API integration tests",
+            status: "draft",
+            testCases: 10,
+            coverage: 60,
+            lastActivity: "3 days ago",
+            folderId: "f3"
+          }
+        ]
+      }
+    ];
+  }
+
+  // Project B folders
+  if (projectId === "p2") {
+    return [
+      {
+        id: "f4",
+        name: "Authentication",
+        description: "User login and security features",
+        lastActivity: "1 day ago",
+        suites: [
+          {
+            id: "s15",
+            name: "Login Flow",
+            description: "User authentication process",
+            status: "completed",
+            testCases: 32,
+            coverage: 96,
+            lastActivity: "1 day ago",
+            folderId: "f4"
+          },
+          {
+            id: "s16",
+            name: "Password Security",
+            description: "Password policies and security",
+            status: "completed",
+            testCases: 25,
+            coverage: 94,
+            lastActivity: "2 days ago",
+            folderId: "f4"
+          }
+        ]
+      },
+      {
+        id: "f5",
+        name: "User Experience",
+        description: "UI/UX testing and usability",
+        lastActivity: "2 days ago",
+        suites: [
+          {
+            id: "s17",
+            name: "Accessibility Tests",
+            description: "WCAG compliance and accessibility",
+            status: "completed",
+            testCases: 18,
+            coverage: 100,
+            lastActivity: "2 days ago",
+            folderId: "f5"
+          },
+          {
+            id: "s18",
+            name: "Responsive Design",
+            description: "Mobile and desktop compatibility",
+            status: "completed",
+            testCases: 14,
+            coverage: 89,
+            lastActivity: "3 days ago",
+            folderId: "f5"
+          }
+        ]
+      }
+    ];
+  }
+
+  // Project C folders
+  if (projectId === "p3") {
+    return [
+      {
+        id: "f6",
+        name: "API Testing",
+        description: "REST API and endpoint testing",
+        lastActivity: "1 week ago",
+        suites: [
+          {
+            id: "s19",
+            name: "Endpoint Validation",
+            description: "API endpoint functionality tests",
+            status: "draft",
+            testCases: 20,
+            coverage: 45,
+            lastActivity: "1 week ago",
+            folderId: "f6"
+          }
+        ]
+      },
+      {
+        id: "f7",
+        name: "Security",
+        description: "Security testing and vulnerability assessment",
+        lastActivity: "2 weeks ago",
+        suites: [
+          {
+            id: "s20",
+            name: "Data Security",
+            description: "Data protection and encryption tests",
+            status: "draft",
+            testCases: 14,
+            coverage: 30,
+            lastActivity: "2 weeks ago",
+            folderId: "f7"
+          }
+        ]
+      }
+    ];
+  }
   
-  // Mock data for other projects
+  // Default mock data for shared projects
   return [
     {
       id: "f1",
@@ -119,13 +303,31 @@ const getProjectFolders = (projectId: string): Folder[] => {
       suites: [
         {
           id: "s10",
-          name: "User Interface",
-          description: "UI component testing",
+          name: "Feature Testing",
+          description: "Core feature validation",
           status: "active",
           testCases: 34,
           coverage: 87,
           lastActivity: "1 hour ago",
           folderId: "f1"
+        }
+      ]
+    },
+    {
+      id: "f2",
+      name: "User Interface",
+      description: "Frontend and user experience testing",
+      lastActivity: "3 hours ago",
+      suites: [
+        {
+          id: "s11",
+          name: "UI Components",
+          description: "Component library testing",
+          status: "active",
+          testCases: 28,
+          coverage: 92,
+          lastActivity: "3 hours ago",
+          folderId: "f2"
         }
       ]
     }
