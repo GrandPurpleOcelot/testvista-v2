@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from "@/components/ui/pagination";
 import { Sidebar } from "@/components/layout/sidebar";
 import { 
   Search, 
@@ -27,8 +28,9 @@ interface TestSuite {
   name: string;
   description: string;
   project: string;
+  projectId: string;
   folder: string;
-  status: "active" | "draft" | "archived";
+  status: "active" | "draft" | "archived" | "completed";
   testCases: number;
   coverage: number;
   lastRun: string;
@@ -43,6 +45,7 @@ const mockTestSuites: TestSuite[] = [
     name: "User Management",
     description: "User account and profile testing",
     project: "Project A",
+    projectId: "p1",
     folder: "Core Features",
     status: "active",
     testCases: 45,
@@ -57,6 +60,7 @@ const mockTestSuites: TestSuite[] = [
     name: "Navigation Tests",
     description: "Menu and routing functionality",
     project: "Project A",
+    projectId: "p1",
     folder: "User Interface",
     status: "active",
     testCases: 28,
@@ -71,6 +75,7 @@ const mockTestSuites: TestSuite[] = [
     name: "Login Flow",
     description: "User authentication process",
     project: "Project B",
+    projectId: "p2",
     folder: "Authentication",
     status: "active",
     testCases: 32,
@@ -85,6 +90,7 @@ const mockTestSuites: TestSuite[] = [
     name: "Endpoint Validation",
     description: "API endpoint functionality tests",
     project: "Project C",
+    projectId: "p3",
     folder: "API Testing",
     status: "draft",
     testCases: 20,
@@ -99,6 +105,7 @@ const mockTestSuites: TestSuite[] = [
     name: "Feature Testing",
     description: "Core feature validation",
     project: "Project D",
+    projectId: "sp1",
     folder: "Core Features",
     status: "active",
     testCases: 34,
@@ -113,6 +120,7 @@ const mockTestSuites: TestSuite[] = [
     name: "UI Components",
     description: "Component library testing",
     project: "Project E",
+    projectId: "sp2",
     folder: "User Interface",
     status: "active",
     testCases: 28,
@@ -121,6 +129,96 @@ const mockTestSuites: TestSuite[] = [
     lastModified: "2024-01-20",
     createdBy: "Emma Davis",
     createdAt: "2024-01-08"
+  },
+  {
+    id: "7",
+    name: "Core Testing Suite",
+    description: "Main application functionality tests",
+    project: "My Space",
+    projectId: "my-space",
+    folder: "Personal Projects",
+    status: "active",
+    testCases: 47,
+    coverage: 89,
+    lastRun: "2024-01-21",
+    lastModified: "2024-01-21",
+    createdBy: "You",
+    createdAt: "2024-01-10"
+  },
+  {
+    id: "8",
+    name: "API Testing Practice",
+    description: "Learning REST API testing techniques",
+    project: "My Space",
+    projectId: "my-space",
+    folder: "Learning & Practice",
+    status: "active",
+    testCases: 67,
+    coverage: 78,
+    lastRun: "2024-01-20",
+    lastModified: "2024-01-20",
+    createdBy: "You",
+    createdAt: "2024-01-05"
+  },
+  {
+    id: "9",
+    name: "Authentication Security",
+    description: "User authentication and authorization tests",
+    project: "My Space",
+    projectId: "my-space",
+    folder: "Security Testing",
+    status: "draft",
+    testCases: 23,
+    coverage: 45,
+    lastRun: "2024-01-15",
+    lastModified: "2024-01-15",
+    createdBy: "You",
+    createdAt: "2024-01-01"
+  },
+  {
+    id: "10",
+    name: "Database Testing",
+    description: "Database operations and integrity tests",
+    project: "Project F",
+    projectId: "sp3",
+    folder: "Database Testing",
+    status: "completed",
+    testCases: 89,
+    coverage: 96,
+    lastRun: "2024-01-18",
+    lastModified: "2024-01-18",
+    createdBy: "David Rodriguez",
+    createdAt: "2024-01-01"
+  },
+  {
+    id: "11",
+    name: "Component Validation",
+    description: "Component library testing and validation",
+    project: "Project G",
+    projectId: "sp4",
+    folder: "UI Components",
+    status: "active",
+    testCases: 56,
+    coverage: 84,
+    lastRun: "2024-01-21",
+    lastModified: "2024-01-21",
+    createdBy: "Maria Garcia",
+    createdAt: "2024-01-08"
+  },
+  {
+    id: "12",
+    name: "iOS Functionality",
+    description: "iOS specific functionality testing",
+    project: "Project E",
+    projectId: "sp2",
+    folder: "iOS Testing",
+    status: "active",
+    testCases: 43,
+    coverage: 91,
+    lastRun: "2024-01-20",
+    lastModified: "2024-01-20",
+    createdBy: "Alex Kumar",
+    createdAt: "2024-01-06"
   }
 ];
 
@@ -129,6 +227,8 @@ export default function TestSuites() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState<keyof TestSuite>("lastModified");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const filteredAndSortedSuites = testSuites
     .filter(suite => {
@@ -149,6 +249,18 @@ export default function TestSuites() {
       }
     });
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredAndSortedSuites.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedSuites = filteredAndSortedSuites.slice(startIndex, endIndex);
+
+  // Reset to first page when search changes
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
   const handleSort = (field: keyof TestSuite) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -167,6 +279,7 @@ export default function TestSuites() {
     switch (status) {
       case "active": return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
       case "draft": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+      case "completed": return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
       case "archived": return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
       default: return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
     }
@@ -176,6 +289,7 @@ export default function TestSuites() {
     switch (status) {
       case "active": return <CheckCircle className="h-3 w-3" />;
       case "draft": return <Clock className="h-3 w-3" />;
+      case "completed": return <CheckCircle className="h-3 w-3" />;
       case "archived": return <XCircle className="h-3 w-3" />;
       default: return <Clock className="h-3 w-3" />;
     }
@@ -185,6 +299,13 @@ export default function TestSuites() {
     if (coverage >= 80) return "text-green-600 dark:text-green-400";
     if (coverage >= 60) return "text-yellow-600 dark:text-yellow-400";
     return "text-red-600 dark:text-red-400";
+  };
+
+  const getProjectLink = (projectId: string) => {
+    if (projectId === "my-space") {
+      return "/project/my-space/folders";
+    }
+    return `/project/${projectId}/folders`;
   };
 
   return (
@@ -220,7 +341,7 @@ export default function TestSuites() {
               <Input
                 placeholder="Search test suites..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -258,7 +379,7 @@ export default function TestSuites() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredAndSortedSuites.map((suite) => (
+                {paginatedSuites.map((suite) => (
                   <TableRow key={suite.id} className="hover:bg-muted/50">
                     <TableCell>
                       <div>
@@ -269,7 +390,12 @@ export default function TestSuites() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className="text-sm font-medium text-primary">{suite.project}</span>
+                      <Link 
+                        to={getProjectLink(suite.projectId)} 
+                        className="text-sm font-medium text-primary hover:underline"
+                      >
+                        {suite.project}
+                      </Link>
                     </TableCell>
                     <TableCell>
                       <span className="text-sm text-muted-foreground">{suite.folder}</span>
@@ -304,6 +430,71 @@ export default function TestSuites() {
               </TableBody>
             </Table>
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-6 flex justify-center">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                  
+                  {/* Page numbers */}
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNumber;
+                    if (totalPages <= 5) {
+                      pageNumber = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNumber = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNumber = totalPages - 4 + i;
+                    } else {
+                      pageNumber = currentPage - 2 + i;
+                    }
+                    
+                    return (
+                      <PaginationItem key={pageNumber}>
+                        <PaginationLink
+                          onClick={() => setCurrentPage(pageNumber)}
+                          isActive={currentPage === pageNumber}
+                          className="cursor-pointer"
+                        >
+                          {pageNumber}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  })}
+                  
+                  {totalPages > 5 && currentPage < totalPages - 2 && (
+                    <>
+                      <PaginationItem>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                      <PaginationItem>
+                        <PaginationLink
+                          onClick={() => setCurrentPage(totalPages)}
+                          className="cursor-pointer"
+                        >
+                          {totalPages}
+                        </PaginationLink>
+                      </PaginationItem>
+                    </>
+                  )}
+                  
+                  <PaginationItem>
+                    <PaginationNext 
+                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
 
           {filteredAndSortedSuites.length === 0 && (
             <div className="text-center py-12">
