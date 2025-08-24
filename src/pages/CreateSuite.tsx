@@ -284,26 +284,43 @@ export default function CreateSuite() {
                     Describe what you want to test, mention any relevant documents, or upload new files to get started.
                   </p>
                   
-                  {/* Prompt Templates */}
-                  <div className="space-y-2 pt-4">
-                    <p className="text-sm font-medium">Use prompt template:</p>
-                    <div className="flex flex-wrap gap-2 justify-center">
-                      {[
-                        { name: "Test Case Template", content: "Generate comprehensive test cases with detailed steps, expected results, and validation criteria for" },
-                        { name: "API Testing Template", content: "Create API test scenarios covering endpoints, request/response validation, error handling, and authentication for" },
-                        { name: "Security Testing Template", content: "Develop security test cases including authentication, authorization, input validation, and vulnerability assessment for" },
-                        { name: "Performance Testing Template", content: "Design performance test scenarios with load testing, stress testing, and response time validation for" }
-                      ].map((template) => (
-                        <Button
-                          key={template.name}
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setChatInput(`${template.content} `)}
-                          className="text-xs"
-                        >
-                          {template.name}
-                        </Button>
-                      ))}
+                  {/* Template Selectors */}
+                  <div className="space-y-3 pt-4">
+                    <p className="text-sm font-medium">Select templates for your artifacts:</p>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {/* Requirements Template */}
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-muted-foreground">Requirements</label>
+                        <select className="w-full text-xs border border-border rounded-md px-2 py-1 bg-background">
+                          <option value="default">Default Requirements Template</option>
+                          <option value="functional">Functional Requirements Template</option>
+                          <option value="non-functional">Non-Functional Requirements Template</option>
+                          <option value="api">API Requirements Template</option>
+                        </select>
+                      </div>
+
+                      {/* Viewpoints Template */}
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-muted-foreground">Viewpoints</label>
+                        <select className="w-full text-xs border border-border rounded-md px-2 py-1 bg-background">
+                          <option value="default">Default Viewpoint Template</option>
+                          <option value="user">User Viewpoint Template</option>
+                          <option value="system">System Viewpoint Template</option>
+                          <option value="security">Security Viewpoint Template</option>
+                        </select>
+                      </div>
+
+                      {/* Test Cases Template */}
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium text-muted-foreground">Test Cases</label>
+                        <select className="w-full text-xs border border-border rounded-md px-2 py-1 bg-background">
+                          <option value="default">Default Test Case Template</option>
+                          <option value="integration">Integration Test Template</option>
+                          <option value="unit">Unit Test Template</option>
+                          <option value="e2e">End-to-End Test Template</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
