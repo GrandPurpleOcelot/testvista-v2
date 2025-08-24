@@ -26,6 +26,7 @@ interface TestSuite {
   id: string;
   name: string;
   description: string;
+  project: string;
   folder: string;
   status: "active" | "draft" | "archived";
   testCases: number;
@@ -39,55 +40,87 @@ interface TestSuite {
 const mockTestSuites: TestSuite[] = [
   {
     id: "1",
-    name: "User Authentication Tests",
-    description: "Comprehensive test suite for login, logout, and session management functionality",
-    folder: "Banking App",
+    name: "User Management",
+    description: "User account and profile testing",
+    project: "Project A",
+    folder: "Core Features",
     status: "active",
-    testCases: 24,
-    coverage: 85,
+    testCases: 45,
+    coverage: 92,
     lastRun: "2024-01-20",
     lastModified: "2024-01-20",
-    createdBy: "John Doe",
+    createdBy: "You",
     createdAt: "2024-01-15"
   },
   {
     id: "2", 
-    name: "Payment Processing Tests",
-    description: "Test cases covering payment flows, validation, and error handling",
-    folder: "Banking App",
+    name: "Navigation Tests",
+    description: "Menu and routing functionality",
+    project: "Project A",
+    folder: "User Interface",
     status: "active",
-    testCases: 18,
-    coverage: 92,
+    testCases: 28,
+    coverage: 98,
     lastRun: "2024-01-19",
     lastModified: "2024-01-19",
-    createdBy: "Jane Smith",
+    createdBy: "You",
     createdAt: "2024-01-12"
   },
   {
     id: "3",
-    name: "API Integration Tests",
-    description: "Backend API endpoint testing and data validation",
-    folder: "E-commerce Platform",
-    status: "draft",
-    testCases: 12,
-    coverage: 60,
+    name: "Login Flow",
+    description: "User authentication process",
+    project: "Project B",
+    folder: "Authentication",
+    status: "active",
+    testCases: 32,
+    coverage: 96,
     lastRun: "2024-01-18",
     lastModified: "2024-01-18",
-    createdBy: "Mike Johnson",
+    createdBy: "You",
     createdAt: "2024-01-10"
   },
   {
     id: "4",
-    name: "Mobile App UI Tests",
-    description: "Cross-device UI testing for mobile applications",
-    folder: "Mobile Apps",
-    status: "archived",
-    testCases: 31,
-    coverage: 78,
+    name: "Endpoint Validation",
+    description: "API endpoint functionality tests",
+    project: "Project C",
+    folder: "API Testing",
+    status: "draft",
+    testCases: 20,
+    coverage: 45,
     lastRun: "2024-01-05",
     lastModified: "2024-01-05",
-    createdBy: "Sarah Wilson",
+    createdBy: "You",
     createdAt: "2024-01-01"
+  },
+  {
+    id: "5",
+    name: "Feature Testing",
+    description: "Core feature validation",
+    project: "Project D",
+    folder: "Core Features",
+    status: "active",
+    testCases: 34,
+    coverage: 87,
+    lastRun: "2024-01-21",
+    lastModified: "2024-01-21",
+    createdBy: "John Doe",
+    createdAt: "2024-01-14"
+  },
+  {
+    id: "6",
+    name: "UI Components",
+    description: "Component library testing",
+    project: "Project E",
+    folder: "User Interface",
+    status: "active",
+    testCases: 28,
+    coverage: 92,
+    lastRun: "2024-01-20",
+    lastModified: "2024-01-20",
+    createdBy: "Emma Davis",
+    createdAt: "2024-01-08"
   }
 ];
 
@@ -101,6 +134,7 @@ export default function TestSuites() {
     .filter(suite => {
       const matchesSearch = suite.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            suite.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           suite.project.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            suite.folder.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesSearch;
     })
@@ -206,6 +240,7 @@ export default function TestSuites() {
                       {getSortIcon("name")}
                     </div>
                   </TableHead>
+                  <TableHead>Project</TableHead>
                   <TableHead>Folder</TableHead>
                   <TableHead className="text-center">Test Cases</TableHead>
                   <TableHead className="text-center">Coverage</TableHead>
@@ -234,7 +269,10 @@ export default function TestSuites() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className="text-sm">{suite.folder}</span>
+                      <span className="text-sm font-medium text-primary">{suite.project}</span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm text-muted-foreground">{suite.folder}</span>
                     </TableCell>
                     <TableCell className="text-center">
                       <span className="font-medium">{suite.testCases}</span>
