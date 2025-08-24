@@ -46,7 +46,7 @@ export function Logo({ className, size = "md" }: LogoProps) {
           size === "sm" && "text-[10px] px-1.5 py-0.5",
           size === "lg" && "text-sm px-3 py-1.5"
         )}>
-          2.0.0
+          Ver 2.0.0
         </span>
       </div>
     </div>
