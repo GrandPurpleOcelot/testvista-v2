@@ -5,33 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  TestTube,
-  Target,
-  Clock,
-  MoreHorizontal,
-  Crown,
-  Shield,
-  Eye,
-  Users,
-  Lock,
-  Share2,
-  Copy,
-  Star,
-  StarOff,
-  Archive,
-  Trash2
-} from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { TestTube, Target, Clock, MoreHorizontal, Crown, Shield, Eye, Users, Lock, Share2, Copy, Star, StarOff, Archive, Trash2 } from "lucide-react";
 import { Project } from "@/types/project";
 import { cn } from "@/lib/utils";
-
 interface UnifiedProjectCardProps {
   project: Project;
   onToggleFavorite?: (projectId: string) => void;
@@ -40,9 +17,8 @@ interface UnifiedProjectCardProps {
   onArchiveProject?: (projectId: string) => void;
   onDeleteProject?: (projectId: string) => void;
 }
-
-export function UnifiedProjectCard({ 
-  project, 
+export function UnifiedProjectCard({
+  project,
   onToggleFavorite,
   onShareProject,
   onCloneProject,
@@ -50,7 +26,6 @@ export function UnifiedProjectCard({
   onDeleteProject
 }: UnifiedProjectCardProps) {
   const navigate = useNavigate();
-
   const getRoleIcon = (role?: string) => {
     switch (role) {
       case "owner":
@@ -65,7 +40,6 @@ export function UnifiedProjectCard({
         return null;
     }
   };
-
   const getRoleColor = (role?: string) => {
     switch (role) {
       case "owner":
@@ -80,7 +54,6 @@ export function UnifiedProjectCard({
         return "bg-muted text-muted-foreground";
     }
   };
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
@@ -95,23 +68,13 @@ export function UnifiedProjectCard({
         return "bg-muted text-muted-foreground";
     }
   };
-
   const getTypeIcon = () => {
-    return project.type === 'private' ? (
-      <Lock className="h-3 w-3" />
-    ) : (
-      <Users className="h-3 w-3" />
-    );
+    return project.type === 'private' ? <Lock className="h-3 w-3" /> : <Users className="h-3 w-3" />;
   };
-
   const getTypeColor = () => {
-    return project.type === 'private' 
-      ? "bg-muted text-muted-foreground" 
-      : "bg-blue-500/10 text-blue-700 dark:text-blue-300";
+    return project.type === 'private' ? "bg-muted text-muted-foreground" : "bg-blue-500/10 text-blue-700 dark:text-blue-300";
   };
-
-  return (
-    <Card className="border-border/50 hover:border-primary/20 transition-all duration-200 group">
+  return <Card className="border-border/50 hover:border-primary/20 transition-all duration-200 group">
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between">
           <div className="flex-1 cursor-pointer" onClick={() => navigate(`/project/${project.id}/folders`)}>
@@ -128,9 +91,7 @@ export function UnifiedProjectCard({
                   {project.type}
                 </span>
               </Badge>
-              {project.isFavorite && (
-                <Star className="h-4 w-4 fill-warning text-warning" />
-              )}
+              {project.isFavorite}
             </div>
             <p className="text-sm text-muted-foreground">{project.description}</p>
           </div>
@@ -143,26 +104,18 @@ export function UnifiedProjectCard({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => onToggleFavorite?.(project.id)}>
-                {project.isFavorite ? (
-                  <><StarOff className="h-4 w-4 mr-2" /> Remove from favorites</>
-                ) : (
-                  <><Star className="h-4 w-4 mr-2" /> Add to favorites</>
-                )}
+                {project.isFavorite ? <><StarOff className="h-4 w-4 mr-2" /> Remove from favorites</> : <><Star className="h-4 w-4 mr-2" /> Add to favorites</>}
               </DropdownMenuItem>
               
-              {project.type === 'private' && (
-                <DropdownMenuItem onClick={() => onShareProject?.(project.id)}>
+              {project.type === 'private' && <DropdownMenuItem onClick={() => onShareProject?.(project.id)}>
                   <Share2 className="h-4 w-4 mr-2" />
                   Share project
-                </DropdownMenuItem>
-              )}
+                </DropdownMenuItem>}
               
-              {project.type === 'shared' && (
-                <DropdownMenuItem onClick={() => onCloneProject?.(project.id)}>
+              {project.type === 'shared' && <DropdownMenuItem onClick={() => onCloneProject?.(project.id)}>
                   <Copy className="h-4 w-4 mr-2" />
                   Clone to My Space
-                </DropdownMenuItem>
-              )}
+                </DropdownMenuItem>}
               
               <DropdownMenuSeparator />
               
@@ -171,15 +124,10 @@ export function UnifiedProjectCard({
                 Archive project
               </DropdownMenuItem>
               
-              {(project.type === 'private' || project.role === 'owner') && (
-                <DropdownMenuItem 
-                  onClick={() => onDeleteProject?.(project.id)}
-                  className="text-destructive"
-                >
+              {(project.type === 'private' || project.role === 'owner') && <DropdownMenuItem onClick={() => onDeleteProject?.(project.id)} className="text-destructive">
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete project
-                </DropdownMenuItem>
-              )}
+                </DropdownMenuItem>}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -220,45 +168,33 @@ export function UnifiedProjectCard({
         {/* Team and Role Info */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {project.type === 'shared' && project.members && (
-              <>
+            {project.type === 'shared' && project.members && <>
                 <div className="flex -space-x-2">
-                  {project.owner && (
-                    <Avatar className="h-6 w-6 border-2 border-background">
+                  {project.owner && <Avatar className="h-6 w-6 border-2 border-background">
                       <AvatarFallback className="text-xs">{project.owner.initials}</AvatarFallback>
-                    </Avatar>
-                  )}
-                  {project.members.slice(0, 3).map((member, index) => (
-                    <Avatar key={index} className="h-6 w-6 border-2 border-background">
+                    </Avatar>}
+                  {project.members.slice(0, 3).map((member, index) => <Avatar key={index} className="h-6 w-6 border-2 border-background">
                       <AvatarFallback className="text-xs">{member.initials}</AvatarFallback>
-                    </Avatar>
-                  ))}
-                  {project.memberCount > 4 && (
-                    <div className="h-6 w-6 bg-muted border-2 border-background rounded-full flex items-center justify-center">
+                    </Avatar>)}
+                  {project.memberCount > 4 && <div className="h-6 w-6 bg-muted border-2 border-background rounded-full flex items-center justify-center">
                       <span className="text-xs text-muted-foreground">+{project.memberCount - 4}</span>
-                    </div>
-                  )}
+                    </div>}
                 </div>
                 <span className="text-xs text-muted-foreground">{project.memberCount} members</span>
-              </>
-            )}
+              </>}
             
-            {project.type === 'private' && (
-              <span className="text-xs text-muted-foreground flex items-center gap-1">
+            {project.type === 'private' && <span className="text-xs text-muted-foreground flex items-center gap-1">
                 <Lock className="h-3 w-3" />
                 Private project
-              </span>
-            )}
+              </span>}
           </div>
 
-          {project.role && (
-            <Badge className={getRoleColor(project.role)} variant="secondary">
+          {project.role && <Badge className={getRoleColor(project.role)} variant="secondary">
               <span className="flex items-center gap-1">
                 {getRoleIcon(project.role)}
                 {project.role}
               </span>
-            </Badge>
-          )}
+            </Badge>}
         </div>
 
         {/* Last Activity */}
@@ -267,6 +203,5 @@ export function UnifiedProjectCard({
           Last activity {project.lastActivity}
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 }
