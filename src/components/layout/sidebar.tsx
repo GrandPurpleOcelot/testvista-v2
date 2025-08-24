@@ -11,7 +11,10 @@ import {
   Plus,
   Bell,
   FileText,
-  User
+  User,
+  ChevronDown,
+  ChevronRight,
+  Share2
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -20,9 +23,23 @@ interface SidebarProps {
   className?: string;
 }
 
-const navigation = [
-  { name: "All Projects", href: "/projects", icon: Users },
-  { name: "My Space", href: "/project/my-space/folders", icon: User },
+interface NavigationItem {
+  name: string;
+  href: string;
+  icon: any;
+  children?: NavigationItem[];
+}
+
+const navigation: NavigationItem[] = [
+  { 
+    name: "All Projects", 
+    href: "/projects", 
+    icon: Users,
+    children: [
+      { name: "My Space", href: "/project/my-space/folders", icon: User },
+      { name: "Shared Projects", href: "/shared-projects", icon: Share2 },
+    ]
+  },
   { name: "Test Suites", href: "/suites", icon: CheckSquare },
   { name: "Uploaded Files", href: "/reference-files", icon: FileText },
   { name: "Prompt Templates", href: "/standards", icon: BookOpen },
@@ -30,7 +47,78 @@ const navigation = [
 
 export function Sidebar({ className }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [expandedItems, setExpandedItems] = useState<string[]>(["All Projects"]);
   const location = useLocation();
+
+  const toggleExpanded = (itemName: string) => {
+    setExpandedItems(prev => 
+      prev.includes(itemName) 
+        ? prev.filter(name => name !== itemName)
+        : [...prev, itemName]
+    );
+  };
+
+  const isItemActive = (item: NavigationItem): boolean => {
+    if (location.pathname === item.href) return true;
+    if (item.href === "/project/my-space/folders" && location.pathname.startsWith("/project/my-space")) return true;
+    return item.children?.some(child => isItemActive(child)) || false;
+  };
+
+  const renderNavigationItem = (item: NavigationItem, level = 0) => {
+    const isActive = isItemActive(item);
+    const isExpanded = expandedItems.includes(item.name);
+    const hasChildren = item.children && item.children.length > 0;
+
+    return (
+      <div key={item.name}>
+        {hasChildren ? (
+          <Button
+            variant={isActive ? "default" : "ghost"}
+            className={cn(
+              "w-full justify-start gap-3 h-10",
+              collapsed && "px-2",
+              level > 0 && "ml-4",
+              isActive && "bg-primary text-primary-foreground shadow-sm"
+            )}
+            onClick={() => !collapsed && toggleExpanded(item.name)}
+          >
+            <item.icon className="h-4 w-4 flex-shrink-0" />
+            {!collapsed && (
+              <>
+                <span className="flex-1 text-left">{item.name}</span>
+                {isExpanded ? 
+                  <ChevronDown className="h-4 w-4" /> : 
+                  <ChevronRight className="h-4 w-4" />
+                }
+              </>
+            )}
+          </Button>
+        ) : (
+          <Button
+            variant={isActive ? "default" : "ghost"}
+            className={cn(
+              "w-full justify-start gap-3 h-10",
+              collapsed && "px-2",
+              level > 0 && "ml-4",
+              isActive && "bg-primary text-primary-foreground shadow-sm"
+            )}
+            asChild
+          >
+            <Link to={item.href}>
+              <item.icon className="h-4 w-4 flex-shrink-0" />
+              {!collapsed && <span>{item.name}</span>}
+            </Link>
+          </Button>
+        )}
+
+        {hasChildren && isExpanded && !collapsed && (
+          <div className="mt-1 space-y-1">
+            {item.children?.map(child => renderNavigationItem(child, level + 1))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className={cn(
@@ -64,27 +152,7 @@ export function Sidebar({ className }: SidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2">
         <div className="space-y-1">
-          {navigation.map((item) => {
-            const isActive = location.pathname === item.href || 
-              (item.href === "/project/my-space/folders" && location.pathname.startsWith("/project/my-space"));
-            return (
-              <Button
-                key={item.name}
-                variant={isActive ? "default" : "ghost"}
-                className={cn(
-                  "w-full justify-start gap-3 h-10",
-                  collapsed && "px-2",
-                  isActive && "bg-primary text-primary-foreground shadow-sm"
-                )}
-                asChild
-              >
-                <Link to={item.href}>
-                  <item.icon className="h-4 w-4 flex-shrink-0" />
-                  {!collapsed && <span>{item.name}</span>}
-                </Link>
-              </Button>
-            );
-          })}
+          {navigation.map((item) => renderNavigationItem(item))}
         </div>
       </nav>
 
