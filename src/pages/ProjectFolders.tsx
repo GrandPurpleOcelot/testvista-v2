@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Sidebar } from "@/components/layout/sidebar";
 import { CreateSuiteModal } from "@/components/ui/create-suite-modal";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { FolderOpen, CheckSquare, Plus, Search, MoreHorizontal, Calendar, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -287,6 +288,8 @@ export default function ProjectFolders() {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(["1", "f1"]));
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFolderDialogOpen, setIsFolderDialogOpen] = useState(false);
+  const [newFolderName, setNewFolderName] = useState("");
   const [selectedFolder, setSelectedFolder] = useState<{
     id?: string;
     name?: string;
@@ -325,6 +328,17 @@ export default function ProjectFolders() {
     });
     setIsModalOpen(true);
   };
+
+  const handleCreateFolder = () => {
+    if (newFolderName.trim()) {
+      // Here you would typically call an API to create the folder
+      console.log("Creating folder:", newFolderName);
+      setIsFolderDialogOpen(false);
+      setNewFolderName("");
+      // You could show a toast notification here
+    }
+  };
+
   const filteredFolders = folders.filter(folder => folder.name.toLowerCase().includes(searchQuery.toLowerCase()) || folder.suites.some(suite => suite.name.toLowerCase().includes(searchQuery.toLowerCase())));
   if (!project) {
     return <div className="flex h-screen bg-workspace-bg">
@@ -414,9 +428,53 @@ export default function ProjectFolders() {
                         </div>
                       </div>
                       
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
+                      <Dialog open={isFolderDialogOpen} onOpenChange={setIsFolderDialogOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle>Create New Folder</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <div className="space-y-2">
+                              <label htmlFor="folder-name" className="text-sm font-medium">
+                                Folder Name
+                              </label>
+                              <Input
+                                id="folder-name"
+                                placeholder="Enter folder name..."
+                                value={newFolderName}
+                                onChange={(e) => setNewFolderName(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    handleCreateFolder();
+                                  }
+                                }}
+                              />
+                            </div>
+                            <div className="flex justify-end gap-2">
+                              <Button 
+                                variant="outline" 
+                                onClick={() => {
+                                  setIsFolderDialogOpen(false);
+                                  setNewFolderName("");
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                              <Button 
+                                onClick={handleCreateFolder}
+                                disabled={!newFolderName.trim()}
+                              >
+                                Create Folder
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   </div>
                 </CardHeader>
