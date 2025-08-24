@@ -9,66 +9,70 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Base colors */
-    --background: 250 255% 98%;
-    --foreground: 230 15% 15%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 20%;
 
     /* Card and surfaces */
     --card: 0 0% 100%;
-    --card-foreground: 230 15% 15%;
-    --card-hover: 250 50% 96%;
+    --card-foreground: 0 0% 20%;
+    --card-hover: 180 58% 96%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 230 15% 15%;
+    --popover-foreground: 0 0% 20%;
 
-    /* Brand colors - TestVista palette */
-    --primary: 220 85% 55%;
+    /* Brand colors - Teal & Coral palette */
+    --primary: 180 58% 48%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 220 85% 50%;
-    --primary-light: 220 80% 92%;
+    --primary-hover: 180 58% 43%;
+    --primary-light: 180 58% 95%;
 
-    --secondary: 160 75% 45%;
+    --secondary: 180 50% 27%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-hover: 160 75% 40%;
-    --secondary-light: 160 60% 92%;
+    --secondary-hover: 180 50% 23%;
+    --secondary-light: 180 50% 92%;
 
     /* Neutral colors */
-    --muted: 240 10% 96%;
-    --muted-foreground: 240 5% 55%;
-    --muted-hover: 240 10% 92%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 40%;
+    --muted-hover: 0 0% 92%;
 
-    --accent: 250 45% 96%;
-    --accent-foreground: 230 15% 25%;
-    --accent-hover: 250 45% 92%;
+    --accent: 0 100% 70%;
+    --accent-foreground: 0 0% 100%;
+    --accent-hover: 0 100% 65%;
 
     /* Status colors */
-    --success: 160 75% 45%;
+    --success: 145 63% 49%;
     --success-foreground: 0 0% 100%;
-    --success-light: 160 60% 92%;
+    --success-light: 145 63% 95%;
 
-    --warning: 45 90% 55%;
-    --warning-foreground: 45 30% 15%;
-    --warning-light: 45 85% 92%;
+    --warning: 37 90% 51%;
+    --warning-foreground: 0 0% 20%;
+    --warning-light: 37 90% 95%;
 
-    --destructive: 0 75% 55%;
+    --destructive: 6 78% 57%;
     --destructive-foreground: 0 0% 100%;
-    --destructive-light: 0 60% 92%;
+    --destructive-light: 6 78% 95%;
+
+    --info: 204 70% 53%;
+    --info-foreground: 0 0% 100%;
+    --info-light: 204 70% 95%;
 
     /* Interactive elements */
-    --border: 240 15% 88%;
-    --input: 240 15% 95%;
-    --ring: 220 85% 55%;
-    --focus-ring: 220 85% 55% / 20%;
+    --border: 0 0% 85%;
+    --input: 0 0% 95%;
+    --ring: 180 58% 48%;
+    --focus-ring: 180 58% 48% / 20%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(220 85% 55%), hsl(160 75% 45%));
-    --gradient-secondary: linear-gradient(135deg, hsl(250 45% 96%), hsl(240 10% 96%));
-    --gradient-hero: linear-gradient(135deg, hsl(220 85% 55% / 10%), hsl(160 75% 45% / 10%));
+    --gradient-primary: linear-gradient(135deg, hsl(180 58% 48%), hsl(0 100% 70%));
+    --gradient-secondary: linear-gradient(135deg, hsl(180 58% 96%), hsl(0 0% 96%));
+    --gradient-hero: linear-gradient(135deg, hsl(180 58% 48% / 10%), hsl(0 100% 70% / 10%));
 
     /* Shadows */
-    --shadow-sm: 0 2px 8px hsl(220 20% 20% / 8%);
-    --shadow-md: 0 8px 24px hsl(220 20% 20% / 12%);
-    --shadow-lg: 0 16px 40px hsl(220 20% 20% / 16%);
-    --shadow-primary: 0 8px 24px hsl(220 85% 55% / 25%);
+    --shadow-sm: 0 2px 8px hsl(0 0% 20% / 8%);
+    --shadow-md: 0 8px 24px hsl(0 0% 20% / 12%);
+    --shadow-lg: 0 16px 40px hsl(0 0% 20% / 16%);
+    --shadow-primary: 0 8px 24px hsl(180 58% 48% / 25%);
 
     /* Workspace specific */
     --workspace-bg: 245 15% 98%;
@@ -97,33 +101,42 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 5%;
+    --foreground: 0 0% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 180 58% 48%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 180 50% 27%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 0 100% 70%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 6 78% 57%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --success: 145 63% 49%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 37 90% 51%;
+    --warning-foreground: 0 0% 20%;
+
+    --info: 204 70% 53%;
+    --info-foreground: 0 0% 100%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 15%;
+    --ring: 180 58% 48%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
