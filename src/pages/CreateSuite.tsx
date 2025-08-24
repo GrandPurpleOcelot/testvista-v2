@@ -284,19 +284,24 @@ export default function CreateSuite() {
                     Describe what you want to test, mention any relevant documents, or upload new files to get started.
                   </p>
                   
-                  {/* Quick Start Templates */}
+                  {/* Prompt Templates */}
                   <div className="space-y-2 pt-4">
-                    <p className="text-sm font-medium">Quick start:</p>
+                    <p className="text-sm font-medium">Use prompt template:</p>
                     <div className="flex flex-wrap gap-2 justify-center">
-                      {["API testing", "Security testing", "User authentication", "Performance testing"].map((template) => (
+                      {[
+                        { name: "Test Case Template", content: "Generate comprehensive test cases with detailed steps, expected results, and validation criteria for" },
+                        { name: "API Testing Template", content: "Create API test scenarios covering endpoints, request/response validation, error handling, and authentication for" },
+                        { name: "Security Testing Template", content: "Develop security test cases including authentication, authorization, input validation, and vulnerability assessment for" },
+                        { name: "Performance Testing Template", content: "Design performance test scenarios with load testing, stress testing, and response time validation for" }
+                      ].map((template) => (
                         <Button
-                          key={template}
+                          key={template.name}
                           variant="outline"
                           size="sm"
-                          onClick={() => setChatInput(`I want to create a comprehensive test suite for ${template.toLowerCase()}. `)}
+                          onClick={() => setChatInput(`${template.content} `)}
                           className="text-xs"
                         >
-                          {template}
+                          {template.name}
                         </Button>
                       ))}
                     </div>
