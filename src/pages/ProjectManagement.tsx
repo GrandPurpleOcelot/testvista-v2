@@ -100,12 +100,36 @@ export default function ProjectManagement() {
       mockProjects.reduce((sum, p) => sum + p.coverage, 0) / mockProjects.length
     );
 
-    return {
-      myProjects: myProjects.length,
-      sharedProjects: sharedProjects.length,
-      totalTestCases,
-      avgCoverage
-    };
+    return [
+      {
+        title: "My Projects",
+        value: myProjects.length.toString(),
+        description: "Private projects",
+        icon: FolderOpen,
+        trend: { value: 12, label: "vs last month", isUpward: true }
+      },
+      {
+        title: "Shared Projects", 
+        value: sharedProjects.length.toString(),
+        description: "Collaborative projects",
+        icon: Users,
+        trend: { value: 8, label: "vs last month", isUpward: true }
+      },
+      {
+        title: "Total Test Cases",
+        value: totalTestCases.toLocaleString(),
+        description: "Across all projects", 
+        icon: TestTube,
+        trend: { value: 23, label: "vs last month", isUpward: true }
+      },
+      {
+        title: "Avg Coverage",
+        value: `${avgCoverage}%`,
+        description: "Test coverage rate",
+        icon: Target,
+        trend: { value: 5, label: "vs last month", isUpward: true }
+      }
+    ];
   }, []);
 
   // Project actions
@@ -152,7 +176,7 @@ export default function ProjectManagement() {
   // Separate projects by type for better organization
   const mySharedProjects = useMemo(() => {
     return filteredAndSortedProjects.filter(p => 
-      p.type === "shared" && (p.role === "owner" || p.role === "admin" || p.role === "collaborator")
+      p.type === "private" || (p.type === "shared" && (p.role === "owner" || p.role === "admin" || p.role === "collaborator"))
     );
   }, [filteredAndSortedProjects]);
 
@@ -199,31 +223,12 @@ export default function ProjectManagement() {
               </p>
             </div>
 
-            {/* My Space Quick Access */}
-            <Card className="border-border/50 bg-gradient-to-r from-primary/5 to-secondary/5">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <FolderOpen className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-lg">My Space</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Your private workspace with folders and test suites
-                      </p>
-                    </div>
-                  </div>
-                  <Button 
-                    onClick={() => navigate("/my-space")}
-                    className="gap-2"
-                  >
-                    Open My Space
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {stats.map((stat, index) => (
+                <StatsCard key={index} {...stat} />
+              ))}
+            </div>
 
             {/* Recent Activity */}
             {activeFilter === "recent" && !searchQuery && (
@@ -276,13 +281,13 @@ export default function ProjectManagement() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Users className="h-5 w-5 text-primary" />
-                    My Shared Projects
+                    My Projects
                     <Badge variant="secondary" className="ml-2">
                       {mySharedProjects.length}
                     </Badge>
                   </CardTitle>
                   <p className="text-sm text-muted-foreground">
-                    Projects where you have ownership or collaboration access
+                    Your workspace and projects where you have ownership or collaboration access
                   </p>
                 </CardHeader>
                 <CardContent>

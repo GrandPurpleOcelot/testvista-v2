@@ -114,7 +114,7 @@ export function UnifiedProjectCard({
     <Card className="border-border/50 hover:border-primary/20 transition-all duration-200 group">
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between">
-          <div className="flex-1 cursor-pointer" onClick={() => navigate(`/suite/${project.id}`)}>
+          <div className="flex-1 cursor-pointer" onClick={() => navigate(`/project/${project.id}/folders`)}>
             <div className="flex items-center gap-2 mb-2">
               <CardTitle className="text-lg group-hover:text-primary transition-colors">
                 {project.name}

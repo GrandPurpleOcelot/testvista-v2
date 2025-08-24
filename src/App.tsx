@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import MySpace from "./pages/MySpace";
 import ProjectManagement from "./pages/ProjectManagement";
+import ProjectFolders from "./pages/ProjectFolders";
 import CreateSuite from "./pages/CreateSuite";
 import TestSuites from "./pages/TestSuites";
 import SuiteWorkspace from "./pages/SuiteWorkspace";
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/my-space" element={<MySpace />} />
           <Route path="/projects" element={<ProjectManagement />} />
+          <Route path="/project/:projectId/folders" element={<ProjectFolders />} />
           <Route path="/create-suite" element={<CreateSuite />} />
           <Route path="/suites" element={<TestSuites />} />
           <Route path="/suite/:id" element={<SuiteWorkspace />} />

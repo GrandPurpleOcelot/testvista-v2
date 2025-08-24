@@ -1,12 +1,33 @@
 import { Project } from "@/types/project";
 
 export const mockProjects: Project[] = [
-  // Private projects (My Space)
+  // My Space (Special private workspace)
+  {
+    id: "my-space",
+    name: "My Space",
+    description: "Your private workspace with folders and test suites",
+    type: "private",
+    role: "owner",
+    status: "active",
+    testSuites: 6,
+    testCases: 214,
+    coverage: 83,
+    lastActivity: "2 hours ago",
+    memberCount: 1,
+    isFavorite: true,
+    tags: ["personal", "workspace"],
+    owner: {
+      name: "You",
+      initials: "YU"
+    }
+  },
+  // Other private projects
   {
     id: "p1",
     name: "E-commerce Testing",
     description: "Testing suite for checkout flow",
     type: "private",
+    role: "owner",
     status: "active",
     testSuites: 3,
     testCases: 45,
@@ -21,6 +42,7 @@ export const mockProjects: Project[] = [
     name: "Authentication Flow",
     description: "User login and registration tests",
     type: "private",
+    role: "owner",
     status: "completed",
     testSuites: 2,
     testCases: 23,
@@ -34,6 +56,7 @@ export const mockProjects: Project[] = [
     name: "API Testing Practice",
     description: "Learning REST API testing",
     type: "private",
+    role: "owner",
     status: "draft",
     testSuites: 1,
     testCases: 12,
