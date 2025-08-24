@@ -105,8 +105,11 @@ export default function ProjectManagement() {
 
   // Separate projects by type for better organization
   const mySharedProjects = useMemo(() => {
+    if (activeFilter === "my-projects") {
+      return filteredAndSortedProjects.filter(p => p.id === "my-space");
+    }
     return filteredAndSortedProjects.filter(p => p.type === "private" || p.type === "shared" && (p.role === "owner" || p.role === "admin" || p.role === "collaborator"));
-  }, [filteredAndSortedProjects]);
+  }, [filteredAndSortedProjects, activeFilter]);
   const otherAccessibleProjects = useMemo(() => {
     return filteredAndSortedProjects.filter(p => p.type === "shared" && p.role === "viewer");
   }, [filteredAndSortedProjects]);
