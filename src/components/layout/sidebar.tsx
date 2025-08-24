@@ -98,8 +98,14 @@ export function Sidebar({ className }: SidebarProps) {
                 <Settings className="h-4 w-4" />
               </Button>
               <div className="flex-1" />
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                <span className="text-xs font-medium text-white">JD</span>
+              <div className="flex items-center gap-3">
+                <div className="flex flex-col text-right">
+                  <span className="text-sm font-medium text-foreground">John Doe</span>
+                  <span className="text-xs text-muted-foreground">john.doe@example.com</span>
+                </div>
+                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                  <span className="text-xs font-medium text-white">JD</span>
+                </div>
               </div>
             </>
           )}
