@@ -50,9 +50,6 @@ const navigation: NavigationItem[] = [
       },
     ]
   },
-  { name: "Test Suites", href: "/suites", icon: CheckSquare },
-  { name: "Uploaded Files", href: "/reference-files", icon: FileText },
-  { name: "Prompt Templates", href: "/standards", icon: BookOpen },
 ];
 
 export function Sidebar({ className }: SidebarProps) {

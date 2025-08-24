@@ -8,7 +8,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { CreateSuiteModal } from "@/components/ui/create-suite-modal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { FolderOpen, CheckSquare, Plus, Search, MoreHorizontal, Calendar, ArrowLeft } from "lucide-react";
+import { FolderOpen, CheckSquare, Plus, Search, MoreHorizontal, Calendar, ArrowLeft, FileText, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { mockProjects } from "@/data/mockProjects";
 interface TestSuite {
@@ -396,6 +396,43 @@ export default function ProjectFolders() {
                 <Plus className="h-4 w-4" />
                 New Test Suite
               </Button>
+            </div>
+
+            {/* Quick Access Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <Card className="border-border/50 hover:border-primary/20 transition-colors">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-3">
+                    <FileText className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-lg">Uploaded Files</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Access your uploaded reference files and documents
+                  </p>
+                  <Button variant="outline" size="sm" onClick={() => navigate('/reference-files')} className="w-full">
+                    View Files
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="border-border/50 hover:border-primary/20 transition-colors">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-3">
+                    <BookOpen className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-lg">Prompt Templates</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Manage your reusable prompt templates
+                  </p>
+                  <Button variant="outline" size="sm" onClick={() => navigate('/standards')} className="w-full">
+                    View Templates
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
             {filteredFolders.length === 0 && <div className="text-center py-12">
                 <FolderOpen className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
