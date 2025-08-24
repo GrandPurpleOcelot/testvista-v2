@@ -33,13 +33,13 @@ interface NavigationItem {
 const navigation: NavigationItem[] = [
   { 
     name: "All Projects", 
-    href: "/projects", 
+    href: "", // Pure container, not clickable
     icon: Users,
     children: [
       { name: "My Space", href: "/project/my-space/folders", icon: User },
       { 
         name: "Shared Projects", 
-        href: "/shared-projects", 
+        href: "", // Pure container, not clickable
         icon: Share2,
         children: [
           { name: "Project A", href: "/project/p1/folders", icon: FolderOpen },
@@ -66,9 +66,16 @@ export function Sidebar({ className }: SidebarProps) {
   };
 
   const isItemActive = (item: NavigationItem): boolean => {
-    if (location.pathname === item.href) return true;
-    if (item.href === "/project/my-space/folders" && location.pathname.startsWith("/project/my-space")) return true;
-    return item.children?.some(child => isItemActive(child)) || false;
+    // For leaf items (no children), check exact match or extended path
+    if (!item.children || item.children.length === 0) {
+      if (!item.href) return false; // Empty href items are never active
+      if (location.pathname === item.href) return true;
+      if (item.href === "/project/my-space/folders" && location.pathname.startsWith("/project/my-space")) return true;
+      return false;
+    }
+    
+    // For parent items with children, never highlight them - only highlight leaf items
+    return false;
   };
 
   const renderNavigationItem = (item: NavigationItem, level = 0) => {
