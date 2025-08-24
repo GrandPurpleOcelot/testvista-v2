@@ -42,10 +42,10 @@ const navigation: NavigationItem[] = [
         href: "/shared-projects", 
         icon: Share2,
         children: [
-          { name: "Project A", href: "/project/shared/project-a", icon: FolderOpen },
-          { name: "Project B", href: "/project/shared/project-b", icon: FolderOpen },
-          { name: "Project C", href: "/project/shared/project-c", icon: FolderOpen },
-          { name: "Project D", href: "/project/shared/project-d", icon: FolderOpen },
+          { name: "Project A", href: "/project/p1/folders", icon: FolderOpen },
+          { name: "Project B", href: "/project/p2/folders", icon: FolderOpen },
+          { name: "Project C", href: "/project/p3/folders", icon: FolderOpen },
+          { name: "Project D", href: "/project/p4/folders", icon: FolderOpen },
         ]
       },
     ]
