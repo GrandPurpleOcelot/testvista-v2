@@ -13,15 +13,6 @@ export function DashboardHeader() {
       </div>
 
       <div className="flex items-center gap-4">
-        <Button className="gap-2 bg-gradient-to-r from-primary to-secondary hover:from-primary-hover hover:to-secondary-hover shadow-sm">
-          <Plus className="h-4 w-4" />
-          New Folder
-        </Button>
-
-        <Button className="gap-2 bg-gradient-to-r from-primary to-secondary hover:from-primary-hover hover:to-secondary-hover shadow-sm">
-          <Plus className="h-4 w-4" />
-          New Folder
-        </Button>
       </div>
     </header>
   );
