@@ -7,18 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Sidebar } from "@/components/layout/sidebar";
 import { CreateSuiteModal } from "@/components/ui/create-suite-modal";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { 
-  FolderOpen, 
-  TestTube, 
-  Plus, 
-  Search,
-  MoreHorizontal,
-  Calendar,
-  ArrowLeft
-} from "lucide-react";
+import { FolderOpen, TestTube, Plus, Search, MoreHorizontal, Calendar, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { mockProjects } from "@/data/mockProjects";
-
 interface TestSuite {
   id: string;
   name: string;
@@ -29,7 +20,6 @@ interface TestSuite {
   lastActivity: string;
   folderId: string;
 }
-
 interface Folder {
   id: string;
   name: string;
@@ -41,310 +31,268 @@ interface Folder {
 // Mock folder data for all projects
 const getProjectFolders = (projectId: string): Folder[] => {
   if (projectId === "my-space") {
-    return [
-      {
-        id: "1",
-        name: "Personal Projects",
-        description: "My individual testing projects and experiments",
+    return [{
+      id: "1",
+      name: "Personal Projects",
+      description: "My individual testing projects and experiments",
+      lastActivity: "2 hours ago",
+      suites: [{
+        id: "s1",
+        name: "Core Testing Suite",
+        description: "Main application functionality tests",
+        status: "active",
+        testCases: 47,
+        coverage: 89,
         lastActivity: "2 hours ago",
-        suites: [
-          {
-            id: "s1",
-            name: "Core Testing Suite",
-            description: "Main application functionality tests",
-            status: "active",
-            testCases: 47,
-            coverage: 89,
-            lastActivity: "2 hours ago",
-            folderId: "1"
-          },
-          {
-            id: "s2", 
-            name: "User Interface Tests",
-            description: "UI component and interaction validation",
-            status: "completed",
-            testCases: 123,
-            coverage: 95,
-            lastActivity: "1 day ago",
-            folderId: "1"
-          }
-        ]
-      },
-      {
-        id: "2",
-        name: "Learning & Practice",
-        description: "Educational testing projects and skill development",
+        folderId: "1"
+      }, {
+        id: "s2",
+        name: "User Interface Tests",
+        description: "UI component and interaction validation",
+        status: "completed",
+        testCases: 123,
+        coverage: 95,
         lastActivity: "1 day ago",
-        suites: [
-          {
-            id: "s3",
-            name: "API Testing Practice",
-            description: "Learning REST API testing techniques",
-            status: "active",
-            testCases: 67,
-            coverage: 78,
-            lastActivity: "6 hours ago",
-            folderId: "2"
-          }
-        ]
-      },
-      {
-        id: "3",
-        name: "Security Testing",
-        description: "Security-focused test cases and vulnerability testing",
-        lastActivity: "3 days ago",
-        suites: [
-          {
-            id: "s4",
-            name: "Authentication Security",
-            description: "User authentication and authorization tests",
-            status: "draft",
-            testCases: 23,
-            coverage: 45,
-            lastActivity: "1 week ago",
-            folderId: "3"
-          }
-        ]
-      }
-    ];
+        folderId: "1"
+      }]
+    }, {
+      id: "2",
+      name: "Learning & Practice",
+      description: "Educational testing projects and skill development",
+      lastActivity: "1 day ago",
+      suites: [{
+        id: "s3",
+        name: "API Testing Practice",
+        description: "Learning REST API testing techniques",
+        status: "active",
+        testCases: 67,
+        coverage: 78,
+        lastActivity: "6 hours ago",
+        folderId: "2"
+      }]
+    }, {
+      id: "3",
+      name: "Security Testing",
+      description: "Security-focused test cases and vulnerability testing",
+      lastActivity: "3 days ago",
+      suites: [{
+        id: "s4",
+        name: "Authentication Security",
+        description: "User authentication and authorization tests",
+        status: "draft",
+        testCases: 23,
+        coverage: 45,
+        lastActivity: "1 week ago",
+        folderId: "3"
+      }]
+    }];
   }
 
   // Project A folders
   if (projectId === "p1") {
-    return [
-      {
-        id: "f1",
-        name: "Core Features",
-        description: "Main application functionality",
+    return [{
+      id: "f1",
+      name: "Core Features",
+      description: "Main application functionality",
+      lastActivity: "2 hours ago",
+      suites: [{
+        id: "s10",
+        name: "User Management",
+        description: "User account and profile testing",
+        status: "active",
+        testCases: 45,
+        coverage: 92,
         lastActivity: "2 hours ago",
-        suites: [
-          {
-            id: "s10",
-            name: "User Management",
-            description: "User account and profile testing",
-            status: "active",
-            testCases: 45,
-            coverage: 92,
-            lastActivity: "2 hours ago",
-            folderId: "f1"
-          },
-          {
-            id: "s11",
-            name: "Data Processing",
-            description: "Core data handling and validation",
-            status: "active",
-            testCases: 38,
-            coverage: 87,
-            lastActivity: "4 hours ago",
-            folderId: "f1"
-          }
-        ]
-      },
-      {
-        id: "f2",
-        name: "User Interface",
-        description: "Frontend components and interactions",
+        folderId: "f1"
+      }, {
+        id: "s11",
+        name: "Data Processing",
+        description: "Core data handling and validation",
+        status: "active",
+        testCases: 38,
+        coverage: 87,
+        lastActivity: "4 hours ago",
+        folderId: "f1"
+      }]
+    }, {
+      id: "f2",
+      name: "User Interface",
+      description: "Frontend components and interactions",
+      lastActivity: "1 day ago",
+      suites: [{
+        id: "s12",
+        name: "Navigation Tests",
+        description: "Menu and routing functionality",
+        status: "completed",
+        testCases: 28,
+        coverage: 98,
         lastActivity: "1 day ago",
-        suites: [
-          {
-            id: "s12",
-            name: "Navigation Tests",
-            description: "Menu and routing functionality",
-            status: "completed",
-            testCases: 28,
-            coverage: 98,
-            lastActivity: "1 day ago",
-            folderId: "f2"
-          },
-          {
-            id: "s13",
-            name: "Form Validation",
-            description: "Input validation and error handling",
-            status: "active",
-            testCases: 35,
-            coverage: 85,
-            lastActivity: "1 day ago",
-            folderId: "f2"
-          }
-        ]
-      },
-      {
-        id: "f3",
-        name: "Integration",
-        description: "External service integrations",
+        folderId: "f2"
+      }, {
+        id: "s13",
+        name: "Form Validation",
+        description: "Input validation and error handling",
+        status: "active",
+        testCases: 35,
+        coverage: 85,
+        lastActivity: "1 day ago",
+        folderId: "f2"
+      }]
+    }, {
+      id: "f3",
+      name: "Integration",
+      description: "External service integrations",
+      lastActivity: "3 days ago",
+      suites: [{
+        id: "s14",
+        name: "API Connections",
+        description: "Third-party API integration tests",
+        status: "draft",
+        testCases: 10,
+        coverage: 60,
         lastActivity: "3 days ago",
-        suites: [
-          {
-            id: "s14",
-            name: "API Connections",
-            description: "Third-party API integration tests",
-            status: "draft",
-            testCases: 10,
-            coverage: 60,
-            lastActivity: "3 days ago",
-            folderId: "f3"
-          }
-        ]
-      }
-    ];
+        folderId: "f3"
+      }]
+    }];
   }
 
   // Project B folders
   if (projectId === "p2") {
-    return [
-      {
-        id: "f4",
-        name: "Authentication",
-        description: "User login and security features",
+    return [{
+      id: "f4",
+      name: "Authentication",
+      description: "User login and security features",
+      lastActivity: "1 day ago",
+      suites: [{
+        id: "s15",
+        name: "Login Flow",
+        description: "User authentication process",
+        status: "completed",
+        testCases: 32,
+        coverage: 96,
         lastActivity: "1 day ago",
-        suites: [
-          {
-            id: "s15",
-            name: "Login Flow",
-            description: "User authentication process",
-            status: "completed",
-            testCases: 32,
-            coverage: 96,
-            lastActivity: "1 day ago",
-            folderId: "f4"
-          },
-          {
-            id: "s16",
-            name: "Password Security",
-            description: "Password policies and security",
-            status: "completed",
-            testCases: 25,
-            coverage: 94,
-            lastActivity: "2 days ago",
-            folderId: "f4"
-          }
-        ]
-      },
-      {
-        id: "f5",
-        name: "User Experience",
-        description: "UI/UX testing and usability",
+        folderId: "f4"
+      }, {
+        id: "s16",
+        name: "Password Security",
+        description: "Password policies and security",
+        status: "completed",
+        testCases: 25,
+        coverage: 94,
         lastActivity: "2 days ago",
-        suites: [
-          {
-            id: "s17",
-            name: "Accessibility Tests",
-            description: "WCAG compliance and accessibility",
-            status: "completed",
-            testCases: 18,
-            coverage: 100,
-            lastActivity: "2 days ago",
-            folderId: "f5"
-          },
-          {
-            id: "s18",
-            name: "Responsive Design",
-            description: "Mobile and desktop compatibility",
-            status: "completed",
-            testCases: 14,
-            coverage: 89,
-            lastActivity: "3 days ago",
-            folderId: "f5"
-          }
-        ]
-      }
-    ];
+        folderId: "f4"
+      }]
+    }, {
+      id: "f5",
+      name: "User Experience",
+      description: "UI/UX testing and usability",
+      lastActivity: "2 days ago",
+      suites: [{
+        id: "s17",
+        name: "Accessibility Tests",
+        description: "WCAG compliance and accessibility",
+        status: "completed",
+        testCases: 18,
+        coverage: 100,
+        lastActivity: "2 days ago",
+        folderId: "f5"
+      }, {
+        id: "s18",
+        name: "Responsive Design",
+        description: "Mobile and desktop compatibility",
+        status: "completed",
+        testCases: 14,
+        coverage: 89,
+        lastActivity: "3 days ago",
+        folderId: "f5"
+      }]
+    }];
   }
 
   // Project C folders
   if (projectId === "p3") {
-    return [
-      {
-        id: "f6",
-        name: "API Testing",
-        description: "REST API and endpoint testing",
+    return [{
+      id: "f6",
+      name: "API Testing",
+      description: "REST API and endpoint testing",
+      lastActivity: "1 week ago",
+      suites: [{
+        id: "s19",
+        name: "Endpoint Validation",
+        description: "API endpoint functionality tests",
+        status: "draft",
+        testCases: 20,
+        coverage: 45,
         lastActivity: "1 week ago",
-        suites: [
-          {
-            id: "s19",
-            name: "Endpoint Validation",
-            description: "API endpoint functionality tests",
-            status: "draft",
-            testCases: 20,
-            coverage: 45,
-            lastActivity: "1 week ago",
-            folderId: "f6"
-          }
-        ]
-      },
-      {
-        id: "f7",
-        name: "Security",
-        description: "Security testing and vulnerability assessment",
+        folderId: "f6"
+      }]
+    }, {
+      id: "f7",
+      name: "Security",
+      description: "Security testing and vulnerability assessment",
+      lastActivity: "2 weeks ago",
+      suites: [{
+        id: "s20",
+        name: "Data Security",
+        description: "Data protection and encryption tests",
+        status: "draft",
+        testCases: 14,
+        coverage: 30,
         lastActivity: "2 weeks ago",
-        suites: [
-          {
-            id: "s20",
-            name: "Data Security",
-            description: "Data protection and encryption tests",
-            status: "draft",
-            testCases: 14,
-            coverage: 30,
-            lastActivity: "2 weeks ago",
-            folderId: "f7"
-          }
-        ]
-      }
-    ];
+        folderId: "f7"
+      }]
+    }];
   }
-  
-  // Default mock data for shared projects
-  return [
-    {
-      id: "f1",
-      name: "Core Features",
-      description: "Main functionality testing",
-      lastActivity: "1 hour ago",
-      suites: [
-        {
-          id: "s10",
-          name: "Feature Testing",
-          description: "Core feature validation",
-          status: "active",
-          testCases: 34,
-          coverage: 87,
-          lastActivity: "1 hour ago",
-          folderId: "f1"
-        }
-      ]
-    },
-    {
-      id: "f2",
-      name: "User Interface",
-      description: "Frontend and user experience testing",
-      lastActivity: "3 hours ago",
-      suites: [
-        {
-          id: "s11",
-          name: "UI Components",
-          description: "Component library testing",
-          status: "active",
-          testCases: 28,
-          coverage: 92,
-          lastActivity: "3 hours ago",
-          folderId: "f2"
-        }
-      ]
-    }
-  ];
-};
 
+  // Default mock data for shared projects
+  return [{
+    id: "f1",
+    name: "Core Features",
+    description: "Main functionality testing",
+    lastActivity: "1 hour ago",
+    suites: [{
+      id: "s10",
+      name: "Feature Testing",
+      description: "Core feature validation",
+      status: "active",
+      testCases: 34,
+      coverage: 87,
+      lastActivity: "1 hour ago",
+      folderId: "f1"
+    }]
+  }, {
+    id: "f2",
+    name: "User Interface",
+    description: "Frontend and user experience testing",
+    lastActivity: "3 hours ago",
+    suites: [{
+      id: "s11",
+      name: "UI Components",
+      description: "Component library testing",
+      status: "active",
+      testCases: 28,
+      coverage: 92,
+      lastActivity: "3 hours ago",
+      folderId: "f2"
+    }]
+  }];
+};
 export default function ProjectFolders() {
-  const { projectId } = useParams<{ projectId: string }>();
+  const {
+    projectId
+  } = useParams<{
+    projectId: string;
+  }>();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(["1", "f1"]));
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedFolder, setSelectedFolder] = useState<{ id?: string; name?: string }>({});
-
+  const [selectedFolder, setSelectedFolder] = useState<{
+    id?: string;
+    name?: string;
+  }>({});
   const project = mockProjects.find(p => p.id === projectId);
   const folders = getProjectFolders(projectId || "");
-
   const toggleFolder = (folderId: string) => {
     const newExpanded = new Set(expandedFolders);
     if (newExpanded.has(folderId)) {
@@ -354,34 +302,32 @@ export default function ProjectFolders() {
     }
     setExpandedFolders(newExpanded);
   };
-
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "active": return "bg-success text-success-foreground";
-      case "completed": return "bg-muted text-muted-foreground";
-      case "draft": return "bg-warning text-warning-foreground";
-      default: return "bg-muted text-muted-foreground";
+      case "active":
+        return "bg-success text-success-foreground";
+      case "completed":
+        return "bg-muted text-muted-foreground";
+      case "draft":
+        return "bg-warning text-warning-foreground";
+      default:
+        return "bg-muted text-muted-foreground";
     }
   };
-
   const handleCreateSuite = (suiteName: string, folderId?: string) => {
     const suiteId = `suite-${Date.now()}`;
     navigate(`/create-suite?name=${encodeURIComponent(suiteName)}&folder=${folderId || ''}&project=${projectId}`);
   };
-
   const openModalForFolder = (folderId?: string, folderName?: string) => {
-    setSelectedFolder({ id: folderId, name: folderName });
+    setSelectedFolder({
+      id: folderId,
+      name: folderName
+    });
     setIsModalOpen(true);
   };
-
-  const filteredFolders = folders.filter(folder =>
-    folder.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    folder.suites.some(suite => suite.name.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
-
+  const filteredFolders = folders.filter(folder => folder.name.toLowerCase().includes(searchQuery.toLowerCase()) || folder.suites.some(suite => suite.name.toLowerCase().includes(searchQuery.toLowerCase())));
   if (!project) {
-    return (
-      <div className="flex h-screen bg-workspace-bg">
+    return <div className="flex h-screen bg-workspace-bg">
         <Sidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -389,24 +335,16 @@ export default function ProjectFolders() {
             <Button onClick={() => navigate('/projects')}>Back to Projects</Button>
           </div>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="flex h-screen bg-workspace-bg">
+  return <div className="flex h-screen bg-workspace-bg">
       <Sidebar />
       
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <header className="p-6 bg-background border-b border-border/50">
           <div className="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => navigate('/projects')}
-              className="gap-2"
-            >
+            <Button variant="ghost" size="sm" onClick={() => navigate('/projects')} className="gap-2">
               <ArrowLeft className="h-4 w-4" />
               Back to Projects
             </Button>
@@ -425,7 +363,7 @@ export default function ProjectFolders() {
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
-              <p className="text-muted-foreground mt-1">{project.description}</p>
+              
             </div>
           </div>
         </header>
@@ -437,38 +375,24 @@ export default function ProjectFolders() {
             <div className="flex items-center justify-between gap-4 bg-background/50 p-4 rounded-lg border border-border/50">
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  placeholder="Search folders and suites..." 
-                  className="pl-10 bg-background border-border/50 focus:border-primary/50"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
+                <Input placeholder="Search folders and suites..." className="pl-10 bg-background border-border/50 focus:border-primary/50" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
               </div>
               
-              <Button 
-                onClick={() => openModalForFolder()}
-                className="gap-2 bg-gradient-to-r from-primary to-secondary hover:from-primary-hover hover:to-secondary-hover shadow-sm"
-              >
+              <Button onClick={() => openModalForFolder()} className="gap-2 bg-gradient-to-r from-primary to-secondary hover:from-primary-hover hover:to-secondary-hover shadow-sm">
                 <Plus className="h-4 w-4" />
                 New Test Suite
               </Button>
             </div>
-            {filteredFolders.length === 0 && (
-              <div className="text-center py-12">
+            {filteredFolders.length === 0 && <div className="text-center py-12">
                 <FolderOpen className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
                 <h3 className="text-lg font-medium text-muted-foreground mb-2">No folders found</h3>
                 <p className="text-muted-foreground">Try adjusting your search or create a new test suite</p>
-              </div>
-            )}
+              </div>}
 
-            {filteredFolders.map((folder) => (
-              <Card key={folder.id} className="border-border/50 shadow-sm">
+            {filteredFolders.map(folder => <Card key={folder.id} className="border-border/50 shadow-sm">
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
-                    <div 
-                      className="flex items-center gap-4 cursor-pointer flex-1"
-                      onClick={() => toggleFolder(folder.id)}
-                    >
+                    <div className="flex items-center gap-4 cursor-pointer flex-1" onClick={() => toggleFolder(folder.id)}>
                       <div className="flex items-center gap-3">
                         <FolderOpen className="h-5 w-5 text-primary" />
                         <div>
@@ -497,15 +421,9 @@ export default function ProjectFolders() {
                   </div>
                 </CardHeader>
 
-                {expandedFolders.has(folder.id) && (
-                  <CardContent className="pt-0">
+                {expandedFolders.has(folder.id) && <CardContent className="pt-0">
                     <div className="grid gap-3">
-                      {folder.suites.map((suite) => (
-                        <div
-                          key={suite.id}
-                          className="flex items-center justify-between p-4 rounded-lg border border-border/30 hover:bg-muted/30 cursor-pointer transition-colors"
-                          onClick={() => navigate(`/suite/${suite.id}`)}
-                        >
+                      {folder.suites.map(suite => <div key={suite.id} className="flex items-center justify-between p-4 rounded-lg border border-border/30 hover:bg-muted/30 cursor-pointer transition-colors" onClick={() => navigate(`/suite/${suite.id}`)}>
                           <div className="flex items-center gap-4">
                             <TestTube className="h-4 w-4 text-secondary" />
                             <div>
@@ -524,33 +442,19 @@ export default function ProjectFolders() {
                               {suite.status}
                             </Badge>
                           </div>
-                        </div>
-                      ))}
+                        </div>)}
                       
-                      <Button 
-                        variant="outline" 
-                        className="mt-2 gap-2 border-dashed"
-                        onClick={() => openModalForFolder(folder.id, folder.name)}
-                      >
+                      <Button variant="outline" className="mt-2 gap-2 border-dashed" onClick={() => openModalForFolder(folder.id, folder.name)}>
                         <Plus className="h-4 w-4" />
                         Add New Suite to {folder.name}
                       </Button>
                     </div>
-                  </CardContent>
-                )}
-              </Card>
-            ))}
+                  </CardContent>}
+              </Card>)}
           </div>
         </main>
       </div>
 
-      <CreateSuiteModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onCreateSuite={handleCreateSuite}
-        selectedFolderId={selectedFolder.id}
-        selectedFolderName={selectedFolder.name}
-      />
-    </div>
-  );
+      <CreateSuiteModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreateSuite={handleCreateSuite} selectedFolderId={selectedFolder.id} selectedFolderName={selectedFolder.name} />
+    </div>;
 }
