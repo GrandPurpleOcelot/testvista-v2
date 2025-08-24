@@ -3,8 +3,9 @@ import { ChatPanel } from "@/components/suite/chat-panel";
 import { ArtifactsPanel } from "@/components/suite/artifacts-panel";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Play, Pause, RotateCcw } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 interface Message {
   id: string;
@@ -985,6 +986,35 @@ export default function SuiteWorkspace() {
     });
   };
 
+  const { id } = useParams();
+  
+  // Mock data for breadcrumb navigation based on suite ID
+  const getSuiteInfo = (suiteId: string) => {
+    const suiteMap: Record<string, { projectName: string; projectId: string; folderName: string; suiteName: string }> = {
+      "s1": {
+        projectName: "My Space",
+        projectId: "my-space",
+        folderName: "Personal Projects", 
+        suiteName: "E-commerce Platform Testing"
+      },
+      "s2": {
+        projectName: "Project A",
+        projectId: "p1",
+        folderName: "Core Features",
+        suiteName: "User Authentication Suite"
+      },
+      "s3": {
+        projectName: "Project D", 
+        projectId: "sp1",
+        folderName: "Core System",
+        suiteName: "Payment Processing Tests"
+      }
+    };
+    return suiteMap[suiteId || "s1"] || suiteMap["s1"];
+  };
+
+  const suiteInfo = getSuiteInfo(id || "s1");
+
   return (
     <div className="h-screen flex flex-col bg-workspace-bg">
       {/* Header */}
@@ -999,8 +1029,40 @@ export default function SuiteWorkspace() {
             <ArrowLeft className="h-4 w-4" />
             Back to Dashboard
           </Button>
-          <div>
-            <h1 className="font-semibold text-lg">E-commerce Platform Testing</h1>
+          <div className="flex flex-col gap-2">
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink 
+                    onClick={() => navigate("/projects")}
+                    className="cursor-pointer"
+                  >
+                    Projects
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink 
+                    onClick={() => navigate(`/project/${suiteInfo.projectId}/folders`)}
+                    className="cursor-pointer"
+                  >
+                    {suiteInfo.projectName}
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink className="text-muted-foreground">
+                    {suiteInfo.folderName}
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage className="font-medium">
+                    {suiteInfo.suiteName}
+                  </BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
             <p className="text-sm text-muted-foreground">Suite Workspace</p>
           </div>
         </div>
