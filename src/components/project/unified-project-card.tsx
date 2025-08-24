@@ -6,8 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { TestTube, Target, Clock, MoreHorizontal, Crown, Shield, Eye, Users, Lock, Share2, Copy, Star, StarOff, Archive, Trash2 } from "lucide-react";
+import { TestTube, Target, Clock, MoreHorizontal, Crown, Shield, Eye, Users, Lock, Share2, Copy, Star, StarOff, Archive, Trash2, FolderOpen, ChevronDown, ChevronRight } from "lucide-react";
 import { Project } from "@/types/project";
+import { FolderPreviewItem } from "./folder-preview-item";
 import { cn } from "@/lib/utils";
 interface UnifiedProjectCardProps {
   project: Project;
@@ -26,6 +27,13 @@ export function UnifiedProjectCard({
   onDeleteProject
 }: UnifiedProjectCardProps) {
   const navigate = useNavigate();
+  const [showAllFolders, setShowAllFolders] = useState(false);
+  
+  const displayedFolders = project.folders 
+    ? showAllFolders 
+      ? project.folders 
+      : project.folders.slice(0, 2)
+    : [];
   const getRoleIcon = (role?: string) => {
     switch (role) {
       case "owner":
@@ -164,6 +172,67 @@ export function UnifiedProjectCard({
           </div>
           <Progress value={project.coverage} className="h-2" />
         </div>
+
+        {/* Folder Preview */}
+        {project.folders && project.folders.length > 0 && (
+          <div className="space-y-3 pt-2 border-t border-border/50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FolderOpen className="h-4 w-4 text-primary" />
+                <h4 className="text-sm font-medium text-card-foreground">Folders</h4>
+                <Badge variant="secondary" className="text-xs">
+                  {project.folders.length}
+                </Badge>
+              </div>
+              {project.folders.length > 2 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowAllFolders(!showAllFolders);
+                  }}
+                  className="h-6 px-2 text-xs"
+                >
+                  {showAllFolders ? (
+                    <>
+                      <ChevronDown className="h-3 w-3 mr-1" />
+                      Show Less
+                    </>
+                  ) : (
+                    <>
+                      <ChevronRight className="h-3 w-3 mr-1" />
+                      Show All
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+            
+            <div className="space-y-1">
+              {displayedFolders.map((folder) => (
+                <FolderPreviewItem
+                  key={folder.id}
+                  folder={folder}
+                  projectId={project.id}
+                  onClick={() => navigate(`/project/${project.id}/folders`)}
+                />
+              ))}
+            </div>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full h-8 text-xs"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/project/${project.id}/folders`);
+              }}
+            >
+              View All Folders
+            </Button>
+          </div>
+        )}
 
         {/* Team and Role Info */}
         <div className="flex items-center justify-between">

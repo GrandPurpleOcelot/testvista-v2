@@ -19,7 +19,30 @@ export const mockProjects: Project[] = [
     owner: {
       name: "You",
       initials: "YU"
-    }
+    },
+    folders: [
+      {
+        id: "1",
+        name: "Personal Projects",
+        description: "Individual testing projects and experiments",
+        suites: 2,
+        lastActivity: "2 hours ago"
+      },
+      {
+        id: "2",
+        name: "Learning & Practice",
+        description: "Educational testing projects",
+        suites: 1,
+        lastActivity: "1 day ago"
+      },
+      {
+        id: "3",
+        name: "Security Testing",
+        description: "Security-focused test cases",
+        suites: 1,
+        lastActivity: "3 days ago"
+      }
+    ]
   },
   // Other private projects
   {
@@ -35,7 +58,30 @@ export const mockProjects: Project[] = [
     lastActivity: "2 hours ago",
     memberCount: 1,
     isFavorite: true,
-    tags: ["core", "features"]
+    tags: ["core", "features"],
+    folders: [
+      {
+        id: "f1",
+        name: "Core Features",
+        description: "Main functionality testing",
+        suites: 3,
+        lastActivity: "2 hours ago"
+      },
+      {
+        id: "f2",
+        name: "User Interface",
+        description: "Frontend component tests",
+        suites: 3,
+        lastActivity: "1 day ago"
+      },
+      {
+        id: "f3",
+        name: "Integration",
+        description: "Service integration tests",
+        suites: 2,
+        lastActivity: "3 days ago"
+      }
+    ]
   },
   {
     id: "p2",
@@ -49,7 +95,23 @@ export const mockProjects: Project[] = [
     coverage: 95,
     lastActivity: "1 day ago",
     memberCount: 1,
-    tags: ["ui", "auth"]
+    tags: ["ui", "auth"],
+    folders: [
+      {
+        id: "f4",
+        name: "Authentication",
+        description: "Login and security features",
+        suites: 3,
+        lastActivity: "1 day ago"
+      },
+      {
+        id: "f5",
+        name: "User Experience",
+        description: "UI/UX testing and usability",
+        suites: 2,
+        lastActivity: "2 days ago"
+      }
+    ]
   },
   {
     id: "p3",
@@ -63,7 +125,23 @@ export const mockProjects: Project[] = [
     coverage: 45,
     lastActivity: "1 week ago",
     memberCount: 1,
-    tags: ["api", "security"]
+    tags: ["api", "security"],
+    folders: [
+      {
+        id: "f6",
+        name: "API Testing",
+        description: "REST API and endpoint testing",
+        suites: 2,
+        lastActivity: "1 week ago"
+      },
+      {
+        id: "f7",
+        name: "Security",
+        description: "Security testing and vulnerability assessment",
+        suites: 1,
+        lastActivity: "2 weeks ago"
+      }
+    ]
   },
   
   // Shared projects
@@ -89,7 +167,37 @@ export const mockProjects: Project[] = [
       { name: "Mike Johnson", initials: "MJ", role: "viewer" },
       { name: "Lisa Wang", initials: "LW", role: "collaborator" }
     ],
-    tags: ["collaborative", "enterprise"]
+    tags: ["collaborative", "enterprise"],
+    folders: [
+      {
+        id: "fd1",
+        name: "Core System",
+        description: "Main application testing",
+        suites: 6,
+        lastActivity: "1 hour ago"
+      },
+      {
+        id: "fd2",
+        name: "User Management",
+        description: "User accounts and profiles",
+        suites: 4,
+        lastActivity: "2 hours ago"
+      },
+      {
+        id: "fd3",
+        name: "Enterprise Features",
+        description: "Advanced enterprise functionality",
+        suites: 5,
+        lastActivity: "4 hours ago"
+      },
+      {
+        id: "fd4",
+        name: "Performance",
+        description: "Load and stress testing",
+        suites: 3,
+        lastActivity: "1 day ago"
+      }
+    ]
   },
   {
     id: "sp2",
@@ -111,7 +219,30 @@ export const mockProjects: Project[] = [
       { name: "Emma Davis", initials: "ED", role: "admin" },
       { name: "Tom Wilson", initials: "TW", role: "collaborator" }
     ],
-    tags: ["mobile", "cross-platform"]
+    tags: ["mobile", "cross-platform"],
+    folders: [
+      {
+        id: "fe1",
+        name: "iOS Testing",
+        description: "iOS specific functionality",
+        suites: 4,
+        lastActivity: "3 hours ago"
+      },
+      {
+        id: "fe2",
+        name: "Android Testing",
+        description: "Android platform tests",
+        suites: 5,
+        lastActivity: "4 hours ago"
+      },
+      {
+        id: "fe3",
+        name: "Cross-Platform",
+        description: "Shared functionality tests",
+        suites: 3,
+        lastActivity: "1 day ago"
+      }
+    ]
   },
   {
     id: "sp3",
@@ -133,7 +264,30 @@ export const mockProjects: Project[] = [
       { name: "Anna Lee", initials: "AL", role: "admin" },
       { name: "Chris Brown", initials: "CB", role: "collaborator" }
     ],
-    tags: ["backend", "database"]
+    tags: ["backend", "database"],
+    folders: [
+      {
+        id: "ff1",
+        name: "Database Testing",
+        description: "Database operations and integrity tests",
+        suites: 12,
+        lastActivity: "2 days ago"
+      },
+      {
+        id: "ff2",
+        name: "API Services",
+        description: "Backend API endpoint testing",
+        suites: 8,
+        lastActivity: "3 days ago"
+      },
+      {
+        id: "ff3",
+        name: "Performance",
+        description: "Load and performance testing",
+        suites: 5,
+        lastActivity: "1 week ago"
+      }
+    ]
   },
   {
     id: "sp4",
@@ -157,7 +311,30 @@ export const mockProjects: Project[] = [
       { name: "James Wilson", initials: "JW", role: "collaborator" },
       { name: "Sophie Chen", initials: "SC", role: "viewer" }
     ],
-    tags: ["components", "design-system"]
+    tags: ["components", "design-system"],
+    folders: [
+      {
+        id: "fg1",
+        name: "UI Components",
+        description: "Component library testing",
+        suites: 8,
+        lastActivity: "5 hours ago"
+      },
+      {
+        id: "fg2",
+        name: "Design Tokens",
+        description: "Design system consistency tests",
+        suites: 4,
+        lastActivity: "1 day ago"
+      },
+      {
+        id: "fg3",
+        name: "Accessibility",
+        description: "WCAG compliance testing",
+        suites: 3,
+        lastActivity: "2 days ago"
+      }
+    ]
   }
 ];
 

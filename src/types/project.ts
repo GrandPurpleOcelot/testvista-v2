@@ -29,6 +29,13 @@ export interface Project {
     action: string;
     timestamp: string;
   }>;
+  folders?: Array<{
+    id: string;
+    name: string;
+    description: string;
+    suites: number;
+    lastActivity: string;
+  }>;
 }
 
 export interface ProjectFolder {
