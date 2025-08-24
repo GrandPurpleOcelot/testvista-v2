@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Link, Users, TestTube, FileText, Target, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Link, Users, CheckSquare, FileText, Target, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface RelationshipIndicatorProps {
@@ -84,7 +84,7 @@ export function RelationshipIndicator({
               )}
               {(linkedTestCases.length > 0 || reqIds.length > 0) && (
                 <div className="flex items-center gap-2 text-xs">
-                  <TestTube className="h-3 w-3" />
+                  <CheckSquare className="h-3 w-3" />
                   <span>Test Cases: {[...linkedTestCases, ...reqIds].join(", ")}</span>
                 </div>
               )}
@@ -114,7 +114,7 @@ export function RelationshipIndicator({
           )}
           {(linkedTestCases.length > 0 || reqIds.length > 0) && (
             <Badge variant="outline" className="h-5 px-1 text-xs">
-              <TestTube className="h-2 w-2 mr-1" />
+              <CheckSquare className="h-2 w-2 mr-1" />
               {linkedTestCases.length + reqIds.length}
             </Badge>
           )}

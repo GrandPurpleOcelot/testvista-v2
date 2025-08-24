@@ -12,7 +12,7 @@ import {
   ChevronDown,
   ChevronRight,
   FolderOpen,
-  TestTube,
+  CheckSquare,
   Users,
   Calendar,
   Target
@@ -223,7 +223,7 @@ export function MySpaceContent() {
                       onClick={() => navigate(`/suite/${suite.id}`)}
                     >
                       <div className="flex items-center gap-3">
-                        <TestTube className="h-4 w-4 text-muted-foreground" />
+                        <CheckSquare className="h-4 w-4 text-muted-foreground" />
                         <div>
                           <h4 className="font-medium text-card-foreground">{suite.name}</h4>
                           <p className="text-sm text-muted-foreground">{suite.description}</p>
@@ -250,7 +250,7 @@ export function MySpaceContent() {
                   
                   {folder.suites.length === 0 && (
                     <div className="text-center py-8 text-muted-foreground">
-                      <TestTube className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <CheckSquare className="h-8 w-8 mx-auto mb-2 opacity-50" />
                       <p>No test suites in this folder yet.</p>
                       <Button
                         variant="outline"

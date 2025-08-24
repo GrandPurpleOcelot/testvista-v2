@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
   FolderOpen, 
-  TestTube, 
+  CheckSquare, 
   Target, 
   TrendingUp, 
   Clock,
@@ -91,7 +91,7 @@ export default function Dashboard() {
               title="Test Suites"
               value="156"
               description="38 suites running"
-              icon={TestTube}
+              icon={CheckSquare}
               trend={{ value: 8, label: "this week" }}
             />
             <StatsCard
@@ -168,7 +168,7 @@ export default function Dashboard() {
                     Create New Folder
                   </Button>
                   <Button variant="outline" className="w-full justify-start gap-2">
-                    <TestTube className="h-4 w-4" />
+                    <CheckSquare className="h-4 w-4" />
                     Start Test Suite
                   </Button>
                   <Button variant="outline" className="w-full justify-start gap-2">

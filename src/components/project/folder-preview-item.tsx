@@ -1,4 +1,4 @@
-import { FolderOpen, TestTube, Calendar } from "lucide-react";
+import { FolderOpen, CheckSquare, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -36,7 +36,7 @@ export function FolderPreviewItem({ folder, projectId, onClick, className }: Fol
           </p>
           <div className="flex items-center gap-4 mt-1">
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <TestTube className="h-3 w-3" />
+              <CheckSquare className="h-3 w-3" />
               <span>{folder.suites} suites</span>
             </div>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">

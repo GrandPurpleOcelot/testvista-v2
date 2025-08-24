@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Sidebar } from "@/components/layout/sidebar";
 import { 
   Search, 
-  TestTube, 
+  CheckSquare, 
   Plus, 
   Calendar,
   User,
@@ -307,7 +307,7 @@ export default function TestSuites() {
 
           {filteredAndSortedSuites.length === 0 && (
             <div className="text-center py-12">
-              <TestTube className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <CheckSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">No test suites found</h3>
               <p className="text-muted-foreground mb-4">
                 {searchTerm 

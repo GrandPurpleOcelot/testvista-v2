@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { TestTube, Target, Clock, MoreHorizontal, Crown, Shield, Eye, Users, Lock, Share2, Copy, Star, StarOff, Archive, Trash2, FolderOpen, ChevronDown, ChevronRight } from "lucide-react";
+import { CheckSquare, Target, Clock, MoreHorizontal, Crown, Shield, Eye, Users, Lock, Share2, Copy, Star, StarOff, Archive, Trash2, FolderOpen, ChevronDown, ChevronRight } from "lucide-react";
 import { Project } from "@/types/project";
 import { FolderPreviewItem } from "./folder-preview-item";
 import { cn } from "@/lib/utils";
@@ -146,7 +146,7 @@ export function UnifiedProjectCard({
           <div className="grid grid-cols-3 gap-4 text-center mb-4">
             <div>
               <div className="flex items-center justify-center gap-1 text-sm font-medium">
-                <TestTube className="h-3 w-3" />
+                <CheckSquare className="h-3 w-3" />
                 {project.testSuites}
               </div>
               <p className="text-xs text-muted-foreground">Suites</p>

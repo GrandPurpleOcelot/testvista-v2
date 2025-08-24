@@ -4,7 +4,7 @@ import { Logo } from "@/components/ui/logo";
 import { 
   LayoutDashboard, 
   FolderOpen, 
-  TestTube, 
+  CheckSquare, 
   Settings, 
   Users, 
   BookOpen,
@@ -21,7 +21,7 @@ interface SidebarProps {
 
 const navigation = [
   { name: "All Projects", href: "/projects", icon: Users },
-  { name: "Test Suites", href: "/suites", icon: TestTube },
+  { name: "Test Suites", href: "/suites", icon: CheckSquare },
   { name: "Reference Files", href: "/reference-files", icon: FileText },
   { name: "Prompt Templates", href: "/standards", icon: BookOpen },
 ];

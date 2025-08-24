@@ -16,7 +16,7 @@ import {
 import { 
   FileText, 
   Target, 
-  TestTube, 
+  CheckSquare, 
   BarChart3, 
   Edit2, 
   Check, 
@@ -296,7 +296,7 @@ export function ArtifactsPanel({
               Viewpoints ({viewpoints.length})
             </TabsTrigger>
             <TabsTrigger value="testcases" className="gap-2">
-              <TestTube className="h-4 w-4" />
+              <CheckSquare className="h-4 w-4" />
               Test Cases ({testCases.length})
             </TabsTrigger>
             <TabsTrigger value="coverage" className="gap-2">

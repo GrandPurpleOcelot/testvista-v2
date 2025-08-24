@@ -7,7 +7,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { CreateSuiteModal } from "@/components/ui/create-suite-modal";
 import { 
   FolderOpen, 
-  TestTube, 
+  CheckSquare, 
   Plus, 
   Search,
   MoreHorizontal,
@@ -211,7 +211,7 @@ export default function MySpace() {
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-6 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
-                          <TestTube className="h-4 w-4" />
+                          <CheckSquare className="h-4 w-4" />
                           <span>{folder.suites.length} suites</span>
                         </div>
                         <div className="flex items-center gap-1">
@@ -237,7 +237,7 @@ export default function MySpace() {
                           onClick={() => navigate(`/suite/${suite.id}`)}
                         >
                           <div className="flex items-center gap-4">
-                            <TestTube className="h-4 w-4 text-secondary" />
+                            <CheckSquare className="h-4 w-4 text-secondary" />
                             <div>
                               <h4 className="font-medium text-card-foreground">{suite.name}</h4>
                               <p className="text-sm text-muted-foreground">{suite.description}</p>

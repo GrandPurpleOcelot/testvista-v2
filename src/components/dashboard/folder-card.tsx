@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, TestTube, Users, Calendar, TrendingUp } from "lucide-react";
+import { MoreHorizontal, CheckSquare, Users, Calendar, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
@@ -65,7 +65,7 @@ export function FolderCard({ folder, className }: FolderCardProps) {
       <CardContent className="pt-0">
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div className="flex items-center gap-2 text-sm">
-            <TestTube className="h-4 w-4 text-primary" />
+            <CheckSquare className="h-4 w-4 text-primary" />
             <span className="text-muted-foreground">Suites:</span>
             <span className="font-medium">{folder.suites}</span>
           </div>

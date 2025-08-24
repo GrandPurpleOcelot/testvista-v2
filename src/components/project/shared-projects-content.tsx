@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Search,
   Users,
-  TestTube,
+  CheckSquare,
   Target,
   Clock,
   UserPlus,
@@ -208,7 +208,7 @@ export function SharedProjectsContent() {
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
                   <div className="flex items-center justify-center gap-1 text-sm font-medium">
-                    <TestTube className="h-3 w-3" />
+                    <CheckSquare className="h-3 w-3" />
                     {project.testSuites}
                   </div>
                   <p className="text-xs text-muted-foreground">Suites</p>

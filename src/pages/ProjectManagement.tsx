@@ -7,7 +7,7 @@ import { ProjectFilters } from "@/components/project/project-filters";
 import { UnifiedProjectCard } from "@/components/project/unified-project-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FolderOpen, TestTube, Users, Target, TrendingUp, Clock, Zap, Calendar, Star, Shield, Eye, UserCheck, Crown, ArrowRight } from "lucide-react";
+import { FolderOpen, CheckSquare, Users, Target, TrendingUp, Clock, Zap, Calendar, Star, Shield, Eye, UserCheck, Crown, ArrowRight } from "lucide-react";
 import { ProjectFilter, ProjectSort, Project } from "@/types/project";
 import { mockProjects, recentActivity, projectRecommendations } from "@/data/mockProjects";
 import { toast } from "@/hooks/use-toast";
@@ -257,7 +257,7 @@ export default function ProjectManagement() {
                   </p>
                   {!searchQuery && activeFilter === "all" && <div className="space-y-3">
                       <Button onClick={handleCreateProject} className="gap-2">
-                        <TestTube className="h-4 w-4" />
+                        <CheckSquare className="h-4 w-4" />
                         Create Your First Project
                       </Button>
                       <p className="text-xs text-muted-foreground">
