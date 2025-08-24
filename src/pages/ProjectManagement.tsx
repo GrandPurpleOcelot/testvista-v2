@@ -202,7 +202,7 @@ export default function ProjectManagement() {
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 gap-6">
                     {mySharedProjects.map(project => {
                   const RoleIcon = getRoleIcon(project.role);
                   return <div key={project.id} className="relative">
@@ -232,7 +232,7 @@ export default function ProjectManagement() {
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 gap-6">
                     {otherAccessibleProjects.map(project => <div key={project.id} className="relative opacity-80">
                         <UnifiedProjectCard project={project} onToggleFavorite={handleToggleFavorite} onShareProject={handleShareProject} onCloneProject={handleCloneProject} onArchiveProject={handleArchiveProject} onDeleteProject={handleDeleteProject} />
                         <Badge variant="outline" className={`absolute top-3 right-3 gap-1 ${getRoleBadgeColor(project.role)}`}>
