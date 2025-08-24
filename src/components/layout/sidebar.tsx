@@ -37,7 +37,17 @@ const navigation: NavigationItem[] = [
     icon: Users,
     children: [
       { name: "My Space", href: "/project/my-space/folders", icon: User },
-      { name: "Shared Projects", href: "/shared-projects", icon: Share2 },
+      { 
+        name: "Shared Projects", 
+        href: "/shared-projects", 
+        icon: Share2,
+        children: [
+          { name: "Project A", href: "/project/shared/project-a", icon: FolderOpen },
+          { name: "Project B", href: "/project/shared/project-b", icon: FolderOpen },
+          { name: "Project C", href: "/project/shared/project-c", icon: FolderOpen },
+          { name: "Project D", href: "/project/shared/project-d", icon: FolderOpen },
+        ]
+      },
     ]
   },
   { name: "Test Suites", href: "/suites", icon: CheckSquare },
