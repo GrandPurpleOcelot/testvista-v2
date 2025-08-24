@@ -27,11 +27,12 @@ import {
   Unlock,
   Link2,
   AlertTriangle,
-  Maximize2
+  Maximize2,
+  ArrowLeft
 } from "lucide-react";
 import { RelationshipIndicator } from "@/components/ui/relationship-indicator";
 import { TraceabilityMatrix } from "@/components/ui/traceability-matrix";
-import { FullScreenModal, FullScreenModalContent, FullScreenModalTrigger } from "@/components/ui/full-screen-modal";
+import { FullScreenModal, FullScreenModalContent, FullScreenModalTrigger, FullScreenModalClose } from "@/components/ui/full-screen-modal";
 import { cn } from "@/lib/utils";
 
 interface Requirement {
@@ -258,6 +259,14 @@ export function ArtifactsPanel({
                 <Download className="h-4 w-4" />
                 Export
               </Button>
+              {isFullScreen && (
+                <FullScreenModalClose asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <ArrowLeft className="h-4 w-4" />
+                    Back
+                  </Button>
+                </FullScreenModalClose>
+              )}
               {!isFullScreen && (
                 <FullScreenModal>
                   <FullScreenModalTrigger asChild>
