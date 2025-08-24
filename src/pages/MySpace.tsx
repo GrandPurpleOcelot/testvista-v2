@@ -153,36 +153,36 @@ export default function MySpace() {
       
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="flex items-center justify-between p-6 bg-background border-b border-border/50">
+        <header className="p-6 bg-background border-b border-border/50">
           <div>
             <h1 className="text-2xl font-bold text-foreground">My Space</h1>
             <p className="text-muted-foreground">Your private folders and test suites</p>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search folders and suites..." 
-                className="pl-10 w-80 bg-workspace-bg border-border/50 focus:border-primary/50"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            
-            <Button 
-              onClick={() => openModalForFolder()}
-              className="gap-2 bg-gradient-to-r from-primary to-secondary hover:from-primary-hover hover:to-secondary-hover shadow-sm"
-            >
-              <Plus className="h-4 w-4" />
-              New Test Suite
-            </Button>
           </div>
         </header>
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-6xl mx-auto space-y-6">
+            {/* Search and Actions Bar */}
+            <div className="flex items-center justify-between gap-4 bg-background/50 p-4 rounded-lg border border-border/50">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  placeholder="Search folders and suites..." 
+                  className="pl-10 bg-background border-border/50 focus:border-primary/50"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              
+              <Button 
+                onClick={() => openModalForFolder()}
+                className="gap-2 bg-gradient-to-r from-primary to-secondary hover:from-primary-hover hover:to-secondary-hover shadow-sm"
+              >
+                <Plus className="h-4 w-4" />
+                New Test Suite
+              </Button>
+            </div>
             {filteredFolders.length === 0 && (
               <div className="text-center py-12">
                 <FolderOpen className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
