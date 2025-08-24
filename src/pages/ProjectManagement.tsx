@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Sidebar } from "@/components/layout/sidebar";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { StatsCard } from "@/components/dashboard/stats-card";
+
 import { ProjectFilters } from "@/components/project/project-filters";
 import { UnifiedProjectCard } from "@/components/project/unified-project-card";
 import { Button } from "@/components/ui/button";
@@ -91,46 +91,6 @@ export default function ProjectManagement() {
     return filtered;
   }, [searchQuery, activeFilter, sortBy]);
 
-  // Calculate stats
-  const stats = useMemo(() => {
-    const myProjects = mockProjects.filter(p => p.type === "private");
-    const sharedProjects = mockProjects.filter(p => p.type === "shared");
-    const totalTestCases = mockProjects.reduce((sum, p) => sum + p.testCases, 0);
-    const avgCoverage = Math.round(
-      mockProjects.reduce((sum, p) => sum + p.coverage, 0) / mockProjects.length
-    );
-
-    return [
-      {
-        title: "My Projects",
-        value: myProjects.length.toString(),
-        description: "Private projects",
-        icon: FolderOpen,
-        trend: { value: 12, label: "vs last month", isUpward: true }
-      },
-      {
-        title: "Shared Projects", 
-        value: sharedProjects.length.toString(),
-        description: "Collaborative projects",
-        icon: Users,
-        trend: { value: 8, label: "vs last month", isUpward: true }
-      },
-      {
-        title: "Total Test Cases",
-        value: totalTestCases.toLocaleString(),
-        description: "Across all projects", 
-        icon: TestTube,
-        trend: { value: 23, label: "vs last month", isUpward: true }
-      },
-      {
-        title: "Avg Coverage",
-        value: `${avgCoverage}%`,
-        description: "Test coverage rate",
-        icon: Target,
-        trend: { value: 5, label: "vs last month", isUpward: true }
-      }
-    ];
-  }, []);
 
   // Project actions
   const handleToggleFavorite = (projectId: string) => {
@@ -223,12 +183,6 @@ export default function ProjectManagement() {
               </p>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {stats.map((stat, index) => (
-                <StatsCard key={index} {...stat} />
-              ))}
-            </div>
 
             {/* Recent Activity */}
             {activeFilter === "recent" && !searchQuery && (
