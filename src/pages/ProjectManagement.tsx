@@ -185,14 +185,20 @@ export default function ProjectManagement() {
             {mySharedProjects.length > 0 && <Card className="border-border/50">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Users className="h-5 w-5 text-primary" />
-                    My Projects
+                    {activeFilter === "all" && <><FolderOpen className="h-5 w-5 text-primary" />All Projects</>}
+                    {activeFilter === "my-projects" && <><FolderOpen className="h-5 w-5 text-primary" />My Space</>}
+                    {activeFilter === "shared-projects" && <><Users className="h-5 w-5 text-primary" />Shared Projects</>}
                     <Badge variant="secondary" className="ml-2">
                       {mySharedProjects.length}
                     </Badge>
                   </CardTitle>
                   <p className="text-sm text-muted-foreground">
-                    Your workspace and projects where you have ownership or collaboration access
+                    {activeFilter === "my-projects" 
+                      ? "Your personal workspace and private projects"
+                      : activeFilter === "shared-projects"
+                      ? "Projects shared with your team where you have access"
+                      : "Your workspace and projects where you have ownership or collaboration access"
+                    }
                   </p>
                 </CardHeader>
                 <CardContent>
