@@ -41,10 +41,12 @@ export function Logo({ className, size = "md" }: LogoProps) {
           TestVista
         </span>
         <span className={cn(
-          "text-muted-foreground font-medium",
-          versionSize[size]
+          "text-foreground font-medium inline-flex items-center justify-center px-2 py-1 rounded-full text-xs",
+          "bg-[#F9F9FB] border border-border/30",
+          size === "sm" && "text-[10px] px-1.5 py-0.5",
+          size === "lg" && "text-sm px-3 py-1.5"
         )}>
-          Ver 1.3.0
+          2.0.0
         </span>
       </div>
     </div>
