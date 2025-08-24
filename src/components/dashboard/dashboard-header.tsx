@@ -13,9 +13,9 @@ export function DashboardHeader() {
       </div>
 
       <div className="flex items-center gap-4">
-        <Button variant="outline" size="sm" className="h-9 w-9 p-0 relative">
-          <Bell className="h-4 w-4" />
-          <span className="absolute -top-1 -right-1 h-2 w-2 bg-primary rounded-full"></span>
+        <Button className="gap-2 bg-gradient-to-r from-primary to-secondary hover:from-primary-hover hover:to-secondary-hover shadow-sm">
+          <Plus className="h-4 w-4" />
+          New Folder
         </Button>
 
         <Button className="gap-2 bg-gradient-to-r from-primary to-secondary hover:from-primary-hover hover:to-secondary-hover shadow-sm">
