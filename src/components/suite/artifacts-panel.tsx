@@ -164,7 +164,8 @@ export function ArtifactsPanel({
     type, 
     id, 
     field, 
-    multiline = false 
+    multiline = false,
+    placeholder = ""
   }: {
     value: string;
     cellId: string;
@@ -172,6 +173,7 @@ export function ArtifactsPanel({
     id: string;
     field: string;
     multiline?: boolean;
+    placeholder?: string;
   }) => {
     const isEditing = editingCell === cellId;
 
@@ -182,6 +184,7 @@ export function ArtifactsPanel({
             <Textarea
               value={editValue}
               onChange={(e) => setEditValue(e.target.value)}
+              placeholder={placeholder}
               className="min-h-[60px] text-xs"
               autoFocus
             />
@@ -189,6 +192,7 @@ export function ArtifactsPanel({
             <Input
               value={editValue}
               onChange={(e) => setEditValue(e.target.value)}
+              placeholder={placeholder}
               className="text-xs"
               autoFocus
             />
@@ -220,7 +224,7 @@ export function ArtifactsPanel({
         className="group cursor-pointer min-h-[24px] flex items-center gap-2"
         onClick={() => startEdit(cellId, value)}
       >
-        <span className="flex-1 text-xs">{value}</span>
+        <span className="flex-1 text-xs">{value || (placeholder ? `${placeholder}` : "")}</span>
         <Edit2 className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
     );
@@ -328,9 +332,17 @@ export function ArtifactsPanel({
                     <TableHeader className="sticky top-0 bg-muted/50 z-10">
                       <TableRow>
                         <TableHead className={isFullScreen ? "w-24" : "w-20"}>Req ID</TableHead>
-                        <TableHead className={isFullScreen ? "min-w-[400px]" : ""}>Description</TableHead>
+                        <TableHead className={isFullScreen ? "min-w-[300px]" : ""}>Description</TableHead>
                         <TableHead className={isFullScreen ? "w-48" : "w-32"}>Relationships</TableHead>
-                        {isFullScreen && <TableHead className="w-40">Last Modified</TableHead>}
+                        {isFullScreen && (
+                          <>
+                            <TableHead className="w-48">Source Document</TableHead>
+                            <TableHead className="w-32">Source Section</TableHead>
+                            <TableHead className="min-w-[400px]">Extracted Content</TableHead>
+                            <TableHead className="w-40">Last Modified</TableHead>
+                          </>
+                        )}
+                        {!isFullScreen && <TableHead className="w-32">Source Info</TableHead>}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -346,7 +358,7 @@ export function ArtifactsPanel({
                           onClick={() => onSelectArtifact({ type: "requirement", id: req.id })}
                         >
                           <TableCell className="font-mono text-xs">{req.id}</TableCell>
-                          <TableCell className={isFullScreen ? "max-w-[400px]" : ""}>
+                          <TableCell className={isFullScreen ? "max-w-[300px]" : ""}>
                             <EditableCell
                               value={req.description}
                               cellId={`req-${req.id}-desc`}
@@ -366,8 +378,57 @@ export function ArtifactsPanel({
                             />
                           </TableCell>
                           {isFullScreen && (
-                            <TableCell className="text-xs text-muted-foreground">
-                              {req.lastModified.toLocaleDateString()}
+                            <>
+                              <TableCell>
+                                <EditableCell
+                                  value={req.sourceDocument || ""}
+                                  cellId={`req-${req.id}-sourceDoc`}
+                                  type="requirement"
+                                  id={req.id}
+                                  field="sourceDocument"
+                                  placeholder="Source document name..."
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <EditableCell
+                                  value={req.sourceSection || ""}
+                                  cellId={`req-${req.id}-sourceSection`}
+                                  type="requirement"
+                                  id={req.id}
+                                  field="sourceSection"
+                                  placeholder="Section reference..."
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <EditableCell
+                                  value={req.extractedContent || ""}
+                                  cellId={`req-${req.id}-extractedContent`}
+                                  type="requirement"
+                                  id={req.id}
+                                  field="extractedContent"
+                                  placeholder="Original extracted content..."
+                                  multiline
+                                />
+                              </TableCell>
+                              <TableCell className="text-xs text-muted-foreground">
+                                {req.lastModified.toLocaleDateString()}
+                              </TableCell>
+                            </>
+                          )}
+                          {!isFullScreen && (
+                            <TableCell className="text-xs">
+                              <div className="space-y-1 max-w-[150px]">
+                                {req.sourceDocument && (
+                                  <div className="truncate text-muted-foreground" title={req.sourceDocument}>
+                                    📄 {req.sourceDocument}
+                                  </div>
+                                )}
+                                {req.sourceSection && (
+                                  <div className="truncate text-muted-foreground" title={req.sourceSection}>
+                                    📍 {req.sourceSection}
+                                  </div>
+                                )}
+                              </div>
                             </TableCell>
                           )}
                         </TableRow>
