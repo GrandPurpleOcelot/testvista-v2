@@ -10,7 +10,8 @@ import {
   BookOpen,
   Plus,
   Bell,
-  FileText
+  FileText,
+  User
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -20,6 +21,7 @@ interface SidebarProps {
 }
 
 const navigation = [
+  { name: "My Space", href: "/project/my-space/folders", icon: User },
   { name: "All Projects", href: "/projects", icon: Users },
   { name: "Test Suites", href: "/suites", icon: CheckSquare },
   { name: "Reference Files", href: "/reference-files", icon: FileText },
@@ -63,7 +65,8 @@ export function Sidebar({ className }: SidebarProps) {
       <nav className="flex-1 p-4 space-y-2">
         <div className="space-y-1">
           {navigation.map((item) => {
-            const isActive = location.pathname === item.href;
+            const isActive = location.pathname === item.href || 
+              (item.href === "/project/my-space/folders" && location.pathname.startsWith("/project/my-space"));
             return (
               <Button
                 key={item.name}
