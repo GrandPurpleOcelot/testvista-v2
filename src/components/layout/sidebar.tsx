@@ -20,7 +20,8 @@ interface SidebarProps {
 }
 
 const navigation = [
-  { name: "Projects", href: "/projects", icon: FolderOpen },
+  { name: "My Space", href: "/my-space", icon: FolderOpen },
+  { name: "All Projects", href: "/projects", icon: Users },
   { name: "Test Suites", href: "/suites", icon: TestTube },
   { name: "Reference Files", href: "/reference-files", icon: FileText },
   { name: "Prompt Templates", href: "/standards", icon: BookOpen },

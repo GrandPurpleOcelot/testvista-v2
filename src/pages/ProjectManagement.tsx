@@ -17,7 +17,12 @@ import {
   Clock,
   Zap,
   Calendar,
-  Star
+  Star,
+  Shield,
+  Eye,
+  UserCheck,
+  Crown,
+  ArrowRight
 } from "lucide-react";
 import { ProjectFilter, ProjectSort, Project } from "@/types/project";
 import { mockProjects, recentActivity, projectRecommendations } from "@/data/mockProjects";
@@ -144,6 +149,39 @@ export default function ProjectManagement() {
     navigate("/create-suite");
   };
 
+  // Separate projects by type for better organization
+  const mySharedProjects = useMemo(() => {
+    return filteredAndSortedProjects.filter(p => 
+      p.type === "shared" && (p.role === "owner" || p.role === "admin" || p.role === "collaborator")
+    );
+  }, [filteredAndSortedProjects]);
+
+  const otherAccessibleProjects = useMemo(() => {
+    return filteredAndSortedProjects.filter(p => 
+      p.type === "shared" && p.role === "viewer"
+    );
+  }, [filteredAndSortedProjects]);
+
+  const getRoleIcon = (role?: string) => {
+    switch (role) {
+      case "owner": return Crown;
+      case "admin": return Shield;
+      case "collaborator": return UserCheck;
+      case "viewer": return Eye;
+      default: return Users;
+    }
+  };
+
+  const getRoleBadgeColor = (role?: string) => {
+    switch (role) {
+      case "owner": return "bg-yellow-500/10 text-yellow-600 border-yellow-500/20";
+      case "admin": return "bg-red-500/10 text-red-600 border-red-500/20";
+      case "collaborator": return "bg-blue-500/10 text-blue-600 border-blue-500/20";
+      case "viewer": return "bg-gray-500/10 text-gray-600 border-gray-500/20";
+      default: return "bg-primary/10 text-primary border-primary/20";
+    }
+  };
+
   return (
     <div className="flex h-screen bg-workspace-bg">
       <Sidebar />
@@ -153,6 +191,39 @@ export default function ProjectManagement() {
         
         <main className="flex-1 overflow-y-auto p-6">
           <div className="space-y-6">
+            {/* Page Header */}
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold tracking-tight">All Projects</h1>
+              <p className="text-muted-foreground">
+                Manage your shared projects and collaborate with your team
+              </p>
+            </div>
+
+            {/* My Space Quick Access */}
+            <Card className="border-border/50 bg-gradient-to-r from-primary/5 to-secondary/5">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <FolderOpen className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg">My Space</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Your private workspace with folders and test suites
+                      </p>
+                    </div>
+                  </div>
+                  <Button 
+                    onClick={() => navigate("/my-space")}
+                    className="gap-2"
+                  >
+                    Open My Space
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Recent Activity */}
             {activeFilter === "recent" && !searchQuery && (
@@ -182,15 +253,9 @@ export default function ProjectManagement() {
               </Card>
             )}
 
-            {/* Project Management */}
+            {/* Project Filters */}
             <Card className="border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FolderOpen className="h-5 w-5 text-primary" />
-                  All Projects
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="p-6">
                 <ProjectFilters
                   searchQuery={searchQuery}
                   onSearchChange={setSearchQuery}
@@ -199,45 +264,122 @@ export default function ProjectManagement() {
                   sortBy={sortBy}
                   onSortChange={setSortBy}
                   onCreateProject={handleCreateProject}
-                  totalCount={mockProjects.length}
-                  filteredCount={filteredAndSortedProjects.length}
+                  totalCount={mockProjects.filter(p => p.type === "shared").length}
+                  filteredCount={filteredAndSortedProjects.filter(p => p.type === "shared").length}
                 />
+              </CardContent>
+            </Card>
 
-                {/* Projects Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {filteredAndSortedProjects.map((project) => (
-                    <UnifiedProjectCard
-                      key={project.id}
-                      project={project}
-                      onToggleFavorite={handleToggleFavorite}
-                      onShareProject={handleShareProject}
-                      onCloneProject={handleCloneProject}
-                      onArchiveProject={handleArchiveProject}
-                      onDeleteProject={handleDeleteProject}
-                    />
-                  ))}
-                </div>
+            {/* My Shared Projects */}
+            {mySharedProjects.length > 0 && (
+              <Card className="border-border/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5 text-primary" />
+                    My Shared Projects
+                    <Badge variant="secondary" className="ml-2">
+                      {mySharedProjects.length}
+                    </Badge>
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Projects where you have ownership or collaboration access
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {mySharedProjects.map((project) => {
+                      const RoleIcon = getRoleIcon(project.role);
+                      return (
+                        <div key={project.id} className="relative">
+                          <UnifiedProjectCard
+                            project={project}
+                            onToggleFavorite={handleToggleFavorite}
+                            onShareProject={handleShareProject}
+                            onCloneProject={handleCloneProject}
+                            onArchiveProject={handleArchiveProject}
+                            onDeleteProject={handleDeleteProject}
+                          />
+                          <Badge 
+                            variant="outline" 
+                            className={`absolute top-3 right-3 gap-1 ${getRoleBadgeColor(project.role)}`}
+                          >
+                            <RoleIcon className="h-3 w-3" />
+                            {project.role}
+                          </Badge>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-                {/* Empty State */}
-                {filteredAndSortedProjects.length === 0 && (
-                  <div className="text-center py-12">
-                    <FolderOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-                    <h3 className="text-lg font-medium mb-2">No projects found</h3>
-                    <p className="text-muted-foreground mb-4">
-                      {searchQuery || activeFilter !== "all" 
-                        ? "Try adjusting your search or filters." 
-                        : "Start by creating your first project."}
-                    </p>
-                    {(!searchQuery && activeFilter === "all") && (
+            {/* Other Accessible Projects */}
+            {otherAccessibleProjects.length > 0 && (
+              <Card className="border-border/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Eye className="h-5 w-5 text-muted-foreground" />
+                    Other Accessible Projects
+                    <Badge variant="outline" className="ml-2">
+                      {otherAccessibleProjects.length}
+                    </Badge>
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Projects where you have viewing access only
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {otherAccessibleProjects.map((project) => (
+                      <div key={project.id} className="relative opacity-80">
+                        <UnifiedProjectCard
+                          project={project}
+                          onToggleFavorite={handleToggleFavorite}
+                          onShareProject={handleShareProject}
+                          onCloneProject={handleCloneProject}
+                          onArchiveProject={handleArchiveProject}
+                          onDeleteProject={handleDeleteProject}
+                        />
+                        <Badge 
+                          variant="outline" 
+                          className={`absolute top-3 right-3 gap-1 ${getRoleBadgeColor(project.role)}`}
+                        >
+                          <Eye className="h-3 w-3" />
+                          View Only
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Empty State */}
+            {filteredAndSortedProjects.filter(p => p.type === "shared").length === 0 && (
+              <Card className="border-border/50">
+                <CardContent className="text-center py-12">
+                  <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+                  <h3 className="text-lg font-medium mb-2">No shared projects found</h3>
+                  <p className="text-muted-foreground mb-4">
+                    {searchQuery || activeFilter !== "all" 
+                      ? "Try adjusting your search or filters." 
+                      : "You don't have access to any shared projects yet."}
+                  </p>
+                  {(!searchQuery && activeFilter === "all") && (
+                    <div className="space-y-3">
                       <Button onClick={handleCreateProject} className="gap-2">
                         <TestTube className="h-4 w-4" />
                         Create Your First Project
                       </Button>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                      <p className="text-xs text-muted-foreground">
+                        Or ask your team admin to invite you to existing projects
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
         </main>
       </div>
