@@ -6,37 +6,64 @@ interface LogoProps {
 }
 
 export function Logo({ className, size = "md" }: LogoProps) {
-  const sizeClasses = {
-    sm: "h-6 w-auto",
-    md: "h-8 w-auto", 
-    lg: "h-12 w-auto"
+  const iconSize = {
+    sm: "h-6 w-6",
+    md: "h-8 w-8",
+    lg: "h-12 w-12"
+  };
+
+  const textSize = {
+    sm: "text-lg",
+    md: "text-xl",
+    lg: "text-2xl"
+  };
+
+  const versionSize = {
+    sm: "text-xs",
+    md: "text-sm", 
+    lg: "text-base"
   };
 
   return (
     <div className={cn("flex items-center gap-3", className)}>
-      <div className={cn(
-        "flex items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary shadow-md",
-        size === "sm" && "h-6 w-6",
-        size === "md" && "h-8 w-8",
-        size === "lg" && "h-12 w-12"
-      )}>
+      {/* Geometric Logo Icon */}
+      <div className={cn(iconSize[size], "relative")}>
+        <svg viewBox="0 0 32 32" className="w-full h-full" fill="none">
+          {/* Main diamond shape */}
+          <path 
+            d="M16 2 L28 8 L24 16 L16 22 L8 16 L4 8 Z" 
+            fill="hsl(var(--primary))" 
+            className="opacity-90"
+          />
+          {/* Inner geometric detail */}
+          <path 
+            d="M16 6 L22 10 L20 16 L16 18 L12 16 L10 10 Z" 
+            fill="hsl(var(--primary))" 
+            className="opacity-70"
+          />
+          {/* Highlight accent */}
+          <path 
+            d="M16 2 L20 6 L16 10 L12 6 Z" 
+            fill="hsl(var(--primary-foreground))" 
+            className="opacity-20"
+          />
+        </svg>
+      </div>
+      
+      <div className="flex flex-col">
         <span className={cn(
-          "font-bold text-white",
-          size === "sm" && "text-xs",
-          size === "md" && "text-sm",
-          size === "lg" && "text-lg"
+          "font-bold text-foreground",
+          textSize[size]
         )}>
-          TV
+          TestVista
+        </span>
+        <span className={cn(
+          "text-muted-foreground font-medium",
+          versionSize[size]
+        )}>
+          Ver 1.3.0
         </span>
       </div>
-      <span className={cn(
-        "font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent",
-        size === "sm" && "text-lg",
-        size === "md" && "text-xl",
-        size === "lg" && "text-2xl"
-      )}>
-        TestVista
-      </span>
     </div>
   );
 }
