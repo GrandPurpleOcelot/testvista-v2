@@ -61,7 +61,7 @@ export function ChatPanel({ onSendMessage, messages, isLoading }: ChatPanelProps
   // Auto-resize textarea
   const adjustTextareaHeight = () => {
     if (inputRef.current) {
-      inputRef.current.style.height = "auto";
+      inputRef.current.style.height = "36px"; // Reset to minimum height
       const maxHeight = 120; // Maximum height in pixels
       const newHeight = Math.min(inputRef.current.scrollHeight, maxHeight);
       inputRef.current.style.height = `${newHeight}px`;
@@ -202,70 +202,83 @@ export function ChatPanel({ onSendMessage, messages, isLoading }: ChatPanelProps
       )}
 
       {/* Input */}
-      <div className="p-4 border-t border-border/50 bg-card">
-        <div className="relative bg-background border border-border/50 rounded-lg">
-          {/* Top toolbar */}
-          <div className="flex items-center gap-1 px-3 py-2 border-b border-border/20">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0 hover:bg-accent"
-              title="Mention"
-            >
-              <AtSign className="h-3.5 w-3.5" />
-            </Button>
+      <div className="p-3 border-t border-border/20">
+        <div className="relative bg-background/50 border border-border/30 rounded-xl hover:border-border/50 transition-colors duration-200 focus-within:border-primary/50 focus-within:bg-background">
+          <div className="flex items-end gap-2 p-3">
+            {/* Left tools */}
+            <div className="flex items-center gap-1 pb-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+                title="Mention"
+              >
+                <AtSign className="h-3.5 w-3.5" />
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+                title="Upload file"
+              >
+                <Plus className="h-3.5 w-3.5" />
+              </Button>
+            </div>
             
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0 hover:bg-accent"
-              title="Upload"
-            >
-              <Plus className="h-3.5 w-3.5" />
-            </Button>
+            {/* Text input area */}
+            <div className="flex-1 min-h-[36px] max-h-[120px]">
+              <Textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) => {
+                  setInput(e.target.value);
+                  adjustTextareaHeight();
+                }}
+                onKeyPress={handleKeyPress}
+                placeholder="Ask TestVista anything..."
+                className="min-h-[36px] max-h-[120px] resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-sm p-0 placeholder:text-muted-foreground/60"
+                disabled={isLoading}
+                style={{ height: "36px" }}
+              />
+            </div>
             
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsChatMode(!isChatMode)}
-              className={cn(
-                "h-7 px-2 text-xs font-medium hover:bg-accent",
-                isChatMode ? "text-primary bg-primary/10" : "text-muted-foreground"
-              )}
-              title="Toggle Chat Mode"
-            >
-              <MessageSquare className="h-3 w-3 mr-1" />
-              Chat
-            </Button>
-          </div>
-          
-          {/* Text input area */}
-          <div className="p-3">
-            <Textarea
-              ref={inputRef}
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value);
-                adjustTextareaHeight();
-              }}
-              onKeyPress={handleKeyPress}
-              placeholder="Ask TestVista..."
-              className="min-h-[60px] max-h-[120px] resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-sm p-0"
-              disabled={isLoading}
-              style={{ height: "60px" }}
-            />
-          </div>
-          
-          {/* Bottom send button */}
-          <div className="flex justify-end p-3 pt-0">
-            <Button 
-              onClick={handleSend} 
-              disabled={!input.trim() || isLoading}
-              size="sm"
-              className="h-8 w-8 p-0 bg-primary hover:bg-primary/90"
-            >
-              <ArrowUp className="h-4 w-4" />
-            </Button>
+            {/* Right tools */}
+            <div className="flex items-center gap-1 pb-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsChatMode(!isChatMode)}
+                className={cn(
+                  "h-7 px-2 text-xs font-medium transition-all duration-200 rounded-md",
+                  isChatMode 
+                    ? "bg-primary/10 text-primary hover:bg-primary/15" 
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                )}
+                title="Toggle Chat Mode"
+              >
+                <MessageSquare className="h-3 w-3 mr-1" />
+                Chat
+              </Button>
+              
+              <Button 
+                onClick={handleSend} 
+                disabled={!input.trim() || isLoading}
+                size="sm" 
+                className={cn(
+                  "h-7 w-7 p-0 rounded-md transition-all duration-200",
+                  input.trim() && !isLoading 
+                    ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm" 
+                    : "bg-muted/50 text-muted-foreground cursor-not-allowed"
+                )}
+              >
+                {isLoading ? (
+                  <div className="h-3 w-3 animate-spin rounded-full border border-current border-t-transparent" />
+                ) : (
+                  <ArrowUp className="h-3.5 w-3.5" />
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
