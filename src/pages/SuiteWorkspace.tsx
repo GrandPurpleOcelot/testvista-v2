@@ -8,8 +8,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { VersionHistoryModal } from "@/components/suite/version-history-modal";
 import { SaveVersionDialog } from "@/components/suite/save-version-dialog";
+import { VersionActionChips } from "@/components/suite/version-action-chips";
 import { useVersionManager } from "@/hooks/use-version-manager";
-import { VersionAction } from "@/types/version";
+import { VersionAction, ArtifactVersion } from "@/types/version";
 interface Message {
   id: string;
   role: "user" | "ai";
@@ -688,15 +689,10 @@ export default function SuiteWorkspace() {
   const [showSaveVersionDialog, setShowSaveVersionDialog] = useState(false);
   const [saveAsCheckpoint, setSaveAsCheckpoint] = useState(false);
   const [showActionChips, setShowActionChips] = useState(false);
+  const [latestVersionForDisplay, setLatestVersionForDisplay] = useState<ArtifactVersion | undefined>();
   
   // Initialize version manager
-  const {
-    versionManager,
-    saveVersion,
-    restoreVersion,
-    markUnsavedChanges,
-    detectChanges
-  } = useVersionManager({
+  const versionManager = useVersionManager({
     requirements,
     viewpoints,
     testCases
@@ -796,12 +792,24 @@ export default function SuiteWorkspace() {
       setMessages(prev => [...prev, aiMessage]);
       setIsLoading(false);
       
-      // Show action chips after AI finishes modifying artifacts
-      if (hasModifiedArtifacts) {
-        markUnsavedChanges();
+      // Auto-save version for AI modifications
+      let command = '';
+      if (message.includes('/sample')) command = '/sample';
+      else if (message.includes('/viewpoints')) command = '/viewpoints';
+      else if (message.includes('ARTIFACT_SELECTION')) command = 'ARTIFACT_SELECTION';
+      
+      if (command) {
+        const currentArtifacts = { requirements, viewpoints, testCases };
+        const newVersion = versionManager.autoSaveVersion(currentArtifacts, command);
+        setLatestVersionForDisplay(newVersion);
         setTimeout(() => {
           setShowActionChips(true);
-        }, 500); // Small delay for better UX
+        }, 500);
+        
+        // Auto-hide action chips after 8 seconds
+        setTimeout(() => {
+          setShowActionChips(false);
+        }, 8500);
       }
     }, 1500);
   };
@@ -830,7 +838,7 @@ export default function SuiteWorkspace() {
     }));
     
     // Mark as having unsaved changes
-    markUnsavedChanges();
+    versionManager.markUnsavedChanges();
   };
   const handleUpdateViewpoint = (id: string, data: Partial<Viewpoint>, field?: string, oldValue?: string) => {
     setViewpoints(prev => prev.map(vp => {
@@ -857,7 +865,7 @@ export default function SuiteWorkspace() {
     }));
     
     // Mark as having unsaved changes
-    markUnsavedChanges();
+    versionManager.markUnsavedChanges();
   };
   const handleUpdateTestCase = (id: string, data: Partial<TestCase>, field?: string, oldValue?: string) => {
     setTestCases(prev => prev.map(tc => {
@@ -884,7 +892,7 @@ export default function SuiteWorkspace() {
     }));
     
     // Mark as having unsaved changes
-    markUnsavedChanges();
+    versionManager.markUnsavedChanges();
   };
   const analyzeChangeImpact = (artifactType: string, artifactId: string, field: string) => {
     // Get related artifacts based on traceability links
@@ -962,68 +970,42 @@ export default function SuiteWorkspace() {
 
   // Version action handlers
   const handleVersionAction = (action: VersionAction) => {
-    switch (action.type) {
-      case "save":
-        setSaveAsCheckpoint(false);
-        setShowSaveVersionDialog(true);
-        break;
-      case "create-checkpoint":
-        setSaveAsCheckpoint(true);
-        setShowSaveVersionDialog(true);
-        break;
-      case "view-history":
-        setShowVersionHistory(true);
-        break;
-      case "restore":
-        if (action.versionId) {
-          const restoredData = restoreVersion(action.versionId);
-          if (restoredData) {
-            setRequirements(restoredData.requirements);
-            setViewpoints(restoredData.viewpoints);
-            setTestCases(restoredData.testCases);
-            setShowActionChips(false); // Hide action chips after restore
-            toast({
-              title: "Version Restored",
-              description: "Successfully restored to selected version"
-            });
-          }
-        }
-        break;
+    if (action.type === 'view-history') {
+      setShowVersionHistory(true);
+    } else if (action.type === 'restore' && action.versionId) {
+      const versionNumber = parseInt(action.versionId);
+      const version = versionManager.versions.find(v => v.versionNumber === versionNumber);
+      if (version) {
+        versionManager.restoreVersion(version, (data) => {
+          setRequirements(data.requirements);
+          setViewpoints(data.viewpoints);
+          setTestCases(data.testCases);
+        });
+        setShowActionChips(false);
+        setLatestVersionForDisplay(undefined);
+        toast({
+          title: "Version Restored",
+          description: `Successfully restored to version ${version.versionNumber}`
+        });
+      }
     }
   };
 
-  const handleSaveVersion = (description: string, isCheckpoint?: boolean) => {
-    const currentData = { requirements, viewpoints, testCases };
-    const version = saveVersion(description, currentData, isCheckpoint);
-    
-    setShowActionChips(false); // Hide action chips after saving
+  const handleSaveVersion = (description: string) => {
+    const currentArtifacts = { requirements, viewpoints, testCases };
+    const newVersion = versionManager.saveVersion(currentArtifacts, description);
+    setShowSaveVersionDialog(false);
+    setShowActionChips(false);
+    setLatestVersionForDisplay(undefined);
     toast({
-      title: isCheckpoint ? "Checkpoint Created" : "Version Saved",
-      description: `Version ${version.versionNumber} saved successfully`
+      title: "Version Saved",
+      description: `Version ${newVersion.versionNumber} saved successfully`
     });
   };
 
   const getChangedArtifacts = () => {
-    const changes = detectChanges({ requirements, viewpoints, testCases });
-    const artifacts: Array<{ type: string; id: string; changes: string[] }> = [];
-    
-    // Group changes by artifact type and id
-    const changesByArtifact = new Map<string, string[]>();
-    changes.forEach(change => {
-      const [artifactInfo, ...changeDetails] = change.split(': ');
-      const key = artifactInfo;
-      if (!changesByArtifact.has(key)) {
-        changesByArtifact.set(key, []);
-      }
-      changesByArtifact.get(key)?.push(changeDetails.join(': ') || change);
-    });
-    
-    changesByArtifact.forEach((changes, key) => {
-      const [type, id] = key.split(' ');
-      artifacts.push({ type, id, changes });
-    });
-    
-    return artifacts;
+    // Return empty array since we're not using this for manual saves anymore
+    return [];
   };
   const {
     id
@@ -1109,10 +1091,18 @@ export default function SuiteWorkspace() {
             messages={messages} 
             onSendMessage={handleSendMessage} 
             isLoading={isLoading}
-            hasUnsavedChanges={showActionChips}
+            hasUnsavedChanges={versionManager.hasUnsavedChanges}
             onVersionAction={handleVersionAction}
             onViewHistory={() => setShowVersionHistory(true)}
           />
+          {showActionChips && latestVersionForDisplay && (
+            <div className="p-4">
+              <VersionActionChips
+                latestVersion={latestVersionForDisplay}
+                onAction={handleVersionAction}
+              />
+            </div>
+          )}
         </div>
 
         {/* Right Panel - Artifacts */}

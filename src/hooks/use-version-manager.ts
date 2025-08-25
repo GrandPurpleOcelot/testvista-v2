@@ -8,169 +8,186 @@ interface ArtifactData {
 }
 
 export function useVersionManager(initialData: ArtifactData) {
-  const [versionManager, setVersionManager] = useState<VersionManager>({
-    versions: [],
-    currentVersion: 0,
-    hasUnsavedChanges: false
-  });
+  const [versions, setVersions] = useState<ArtifactVersion[]>([]);
+  const [currentVersion, setCurrentVersion] = useState(0);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   
   const lastSavedData = useRef<ArtifactData>(initialData);
-  const versionCounter = useRef(1);
 
-  const createVersion = useCallback((
-    description: string,
-    currentData: ArtifactData,
-    isAutoSave = false,
-    artifactType?: "requirement" | "viewpoint" | "testcase",
-    artifactId?: string
-  ): ArtifactVersion => {
-    const changes = detectChanges(lastSavedData.current, currentData);
+  const generateVersionDescription = useCallback((
+    command?: string,
+    artifactType?: string,
+    changesSummary?: string[]
+  ): string => {
+    if (command) {
+      switch (command) {
+        case '/sample':
+          return 'Generated Sample Test Cases';
+        case '/viewpoints':
+          return 'Generated Testing Viewpoints';
+        case '/requirements':
+          return 'Generated Requirements';
+        default:
+          if (command.includes('ARTIFACT_SELECTION')) {
+            return 'Generated Selected Artifacts';
+          }
+          return 'AI Generated Updates';
+      }
+    }
     
-    const version: ArtifactVersion = {
-      id: `v${versionCounter.current}-${Date.now()}`,
-      versionNumber: versionCounter.current++,
-      timestamp: new Date(),
-      description,
-      author: "Current User", // In real app, get from auth
-      artifactType: artifactType || "requirement", // Default type
-      artifactId: artifactId || "all",
-      snapshot: JSON.parse(JSON.stringify(currentData)),
-      changesSummary: changes,
-      isAutoSave
-    };
-
-    return version;
+    if (artifactType && changesSummary?.length) {
+      const count = changesSummary.length;
+      return `Updated ${count} ${artifactType}${count > 1 ? 's' : ''}`;
+    }
+    
+    return 'Manual Updates';
   }, []);
 
-  const detectChanges = (oldData: ArtifactData, newData: ArtifactData): string[] => {
+  const createVersion = useCallback((
+    data: ArtifactData,
+    description?: string,
+    isAutoSave = false,
+    command?: string,
+    artifactType?: string
+  ): ArtifactVersion => {
+    const changesSummary = detectChanges(lastSavedData.current, data);
+    const versionDescription = description || generateVersionDescription(command, artifactType, changesSummary);
+    
+    const newVersion: ArtifactVersion = {
+      id: `version-${Date.now()}`,
+      versionNumber: versions.length + 1,
+      timestamp: new Date(),
+      description: versionDescription,
+      author: isAutoSave ? 'AI Assistant' : 'User',
+      artifactType: 'requirement',
+      artifactId: 'suite',
+      snapshot: JSON.parse(JSON.stringify(data)),
+      changesSummary,
+      isAutoSave,
+    };
+
+    return newVersion;
+  }, [versions.length, generateVersionDescription]);
+
+  const saveVersion = useCallback(
+    (data: ArtifactData, description?: string, command?: string, artifactType?: string) => {
+      const version = createVersion(data, description, false, command, artifactType);
+      setVersions((prev) => [...prev, version]);
+      setCurrentVersion(version.versionNumber);
+      setHasUnsavedChanges(false);
+      lastSavedData.current = JSON.parse(JSON.stringify(data));
+      return version;
+    },
+    [createVersion]
+  );
+
+  const autoSaveVersion = useCallback(
+    (data: ArtifactData, command?: string, artifactType?: string) => {
+      const version = createVersion(data, undefined, true, command, artifactType);
+      setVersions((prev) => [...prev, version]);
+      setCurrentVersion(version.versionNumber);
+      setHasUnsavedChanges(false);
+      lastSavedData.current = JSON.parse(JSON.stringify(data));
+      return version;
+    },
+    [createVersion]
+  );
+
+  const restoreVersion = useCallback(
+    (version: ArtifactVersion, onRestore: (data: ArtifactData) => void) => {
+      onRestore(version.snapshot);
+      setCurrentVersion(version.versionNumber);
+      setHasUnsavedChanges(false);
+      lastSavedData.current = JSON.parse(JSON.stringify(version.snapshot));
+    },
+    []
+  );
+
+  const markUnsavedChanges = useCallback(() => {
+    setHasUnsavedChanges(true);
+  }, []);
+
+  const autoSave = useCallback((data: ArtifactData) => {
+    if (hasUnsavedChanges) {
+      const changes = detectChanges(lastSavedData.current, data);
+      if (changes.length > 0) {
+        const version = createVersion(data, 'Auto-save', true);
+        setVersions((prev) => [...prev, version]);
+        setCurrentVersion(version.versionNumber);
+        setHasUnsavedChanges(false);
+        lastSavedData.current = JSON.parse(JSON.stringify(data));
+      }
+    }
+  }, [hasUnsavedChanges, createVersion]);
+
+  const detectChanges = useCallback((oldData: ArtifactData, newData: ArtifactData): string[] => {
     const changes: string[] = [];
 
-    // Compare requirements
-    const reqChanges = compareArrays(oldData.requirements, newData.requirements, "requirement");
+    const reqChanges = compareArrays(oldData.requirements, newData.requirements, 'requirement');
     changes.push(...reqChanges);
 
-    // Compare viewpoints  
-    const vpChanges = compareArrays(oldData.viewpoints, newData.viewpoints, "viewpoint");
-    changes.push(...vpChanges);
+    const viewpointChanges = compareArrays(oldData.viewpoints, newData.viewpoints, 'viewpoint');
+    changes.push(...viewpointChanges);
 
-    // Compare test cases
-    const tcChanges = compareArrays(oldData.testCases, newData.testCases, "testcase");
-    changes.push(...tcChanges);
+    const testCaseChanges = compareArrays(oldData.testCases, newData.testCases, 'testcase');
+    changes.push(...testCaseChanges);
 
     return changes;
-  };
+  }, []);
 
-  const compareArrays = (oldArray: any[], newArray: any[], type: string): string[] => {
+  const compareArrays = useCallback((oldArray: any[], newArray: any[], type: string): string[] => {
     const changes: string[] = [];
     
-    // Check for additions
-    const addedItems = newArray.filter(newItem => 
+    // Added items
+    const added = newArray.filter(newItem => 
       !oldArray.find(oldItem => oldItem.id === newItem.id)
     );
-    addedItems.forEach(item => {
-      changes.push(`Added ${type} ${item.id}`);
-    });
+    added.forEach(item => changes.push(`Added ${type}: ${item.title || item.id}`));
 
-    // Check for removals
-    const removedItems = oldArray.filter(oldItem =>
+    // Removed items
+    const removed = oldArray.filter(oldItem =>
       !newArray.find(newItem => newItem.id === oldItem.id)
     );
-    removedItems.forEach(item => {
-      changes.push(`Removed ${type} ${item.id}`);
-    });
+    removed.forEach(item => changes.push(`Removed ${type}: ${item.title || item.id}`));
 
-    // Check for modifications
+    // Modified items
     oldArray.forEach(oldItem => {
       const newItem = newArray.find(item => item.id === oldItem.id);
       if (newItem) {
         const itemChanges = compareObjects(oldItem, newItem);
-        itemChanges.forEach(change => {
-          changes.push(`${type} ${oldItem.id}: ${change}`);
-        });
+        if (itemChanges.length > 0) {
+          changes.push(`Modified ${type}: ${newItem.title || newItem.id}`);
+        }
       }
     });
 
     return changes;
-  };
+  }, []);
 
-  const compareObjects = (oldObj: any, newObj: any): string[] => {
+  const compareObjects = useCallback((oldObj: any, newObj: any): string[] => {
     const changes: string[] = [];
     const keys = new Set([...Object.keys(oldObj), ...Object.keys(newObj)]);
 
     keys.forEach(key => {
-      if (key === 'lastModified' || key === 'changeHistory') return; // Skip meta fields
+      if (key === 'lastModified' || key === 'changeHistory') return;
       
-      const oldValue = oldObj[key];
-      const newValue = newObj[key];
-
-      if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
-        changes.push(`${key} changed`);
+      if (JSON.stringify(oldObj[key]) !== JSON.stringify(newObj[key])) {
+        changes.push(`${key} updated`);
       }
     });
 
     return changes;
-  };
-
-  const saveVersion = useCallback((
-    description: string,
-    currentData: ArtifactData,
-    isCheckpoint = false
-  ) => {
-    const version = createVersion(description, currentData, false);
-    
-    setVersionManager(prev => ({
-      ...prev,
-      versions: [...prev.versions, version],
-      currentVersion: version.versionNumber,
-      hasUnsavedChanges: false
-    }));
-
-    lastSavedData.current = JSON.parse(JSON.stringify(currentData));
-    
-    return version;
-  }, [createVersion]);
-
-  const markUnsavedChanges = useCallback(() => {
-    setVersionManager(prev => ({
-      ...prev,
-      hasUnsavedChanges: true
-    }));
   }, []);
 
-  const restoreVersion = useCallback((versionId: string): ArtifactData | null => {
-    const version = versionManager.versions.find(v => v.id === versionId);
-    if (!version) return null;
-
-    setVersionManager(prev => ({
-      ...prev,
-      currentVersion: version.versionNumber,
-      hasUnsavedChanges: false
-    }));
-
-    lastSavedData.current = JSON.parse(JSON.stringify(version.snapshot));
-    return version.snapshot;
-  }, [versionManager.versions]);
-
-  const autoSave = useCallback((currentData: ArtifactData) => {
-    // Auto-save every 5 minutes if there are unsaved changes
-    if (versionManager.hasUnsavedChanges) {
-      const version = createVersion("Auto-save", currentData, true);
-      setVersionManager(prev => ({
-        ...prev,
-        versions: [...prev.versions, version],
-        currentVersion: version.versionNumber,
-        hasUnsavedChanges: false
-      }));
-      lastSavedData.current = JSON.parse(JSON.stringify(currentData));
-    }
-  }, [createVersion, versionManager.hasUnsavedChanges]);
-
   return {
-    versionManager,
+    versions,
+    currentVersion,
+    hasUnsavedChanges,
     saveVersion,
+    autoSaveVersion,
     restoreVersion,
     markUnsavedChanges,
     autoSave,
-    detectChanges: (currentData: ArtifactData) => detectChanges(lastSavedData.current, currentData)
+    getLatestVersion: () => versions[versions.length - 1],
   };
 }

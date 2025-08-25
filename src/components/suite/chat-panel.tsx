@@ -201,13 +201,7 @@ export function ChatPanel({
               </div>
             </div>}
 
-          {/* Version Action Chips */}
-          {hasUnsavedChanges && onVersionAction && (
-            <VersionActionChips
-              hasUnsavedChanges={hasUnsavedChanges}
-              onAction={onVersionAction}
-            />
-          )}
+          {/* Version Action Chips - Now handled at workspace level */}
           
           <div ref={messagesEndRef} />
         </div>

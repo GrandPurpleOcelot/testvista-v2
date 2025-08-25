@@ -1,50 +1,36 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Save, GitBranch, Eye, Clock } from "lucide-react";
+import { Eye, GitBranch, Undo2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { VersionAction } from "@/types/version";
+import { VersionAction, ArtifactVersion } from "@/types/version";
 
 interface VersionActionChipsProps {
-  hasUnsavedChanges: boolean;
+  latestVersion?: ArtifactVersion;
   onAction: (action: VersionAction) => void;
   className?: string;
 }
 
 export function VersionActionChips({ 
-  hasUnsavedChanges, 
+  latestVersion, 
   onAction, 
   className 
 }: VersionActionChipsProps) {
-  if (!hasUnsavedChanges) return null;
+  if (!latestVersion) return null;
 
   return (
-    <div className={cn("flex items-center gap-2 p-3 bg-muted/50 border rounded-lg", className)}>
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Clock className="h-4 w-4" />
-        <span>Unsaved changes detected</span>
+    <div className={cn("flex items-center gap-2 p-3 bg-muted/50 border rounded-lg animate-in fade-in-0 slide-in-from-bottom-2", className)}>
+      <div className="flex items-center gap-2">
+        <Badge variant="secondary" className="h-6">
+          <GitBranch className="h-3 w-3 mr-1" />
+          Version {latestVersion.versionNumber}
+        </Badge>
+        <span className="text-sm font-medium">{latestVersion.description}</span>
+        <span className="text-xs text-muted-foreground">
+          by {latestVersion.author}
+        </span>
       </div>
       
       <div className="flex items-center gap-2 ml-auto">
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => onAction({ type: "save" })}
-          className="h-7 px-3"
-        >
-          <Save className="h-3 w-3 mr-1" />
-          Save as Version
-        </Button>
-        
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => onAction({ type: "create-checkpoint" })}
-          className="h-7 px-3"
-        >
-          <GitBranch className="h-3 w-3 mr-1" />
-          Create Checkpoint
-        </Button>
-        
         <Button
           size="sm"
           variant="ghost"
@@ -52,7 +38,21 @@ export function VersionActionChips({
           className="h-7 px-3"
         >
           <Eye className="h-3 w-3 mr-1" />
-          View Changes
+          View History
+        </Button>
+        
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => onAction({ 
+            type: "restore", 
+            versionId: (latestVersion.versionNumber - 1).toString() 
+          })}
+          className="h-7 px-3"
+          disabled={latestVersion.versionNumber <= 1}
+        >
+          <Undo2 className="h-3 w-3 mr-1" />
+          Revert
         </Button>
       </div>
     </div>
