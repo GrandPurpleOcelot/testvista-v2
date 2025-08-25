@@ -150,7 +150,7 @@ export default function ReferenceFiles() {
             {/* Page Title */}
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <h1 className="text-2xl font-semibold text-foreground leading-tight">Reference Files</h1>
+                <h1 className="text-2xl font-semibold text-foreground leading-tight">Uploaded Files</h1>
                 <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
                   Upload and manage system documentation for AI-powered testing insights
                 </p>
