@@ -733,6 +733,7 @@ export default function SuiteWorkspace() {
     setTimeout(() => {
       let aiResponse = "";
       let hasModifiedArtifacts = false;
+      const lowerMessage = message.toLowerCase();
       
       // Handle artifact selection
       if (message.startsWith("ARTIFACT_SELECTION:")) {
@@ -805,13 +806,24 @@ export default function SuiteWorkspace() {
       }
       // Handle general AI responses
       else {
-        const responses = [
-          "I can help you generate comprehensive test cases, analyze requirements, create testing viewpoints, and establish traceability matrices. What would you like to work on?",
-          "Let me assist you with test case generation. I can create detailed test scenarios based on your requirements, including steps, expected results, and priority levels.",
-          "I can analyze your requirements and suggest comprehensive testing strategies. Would you like me to focus on functional testing, security aspects, or performance considerations?",
-          "I'm here to help optimize your testing process. I can generate test cases, create viewpoints for different testing perspectives, and help establish clear traceability between requirements and tests."
-        ];
-        aiResponse = responses[Math.floor(Math.random() * responses.length)];
+        if (chatMode) {
+          const responses = [
+            "I can help you generate comprehensive test cases, analyze requirements, create testing viewpoints, and establish traceability matrices. What would you like to work on?",
+            "Let me assist you with test case generation. I can create detailed test scenarios based on your requirements, including steps, expected results, and priority levels.",
+            "I can analyze your requirements and suggest comprehensive testing strategies. Would you like me to focus on functional testing, security aspects, or performance considerations?",
+            "I'm here to help optimize your testing process. I can generate test cases, create viewpoints for different testing perspectives, and help establish clear traceability between requirements and tests."
+          ];
+          aiResponse = responses[Math.floor(Math.random() * responses.length)];
+        } else {
+          // When chat mode is OFF, provide specific action-oriented responses
+          if (lowerMessage.includes('change') || lowerMessage.includes('modify') || lowerMessage.includes('update')) {
+            aiResponse = "✅ **Test Case Modified Successfully!**\n\nI've analyzed your request and updated the relevant test case with your specifications. The changes include updated test steps, expected results, and any necessary traceability adjustments.\n\nAll modifications have been saved and are ready for review.";
+          } else if (lowerMessage.includes('test case') || lowerMessage.includes('test')) {
+            aiResponse = "✅ **Test Cases Updated!**\n\nI've processed your test case request and made the necessary modifications to ensure comprehensive coverage. The updated test cases include detailed steps, expected outcomes, and proper validation criteria.";
+          } else {
+            aiResponse = "✅ **Workspace Updated!**\n\nI've processed your request and made the appropriate updates to your test suite artifacts. All changes have been applied and are reflected in your current workspace.";
+          }
+        }
         hasModifiedArtifacts = !chatMode; // Show action chips for all responses when chat mode is OFF
       }
 
@@ -823,7 +835,6 @@ export default function SuiteWorkspace() {
       // Auto-save version for AI modifications
       let command = '';
       let versionInfo: ArtifactVersion | undefined = undefined;
-      const lowerMessage = message.toLowerCase();
       
       if (message.includes('/sample')) command = '/sample';
       else if (message.includes('/viewpoints')) command = '/viewpoints';
@@ -833,6 +844,12 @@ export default function SuiteWorkspace() {
                (lowerMessage.includes('generate') && lowerMessage.includes('requirements'))) {
         command = '/viewpoints'; // Treat as viewpoints generation
         console.log('🎯 Matched artifact generation pattern, command set to:', command);
+      }
+      
+      
+      // For chat mode OFF, always create a version if no specific command was matched
+      if (!chatMode && !command && hasModifiedArtifacts) {
+        command = 'general-update'; // Set a default command for general updates
       }
       
       if (command && hasModifiedArtifacts) {
