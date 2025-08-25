@@ -828,9 +828,10 @@ export default function SuiteWorkspace() {
         const newVersion = versionManager.autoSaveVersion(currentArtifacts, command);
         setLatestVersionForDisplay(newVersion);
         console.log('📦 Version created:', newVersion);
+        console.log('🎯 Setting showActionChips to true and latestVersionForDisplay to:', newVersion);
         
         setTimeout(() => {
-          console.log('💫 Showing action chips');
+          console.log('💫 Showing action chips - showActionChips:', true, 'latestVersionForDisplay:', newVersion);
           setShowActionChips(true);
         }, 2000); // 2 second delay to simulate AI finishing
         
@@ -1114,6 +1115,16 @@ export default function SuiteWorkspace() {
 
       </header>
 
+      {/* Action Chips - Global Position */}
+      {showActionChips && latestVersionForDisplay && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-[600px]">
+          <VersionActionChips
+            latestVersion={latestVersionForDisplay}
+            onAction={handleVersionAction}
+          />
+        </div>
+      )}
+
       {/* Main Content - Split Screen */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Panel - Chat */}
@@ -1126,14 +1137,6 @@ export default function SuiteWorkspace() {
             onVersionAction={handleVersionAction}
             onViewHistory={() => setShowVersionHistory(true)}
           />
-          {showActionChips && latestVersionForDisplay && (
-            <div className="p-4">
-              <VersionActionChips
-                latestVersion={latestVersionForDisplay}
-                onAction={handleVersionAction}
-              />
-            </div>
-          )}
         </div>
 
         {/* Right Panel - Artifacts */}
