@@ -10,6 +10,7 @@ import { Send, Bot, User, Upload, Zap, Target, Plus, Lightbulb, ArrowUp, AtSign,
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 import { ArtifactSelectionModal } from "./artifact-selection-modal";
+import { Logo } from "@/components/ui/logo";
 interface Message {
   id: string;
   role: "user" | "ai";
@@ -108,7 +109,7 @@ export function ChatPanel({
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
           {messages.length === 0 && <div className="text-center text-muted-foreground py-8">
-              <Bot className="h-12 w-12 mx-auto mb-4 text-primary/50" />
+              <Logo className="h-12 w-12 mx-auto mb-4" />
               <p className="text-lg font-medium">Welcome to TestVista</p>
               <p className="text-sm">Start by uploading requirements or asking me to generate test cases</p>
               <div className="mt-4 space-y-2">
@@ -123,7 +124,7 @@ export function ChatPanel({
 
           {messages.map(message => <div key={message.id} className={cn("flex gap-3", message.role === "user" ? "justify-end" : "justify-start")}>
               {message.role === "ai" && <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Bot className="h-4 w-4 text-primary" />
+                  <Logo className="h-5 w-5" />
                 </div>}
               
               <div className={cn("max-w-[80%] rounded-lg p-3 text-sm", message.role === "user" ? "bg-primary text-primary-foreground" : "bg-card border border-border/50 text-card-foreground")}>
@@ -165,15 +166,11 @@ export function ChatPanel({
                   {message.timestamp.toLocaleTimeString()}
                 </span>
               </div>
-
-              {message.role === "user" && <div className="flex-shrink-0 w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center">
-                  <User className="h-4 w-4 text-secondary" />
-                </div>}
             </div>)}
 
           {isLoading && <div className="flex gap-3 justify-start">
               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <Bot className="h-4 w-4 text-primary" />
+                <Logo className="h-5 w-5" />
               </div>
               <div className="bg-card border border-border/50 rounded-lg p-3 text-sm">
                 <div className="flex items-center gap-2">
