@@ -11,7 +11,7 @@ interface Message {
   role: "user" | "ai";
   content: string;
   timestamp: Date;
-  type?: "command" | "normal";
+  type?: "command" | "normal" | "artifact-selection";
 }
 interface TraceabilityLink {
   id: string;
@@ -691,9 +691,9 @@ export default function SuiteWorkspace() {
       {
         id: "artifact-selection",
         role: "ai",
-        content: "Now, let's configure what artifacts you'd like me to generate for your test suite:\n\n**Artifact Selection:**\n✅ Requirements & Test Cases (selected by default)\n☐ Viewpoints - Different perspectives and stakeholder views\n☐ Scenarios - User journey and use case scenarios\n\nPlease let me know which additional artifacts you'd like to include, or type 'continue' if the default selection works for you.",
+        content: "Now, let's configure what artifacts you'd like me to generate for your test suite.",
         timestamp: new Date(),
-        type: "normal"
+        type: "artifact-selection"
       }
     ]);
   }, []);
