@@ -834,12 +834,6 @@ export default function SuiteWorkspace() {
           console.log('💫 Showing action chips - showActionChips:', true, 'latestVersionForDisplay:', newVersion);
           setShowActionChips(true);
         }, 2000); // 2 second delay to simulate AI finishing
-        
-        // Auto-hide action chips after 10 seconds
-        setTimeout(() => {
-          console.log('🫥 Hiding action chips');
-          setShowActionChips(false);
-        }, 12000);
       } else {
         console.log('❌ No command matched for message:', message);
       }
