@@ -30,6 +30,8 @@ interface ChatPanelProps {
   hasUnsavedChanges?: boolean;
   onVersionAction?: (action: VersionAction) => void;
   onViewHistory?: () => void;
+  chatMode: boolean;
+  onChatModeChange: (chatMode: boolean) => void;
 }
 const slashCommands = [{
   cmd: "/upload",
@@ -54,11 +56,12 @@ export function ChatPanel({
   isLoading,
   hasUnsavedChanges = false,
   onVersionAction,
-  onViewHistory
+  onViewHistory,
+  chatMode,
+  onChatModeChange
 }: ChatPanelProps) {
   const [input, setInput] = useState("");
   const [showCommands, setShowCommands] = useState(false);
-  const [isChatMode, setIsChatMode] = useState(true);
   const [showArtifactModal, setShowArtifactModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -277,7 +280,7 @@ export function ChatPanel({
                 
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="sm" onClick={() => setIsChatMode(!isChatMode)} className={cn("h-8 px-3 text-xs font-medium transition-all duration-200 rounded-md", isChatMode ? "bg-primary/10 text-primary hover:bg-primary/15" : "text-muted-foreground hover:text-foreground hover:bg-accent/50")}>
+                    <Button variant="ghost" size="sm" onClick={() => onChatModeChange(!chatMode)} className={cn("h-8 px-3 text-xs font-medium transition-all duration-200 rounded-md", chatMode ? "bg-primary/10 text-primary hover:bg-primary/15" : "text-muted-foreground hover:text-foreground hover:bg-accent/50")}>
                       <MessageSquare className="h-3.5 w-3.5 mr-1" />
                       Chat
                     </Button>

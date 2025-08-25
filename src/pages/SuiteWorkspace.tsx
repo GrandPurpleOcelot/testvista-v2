@@ -685,6 +685,7 @@ export default function SuiteWorkspace() {
     id: string;
   } | null>(null);
   const [suiteStatus, setSuiteStatus] = useState<"idle" | "running" | "paused">("idle");
+  const [chatMode, setChatMode] = useState(false); // false = modify artifacts, true = chat only
   
   // Version management state
   const [showVersionHistory, setShowVersionHistory] = useState(false);
@@ -747,32 +748,52 @@ export default function SuiteWorkspace() {
         }).join(", ");
         
         aiResponse = `Perfect! I'll generate ${artifactNames} for your test suite. This will provide comprehensive coverage of your testing needs.\n\nGenerating artifacts now...`;
-        hasModifiedArtifacts = true;
+        hasModifiedArtifacts = !chatMode; // Only modify artifacts if chat mode is OFF
       }
       // Handle specific artifact generation commands
       else if (message.includes("/sample")) {
-        aiResponse = "Perfect! I've generated comprehensive sample test cases for your suite. These include functional tests, edge cases, and integration scenarios with detailed steps and expected outcomes.";
-        hasModifiedArtifacts = true;
+        if (chatMode) {
+          aiResponse = "I can generate comprehensive sample test cases for your suite, including functional tests, edge cases, and integration scenarios with detailed steps and expected outcomes. Would you like me to implement this?";
+        } else {
+          aiResponse = "Perfect! I've generated comprehensive sample test cases for your suite. These include functional tests, edge cases, and integration scenarios with detailed steps and expected outcomes.";
+        }
+        hasModifiedArtifacts = !chatMode;
       }
       else if (message.includes("/viewpoints")) {
-        aiResponse = "Excellent! I've created multiple testing viewpoints including functional, security, performance, and usability perspectives. Each viewpoint provides targeted testing strategies for comprehensive coverage.";
-        hasModifiedArtifacts = true;
+        if (chatMode) {
+          aiResponse = "I can create multiple testing viewpoints including functional, security, performance, and usability perspectives. Each viewpoint would provide targeted testing strategies for comprehensive coverage. Should I implement this plan?";
+        } else {
+          aiResponse = "Excellent! I've created multiple testing viewpoints including functional, security, performance, and usability perspectives. Each viewpoint provides targeted testing strategies for comprehensive coverage.";
+        }
+        hasModifiedArtifacts = !chatMode;
       }
       else if (message.toLowerCase().includes("generating artifacts") || 
                (message.toLowerCase().includes("generate") && message.toLowerCase().includes("viewpoints")) ||
                (message.toLowerCase().includes("generate") && message.toLowerCase().includes("requirements"))) {
-        aiResponse = "✅ **Artifacts Generated Successfully!**\n\nI've created comprehensive requirements and testing viewpoints for your test suite:\n\n**Requirements Generated:**\n- 8 functional requirements covering core functionality\n- 3 non-functional requirements for performance and security\n- 2 integration requirements for system compatibility\n\n**Testing Viewpoints Created:**\n- Functional Testing Viewpoint\n- Security Testing Viewpoint \n- Performance Testing Viewpoint\n- Usability Testing Viewpoint\n- Integration Testing Viewpoint\n\nAll artifacts are now available in your workspace with full traceability established.";
-        hasModifiedArtifacts = true;
-        console.log('🎯 Detected artifact generation message, setting hasModifiedArtifacts to true');
+        if (chatMode) {
+          aiResponse = "I can create comprehensive requirements and testing viewpoints for your test suite:\n\n**Planned Requirements:**\n- 8 functional requirements covering core functionality\n- 3 non-functional requirements for performance and security\n- 2 integration requirements for system compatibility\n\n**Planned Testing Viewpoints:**\n- Functional Testing Viewpoint\n- Security Testing Viewpoint \n- Performance Testing Viewpoint\n- Usability Testing Viewpoint\n- Integration Testing Viewpoint\n\nWould you like me to implement this plan and generate all artifacts?";
+        } else {
+          aiResponse = "✅ **Artifacts Generated Successfully!**\n\nI've created comprehensive requirements and testing viewpoints for your test suite:\n\n**Requirements Generated:**\n- 8 functional requirements covering core functionality\n- 3 non-functional requirements for performance and security\n- 2 integration requirements for system compatibility\n\n**Testing Viewpoints Created:**\n- Functional Testing Viewpoint\n- Security Testing Viewpoint \n- Performance Testing Viewpoint\n- Usability Testing Viewpoint\n- Integration Testing Viewpoint\n\nAll artifacts are now available in your workspace with full traceability established.";
+        }
+        hasModifiedArtifacts = !chatMode;
+        console.log('🎯 Detected artifact generation message, chatMode:', chatMode, 'hasModifiedArtifacts:', !chatMode);
       }
       // Handle specific commands
       else if (message.startsWith("/sample")) {
-        aiResponse = "I'll generate sample test cases based on common user authentication scenarios. These will serve as a foundation that you can customize for your specific needs.\n\n✅ Generated 8 comprehensive test cases covering:\n- Valid registration flows\n- Password validation scenarios\n- Email verification processes\n- Error handling cases\n\nEach test case includes detailed steps, expected results, and traceability links to requirements.";
-        hasModifiedArtifacts = true;
+        if (chatMode) {
+          aiResponse = "I can generate sample test cases based on common user authentication scenarios. These would serve as a foundation that you can customize for your specific needs:\n\n**Planned Test Cases:**\n- Valid registration flows\n- Password validation scenarios\n- Email verification processes\n- Error handling cases\n\nEach test case would include detailed steps, expected results, and traceability links to requirements. Should I implement this plan?";
+        } else {
+          aiResponse = "I'll generate sample test cases based on common user authentication scenarios. These will serve as a foundation that you can customize for your specific needs.\n\n✅ Generated 8 comprehensive test cases covering:\n- Valid registration flows\n- Password validation scenarios\n- Email verification processes\n- Error handling cases\n\nEach test case includes detailed steps, expected results, and traceability links to requirements.";
+        }
+        hasModifiedArtifacts = !chatMode;
       }
       else if (message.startsWith("/viewpoints")) {
-        aiResponse = "I've created testing viewpoints that provide different perspectives for comprehensive test coverage:\n\n✅ **Functional Testing Viewpoint**: Focuses on core authentication features\n✅ **Security Testing Viewpoint**: Emphasizes password policies and data protection\n✅ **Usability Testing Viewpoint**: Ensures user-friendly registration experience\n✅ **Performance Testing Viewpoint**: Tests system behavior under load\n\nThese viewpoints will help ensure no critical testing areas are overlooked.";
-        hasModifiedArtifacts = true;
+        if (chatMode) {
+          aiResponse = "I can create testing viewpoints that provide different perspectives for comprehensive test coverage:\n\n**Planned Viewpoints:**\n- **Functional Testing Viewpoint**: Focuses on core authentication features\n- **Security Testing Viewpoint**: Emphasizes password policies and data protection\n- **Usability Testing Viewpoint**: Ensures user-friendly registration experience\n- **Performance Testing Viewpoint**: Tests system behavior under load\n\nThese viewpoints would help ensure no critical testing areas are overlooked. Would you like me to implement this plan?";
+        } else {
+          aiResponse = "I've created testing viewpoints that provide different perspectives for comprehensive test coverage:\n\n✅ **Functional Testing Viewpoint**: Focuses on core authentication features\n✅ **Security Testing Viewpoint**: Emphasizes password policies and data protection\n✅ **Usability Testing Viewpoint**: Ensures user-friendly registration experience\n✅ **Performance Testing Viewpoint**: Tests system behavior under load\n\nThese viewpoints will help ensure no critical testing areas are overlooked.";
+        }
+        hasModifiedArtifacts = !chatMode;
       }
       else if (message.startsWith("/export")) {
         aiResponse = "I'm preparing your test cases for export. You can choose from several formats:\n\n📄 **Excel (.xlsx)** - Structured spreadsheet with all test details\n📋 **CSV** - Simple comma-separated format for easy import\n📝 **Word (.docx)** - Formatted document ready for documentation\n🔗 **TestRail** - Direct import format for TestRail integration\n\nWhich format would you prefer?";
@@ -816,12 +837,26 @@ export default function SuiteWorkspace() {
         console.log('📦 Version created:', versionInfo);
       }
 
+      // Add action buttons for chat mode responses that suggest implementations
+      let messageType: "normal" | "action-prompt" = "normal";
+      let actions: { label: string; action: string }[] | undefined = undefined;
+      
+      if (chatMode && (lowerMessage.includes('generate') || lowerMessage.includes('/sample') || lowerMessage.includes('/viewpoints'))) {
+        messageType = "action-prompt";
+        actions = [
+          { label: "Implement this plan", action: "Yes, implement this plan and generate the artifacts" },
+          { label: "Modify approach", action: "Can you modify this approach to focus more on security testing?" },
+          { label: "Ask questions", action: "I have some questions about this approach" }
+        ];
+      }
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "ai",
         content: aiResponse,
         timestamp: new Date(),
-        type: "normal",
+        type: messageType,
+        actions: actions,
         versionInfo: versionInfo,
         hasModifiedArtifacts: hasModifiedArtifacts
       };
@@ -1108,6 +1143,8 @@ export default function SuiteWorkspace() {
             hasUnsavedChanges={versionManager.hasUnsavedChanges}
             onVersionAction={handleVersionAction}
             onViewHistory={() => setShowVersionHistory(true)}
+            chatMode={chatMode}
+            onChatModeChange={setChatMode}
           />
         </div>
 
