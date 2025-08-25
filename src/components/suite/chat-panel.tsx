@@ -90,49 +90,8 @@ export function ChatPanel({ onSendMessage, messages, isLoading }: ChatPanelProps
     <div className="h-full flex flex-col bg-workspace-chat border-r border-border/50">
       {/* Header */}
       <div className="p-4 border-b border-border/50 bg-card">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="font-semibold text-card-foreground">AI Test Assistant</h2>
-            <p className="text-sm text-muted-foreground">Guide test case generation with natural language</p>
-          </div>
-          
-          {/* Tools in header */}
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
-              title="Mention"
-            >
-              <AtSign className="h-4 w-4" />
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
-              title="Upload file"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsChatMode(!isChatMode)}
-              className={cn(
-                "h-8 px-3 text-xs font-medium transition-all duration-200 rounded-md",
-                isChatMode 
-                  ? "bg-primary/10 text-primary hover:bg-primary/15" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-              )}
-              title="Toggle Chat Mode"
-            >
-              <MessageSquare className="h-3 w-3 mr-1" />
-              Chat
-            </Button>
-          </div>
-        </div>
+        <h2 className="font-semibold text-card-foreground">AI Test Assistant</h2>
+        <p className="text-sm text-muted-foreground">Guide test case generation with natural language</p>
       </div>
 
       {/* Messages */}
@@ -245,9 +204,30 @@ export function ChatPanel({ onSendMessage, messages, isLoading }: ChatPanelProps
       {/* Input */}
       <div className="p-3 border-t border-border/20">
         <div className="relative bg-background/50 border border-border/30 rounded-xl hover:border-border/50 transition-colors duration-200 focus-within:border-primary/50 focus-within:bg-background">
-          <div className="flex items-end gap-3 p-4">
-            {/* Text input area - maximized space */}
-            <div className="flex-1 min-h-[56px] max-h-[120px]">
+          <div className="flex items-end gap-2 p-3">
+            {/* Left tools */}
+            <div className="flex items-center gap-1 pb-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+                title="Mention"
+              >
+                <AtSign className="h-3.5 w-3.5" />
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+                title="Upload file"
+              >
+                <Plus className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+            
+            {/* Text input area */}
+            <div className="flex-1 min-h-[56px] max-h-[120px] mb-2">
               <Textarea
                 ref={inputRef}
                 value={input}
@@ -263,23 +243,39 @@ export function ChatPanel({ onSendMessage, messages, isLoading }: ChatPanelProps
               />
             </div>
             
-            {/* Send button */}
-            <div className="pb-1">
+            {/* Right tools */}
+            <div className="flex items-center gap-1 pb-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsChatMode(!isChatMode)}
+                className={cn(
+                  "h-7 px-2 text-xs font-medium transition-all duration-200 rounded-md",
+                  isChatMode 
+                    ? "bg-primary/10 text-primary hover:bg-primary/15" 
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                )}
+                title="Toggle Chat Mode"
+              >
+                <MessageSquare className="h-3 w-3 mr-1" />
+                Chat
+              </Button>
+              
               <Button 
                 onClick={handleSend} 
                 disabled={!input.trim() || isLoading}
                 size="sm" 
                 className={cn(
-                  "h-8 w-8 p-0 rounded-lg transition-all duration-200",
+                  "h-7 w-7 p-0 rounded-md transition-all duration-200",
                   input.trim() && !isLoading 
                     ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm" 
                     : "bg-muted/50 text-muted-foreground cursor-not-allowed"
                 )}
               >
                 {isLoading ? (
-                  <div className="h-3.5 w-3.5 animate-spin rounded-full border border-current border-t-transparent" />
+                  <div className="h-3 w-3 animate-spin rounded-full border border-current border-t-transparent" />
                 ) : (
-                  <ArrowUp className="h-4 w-4" />
+                  <ArrowUp className="h-3.5 w-3.5" />
                 )}
               </Button>
             </div>
