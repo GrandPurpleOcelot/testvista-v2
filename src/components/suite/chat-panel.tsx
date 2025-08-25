@@ -2,9 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Send, Bot, User, Upload, Zap, Target, Plus, Lightbulb, ArrowUp } from "lucide-react";
+import { Send, Bot, User, Upload, Zap, Target, Plus, Lightbulb, ArrowUp, AtSign, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -31,8 +32,9 @@ const slashCommands = [
 export function ChatPanel({ onSendMessage, messages, isLoading }: ChatPanelProps) {
   const [input, setInput] = useState("");
   const [showCommands, setShowCommands] = useState(false);
+  const [isChatMode, setIsChatMode] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -55,6 +57,20 @@ export function ChatPanel({ onSendMessage, messages, isLoading }: ChatPanelProps
       handleSend();
     }
   };
+
+  // Auto-resize textarea
+  const adjustTextareaHeight = () => {
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto";
+      const maxHeight = 120; // Maximum height in pixels
+      const newHeight = Math.min(inputRef.current.scrollHeight, maxHeight);
+      inputRef.current.style.height = `${newHeight}px`;
+    }
+  };
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [input]);
 
   const handleCommandSelect = (cmd: string) => {
     setInput(cmd + " ");
@@ -187,35 +203,61 @@ export function ChatPanel({ onSendMessage, messages, isLoading }: ChatPanelProps
 
       {/* Input */}
       <div className="p-4 border-t border-border/50 bg-card">
-        <div className="relative flex items-center gap-2 bg-background border border-border/50 rounded-lg p-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0 hover:bg-accent"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-          
-          <Input
-            ref={inputRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Ask TestVista..."
-            className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-sm"
-            disabled={isLoading}
-          />
-          
-          <div className="flex items-center gap-1">
+        <div className="relative bg-background border border-border/50 rounded-lg">
+          {/* Top toolbar */}
+          <div className="flex items-center gap-1 px-3 py-2 border-b border-border/20">
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 px-2 text-xs font-medium hover:bg-accent text-muted-foreground"
+              className="h-7 w-7 p-0 hover:bg-accent"
+              title="Mention"
             >
-              <Lightbulb className="h-3 w-3 mr-1" />
-              Chat
+              <AtSign className="h-3.5 w-3.5" />
             </Button>
             
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 w-7 p-0 hover:bg-accent"
+              title="Upload"
+            >
+              <Plus className="h-3.5 w-3.5" />
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsChatMode(!isChatMode)}
+              className={cn(
+                "h-7 px-2 text-xs font-medium hover:bg-accent",
+                isChatMode ? "text-primary bg-primary/10" : "text-muted-foreground"
+              )}
+              title="Toggle Chat Mode"
+            >
+              <MessageSquare className="h-3 w-3 mr-1" />
+              Chat
+            </Button>
+          </div>
+          
+          {/* Text input area */}
+          <div className="p-3">
+            <Textarea
+              ref={inputRef}
+              value={input}
+              onChange={(e) => {
+                setInput(e.target.value);
+                adjustTextareaHeight();
+              }}
+              onKeyPress={handleKeyPress}
+              placeholder="Ask TestVista..."
+              className="min-h-[60px] max-h-[120px] resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-sm p-0"
+              disabled={isLoading}
+              style={{ height: "60px" }}
+            />
+          </div>
+          
+          {/* Bottom send button */}
+          <div className="flex justify-end p-3 pt-0">
             <Button 
               onClick={handleSend} 
               disabled={!input.trim() || isLoading}
