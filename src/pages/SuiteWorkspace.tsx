@@ -18,6 +18,8 @@ interface Message {
   timestamp: Date;
   type?: "command" | "normal" | "artifact-selection" | "action-prompt";
   actions?: { label: string; action: string }[];
+  versionInfo?: ArtifactVersion;
+  hasModifiedArtifacts?: boolean;
 }
 interface TraceabilityLink {
   id: string;
@@ -688,8 +690,6 @@ export default function SuiteWorkspace() {
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [showSaveVersionDialog, setShowSaveVersionDialog] = useState(false);
   const [saveAsCheckpoint, setSaveAsCheckpoint] = useState(false);
-  const [showActionChips, setShowActionChips] = useState(false);
-  const [latestVersionForDisplay, setLatestVersionForDisplay] = useState<ArtifactVersion | undefined>();
   
   // Initialize version manager
   const versionManager = useVersionManager({
@@ -794,19 +794,9 @@ export default function SuiteWorkspace() {
         hasModifiedArtifacts = false;
       }
 
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "ai",
-        content: aiResponse,
-        timestamp: new Date(),
-        type: "normal"
-      };
-
-      setMessages(prev => [...prev, aiMessage]);
-      setIsLoading(false);
-      
       // Auto-save version for AI modifications
       let command = '';
+      let versionInfo: ArtifactVersion | undefined = undefined;
       const lowerMessage = message.toLowerCase();
       
       if (message.includes('/sample')) command = '/sample';
@@ -819,21 +809,25 @@ export default function SuiteWorkspace() {
         console.log('🎯 Matched artifact generation pattern, command set to:', command);
       }
       
-      if (command) {
+      if (command && hasModifiedArtifacts) {
         console.log('🚀 Creating auto-save version with command:', command);
         const currentArtifacts = { requirements, viewpoints, testCases };
-        const newVersion = versionManager.autoSaveVersion(currentArtifacts, command);
-        setLatestVersionForDisplay(newVersion);
-        console.log('📦 Version created:', newVersion);
-        console.log('🎯 Setting showActionChips to true and latestVersionForDisplay to:', newVersion);
-        
-        setTimeout(() => {
-          console.log('💫 Showing action chips - showActionChips:', true, 'latestVersionForDisplay:', newVersion);
-          setShowActionChips(true);
-        }, 2000); // 2 second delay to simulate AI finishing
-      } else {
-        console.log('❌ No command matched for message:', message);
+        versionInfo = versionManager.autoSaveVersion(currentArtifacts, command);
+        console.log('📦 Version created:', versionInfo);
       }
+
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "ai",
+        content: aiResponse,
+        timestamp: new Date(),
+        type: "normal",
+        versionInfo: versionInfo,
+        hasModifiedArtifacts: hasModifiedArtifacts
+      };
+
+      setMessages(prev => [...prev, aiMessage]);
+      setIsLoading(false);
     }, 1500);
   };
   const handleUpdateRequirement = (id: string, data: Partial<Requirement>, field?: string, oldValue?: string) => {
@@ -1004,8 +998,6 @@ export default function SuiteWorkspace() {
           setViewpoints(data.viewpoints);
           setTestCases(data.testCases);
         });
-        setShowActionChips(false);
-        setLatestVersionForDisplay(undefined);
         toast({
           title: "Version Restored",
           description: `Successfully restored to version ${version.versionNumber}`
@@ -1018,8 +1010,6 @@ export default function SuiteWorkspace() {
     const currentArtifacts = { requirements, viewpoints, testCases };
     const newVersion = versionManager.saveVersion(currentArtifacts, description);
     setShowSaveVersionDialog(false);
-    setShowActionChips(false);
-    setLatestVersionForDisplay(undefined);
     toast({
       title: "Version Saved",
       description: `Version ${newVersion.versionNumber} saved successfully`
@@ -1118,8 +1108,6 @@ export default function SuiteWorkspace() {
             hasUnsavedChanges={versionManager.hasUnsavedChanges}
             onVersionAction={handleVersionAction}
             onViewHistory={() => setShowVersionHistory(true)}
-            showActionChips={showActionChips}
-            latestVersionForDisplay={latestVersionForDisplay}
           />
         </div>
 
