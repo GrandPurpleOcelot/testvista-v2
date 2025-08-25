@@ -109,7 +109,7 @@ export function ChatPanel({
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
           {messages.length === 0 && <div className="text-center text-muted-foreground py-8">
-              <Logo className="h-12 w-12 mx-auto mb-4" />
+              <Logo className="mx-auto mb-4" size="lg" iconOnly />
               <p className="text-lg font-medium">Welcome to TestVista</p>
               <p className="text-sm">Start by uploading requirements or asking me to generate test cases</p>
               <div className="mt-4 space-y-2">
@@ -124,7 +124,7 @@ export function ChatPanel({
 
           {messages.map(message => <div key={message.id} className={cn("flex gap-3", message.role === "user" ? "justify-end" : "justify-start")}>
               {message.role === "ai" && <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Logo className="h-5 w-5" />
+                  <Logo size="sm" iconOnly />
                 </div>}
               
               <div className={cn("max-w-[80%] rounded-lg p-3 text-sm", message.role === "user" ? "bg-primary text-primary-foreground" : "bg-card border border-border/50 text-card-foreground")}>
@@ -170,7 +170,7 @@ export function ChatPanel({
 
           {isLoading && <div className="flex gap-3 justify-start">
               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <Logo className="h-5 w-5" />
+                <Logo size="sm" iconOnly />
               </div>
               <div className="bg-card border border-border/50 rounded-lg p-3 text-sm">
                 <div className="flex items-center gap-2">

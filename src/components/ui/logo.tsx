@@ -3,9 +3,10 @@ import { cn } from "@/lib/utils";
 interface LogoProps {
   className?: string;
   size?: "sm" | "md" | "lg";
+  iconOnly?: boolean;
 }
 
-export function Logo({ className, size = "md" }: LogoProps) {
+export function Logo({ className, size = "md", iconOnly = false }: LogoProps) {
   const iconSize = {
     sm: "h-6 w-6",
     md: "h-8 w-8",
@@ -23,6 +24,16 @@ export function Logo({ className, size = "md" }: LogoProps) {
     md: "text-sm", 
     lg: "text-base"
   };
+
+  if (iconOnly) {
+    return (
+      <img 
+        src="/lovable-uploads/8f1b7e00-43c6-40df-9a5a-393392e76de0.png"
+        alt="TestVista Logo"
+        className={cn(iconSize[size], "object-contain", className)}
+      />
+    );
+  }
 
   return (
     <div className={cn("flex items-center gap-3", className)}>
