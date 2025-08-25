@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Send, Bot, User, Upload, Zap, Target } from "lucide-react";
+import { Send, Bot, User, Upload, Zap, Target, Plus, Lightbulb, ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -187,27 +187,45 @@ export function ChatPanel({ onSendMessage, messages, isLoading }: ChatPanelProps
 
       {/* Input */}
       <div className="p-4 border-t border-border/50 bg-card">
-        <div className="flex gap-2">
+        <div className="relative flex items-center gap-2 bg-background border border-border/50 rounded-lg p-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0 hover:bg-accent"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+          
           <Input
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Type a message or / for commands..."
-            className="flex-1"
+            placeholder="Ask TestVista..."
+            className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-sm"
             disabled={isLoading}
           />
-          <Button 
-            onClick={handleSend} 
-            disabled={!input.trim() || isLoading}
-            className="px-3"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
+          
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 px-2 text-xs font-medium hover:bg-accent text-muted-foreground"
+            >
+              <Lightbulb className="h-3 w-3 mr-1" />
+              Chat
+            </Button>
+            
+            <Button 
+              onClick={handleSend} 
+              disabled={!input.trim() || isLoading}
+              size="sm"
+              className="h-8 w-8 p-0 bg-primary hover:bg-primary/90"
+            >
+              <ArrowUp className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          Press Enter to send, / for commands
-        </p>
       </div>
     </div>
   );
