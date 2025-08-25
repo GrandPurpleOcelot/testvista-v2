@@ -694,13 +694,6 @@ export default function SuiteWorkspace() {
         content: "Now, let's configure what artifacts you'd like me to generate for your test suite:\n\n**Artifact Selection:**\n✅ Requirements & Test Cases (selected by default)\n☐ Viewpoints - Different perspectives and stakeholder views\n☐ Scenarios - User journey and use case scenarios\n\nPlease let me know which additional artifacts you'd like to include, or type 'continue' if the default selection works for you.",
         timestamp: new Date(),
         type: "normal"
-      },
-      {
-        id: "template-selection",
-        role: "ai",
-        content: "**Prompt Template Selection:**\n\nChoose a template approach for generating your test artifacts:\n\n• **Comprehensive Testing** - Covers functional, non-functional, and edge cases\n• **Security-Focused** - Emphasizes security testing and vulnerability scenarios\n• **Performance Testing** - Focuses on load, stress, and performance validation\n• **Custom** - Tailored approach based on your specific requirements\n\nWhich template approach would work best for your project?",
-        timestamp: new Date(),
-        type: "normal"
       }
     ]);
   }, []);
