@@ -797,6 +797,7 @@ export default function SuiteWorkspace() {
       if (message.includes('/sample')) command = '/sample';
       else if (message.includes('/viewpoints')) command = '/viewpoints';
       else if (message.includes('ARTIFACT_SELECTION')) command = 'ARTIFACT_SELECTION';
+      else if (message.includes('Generating artifacts now')) command = '/viewpoints'; // Treat as viewpoints generation
       
       if (command) {
         const currentArtifacts = { requirements, viewpoints, testCases };
@@ -804,12 +805,12 @@ export default function SuiteWorkspace() {
         setLatestVersionForDisplay(newVersion);
         setTimeout(() => {
           setShowActionChips(true);
-        }, 500);
+        }, 2000); // 2 second delay to simulate AI finishing
         
-        // Auto-hide action chips after 8 seconds
+        // Auto-hide action chips after 10 seconds
         setTimeout(() => {
           setShowActionChips(false);
-        }, 8500);
+        }, 12000);
       }
     }, 1500);
   };
