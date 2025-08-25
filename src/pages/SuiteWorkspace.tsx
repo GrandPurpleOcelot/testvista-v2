@@ -727,9 +727,6 @@ export default function SuiteWorkspace() {
     };
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
-    
-    // Hide action chips when new message is sent
-    setShowActionChips(false);
 
     // Simulate AI processing
     setTimeout(() => {
