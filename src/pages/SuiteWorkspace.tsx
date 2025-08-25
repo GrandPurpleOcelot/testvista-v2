@@ -812,7 +812,12 @@ export default function SuiteWorkspace() {
           "I'm here to help optimize your testing process. I can generate test cases, create viewpoints for different testing perspectives, and help establish clear traceability between requirements and tests."
         ];
         aiResponse = responses[Math.floor(Math.random() * responses.length)];
-        hasModifiedArtifacts = false;
+        hasModifiedArtifacts = !chatMode; // Show action chips for all responses when chat mode is OFF
+      }
+
+      // When chat mode is OFF, ALL AI responses should show action chips
+      if (!chatMode) {
+        hasModifiedArtifacts = true;
       }
 
       // Auto-save version for AI modifications
