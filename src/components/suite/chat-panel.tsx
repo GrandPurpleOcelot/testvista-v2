@@ -6,7 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
-import { Send, Bot, User, Upload, Zap, Target, Plus, Lightbulb, ArrowUp, AtSign, MessageSquare, Clock } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Send, Bot, User, Upload, Zap, Target, Plus, Lightbulb, ArrowUp, AtSign, MessageSquare, Clock, FileText, File } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 import { ArtifactSelectionModal } from "./artifact-selection-modal";
@@ -32,6 +33,7 @@ interface ChatPanelProps {
   onViewHistory?: () => void;
   chatMode: boolean;
   onChatModeChange: (chatMode: boolean) => void;
+  uploadedFiles?: { id: string; name: string; type: string }[];
 }
 const slashCommands = [{
   cmd: "/upload",
@@ -58,11 +60,13 @@ export function ChatPanel({
   onVersionAction,
   onViewHistory,
   chatMode,
-  onChatModeChange
+  onChatModeChange,
+  uploadedFiles = []
 }: ChatPanelProps) {
   const [input, setInput] = useState("");
   const [showCommands, setShowCommands] = useState(false);
   const [showArtifactModal, setShowArtifactModal] = useState(false);
+  const [showFileMention, setShowFileMention] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const scrollToBottom = () => {
@@ -107,6 +111,14 @@ export function ChatPanel({
   useEffect(() => {
     setShowCommands(input.startsWith("/") && filteredCommands.length > 0);
   }, [input]);
+
+  // Handle file selection
+  const handleFileSelect = (fileName: string) => {
+    const mentionText = `@${fileName}`;
+    setInput(prev => prev + mentionText + " ");
+    setShowFileMention(false);
+    inputRef.current?.focus();
+  };
   return <TooltipProvider>
       <div className="h-full flex flex-col bg-workspace-chat border-r border-border/50">
         {/* Header */}
@@ -255,17 +267,50 @@ export function ChatPanel({
 
             {/* Tool buttons row - now below text input */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors">
-                      <AtSign className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Mention a Document</p>
-                  </TooltipContent>
-                </Tooltip>
+               <div className="flex items-center gap-1">
+                <Popover open={showFileMention} onOpenChange={setShowFileMention}>
+                  <PopoverTrigger asChild>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors">
+                          <AtSign className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Mention a Document</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 p-2" align="start" side="top">
+                    <div className="space-y-1">
+                      <div className="text-sm font-medium px-2 py-1 text-muted-foreground">
+                        Uploaded Files
+                      </div>
+                      {uploadedFiles.length === 0 ? (
+                        <div className="px-2 py-4 text-sm text-muted-foreground text-center">
+                          No files uploaded yet
+                        </div>
+                      ) : (
+                        <div className="space-y-1">
+                          {uploadedFiles.map((file) => (
+                            <button
+                              key={file.id}
+                              onClick={() => handleFileSelect(file.name)}
+                              className="w-full flex items-center gap-2 px-2 py-2 text-sm hover:bg-accent rounded-md transition-colors text-left"
+                            >
+                              {file.type.includes('pdf') ? (
+                                <FileText className="h-4 w-4 text-red-500" />
+                              ) : (
+                                <File className="h-4 w-4 text-blue-500" />
+                              )}
+                              <span className="truncate">{file.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 
                 <Tooltip>
                   <TooltipTrigger asChild>

@@ -687,6 +687,14 @@ export default function SuiteWorkspace() {
   const [suiteStatus, setSuiteStatus] = useState<"idle" | "running" | "paused">("idle");
   const [chatMode, setChatMode] = useState(false); // false = modify artifacts, true = chat only
   
+  // Mock uploaded files
+  const uploadedFiles = [
+    { id: "file1", name: "requirements-doc.pdf", type: "application/pdf" },
+    { id: "file2", name: "user-stories.docx", type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
+    { id: "file3", name: "test-plan.xlsx", type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" },
+    { id: "file4", name: "api-specification.json", type: "application/json" }
+  ];
+  
   // Version management state
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [showSaveVersionDialog, setShowSaveVersionDialog] = useState(false);
@@ -1167,6 +1175,7 @@ export default function SuiteWorkspace() {
             onViewHistory={() => setShowVersionHistory(true)}
             chatMode={chatMode}
             onChatModeChange={setChatMode}
+            uploadedFiles={uploadedFiles}
           />
         </div>
 
