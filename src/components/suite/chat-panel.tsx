@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { Send, Bot, User, Upload, Zap, Target, Plus, Lightbulb, ArrowUp, AtSign, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -87,53 +88,72 @@ export function ChatPanel({ onSendMessage, messages, isLoading }: ChatPanelProps
   }, [input]);
 
   return (
-    <div className="h-full flex flex-col bg-workspace-chat border-r border-border/50">
-      {/* Header */}
-      <div className="p-4 border-b border-border/50 bg-card">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="font-semibold text-card-foreground">AI Test Assistant</h2>
-            <p className="text-sm text-muted-foreground">Guide test case generation with natural language</p>
-          </div>
-          
-          {/* Tools in header */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
-              title="Mention"
-            >
-              <AtSign className="h-4 w-4" />
-            </Button>
+    <TooltipProvider>
+      <div className="h-full flex flex-col bg-workspace-chat border-r border-border/50">
+        {/* Header */}
+        <div className="p-4 border-b border-border/50 bg-card">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="font-semibold text-card-foreground">AI Test Assistant</h2>
+              <p className="text-sm text-muted-foreground">Guide test case generation with natural language</p>
+            </div>
             
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
-              title="Upload file"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsChatMode(!isChatMode)}
-              className={cn(
-                "h-8 px-3 text-xs font-medium transition-all duration-200 rounded-md",
-                isChatMode 
-                  ? "bg-primary/10 text-primary hover:bg-primary/15" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-              )}
-              title="Toggle Chat Mode"
-            >
-              <MessageSquare className="h-3.5 w-3.5 mr-1" />
-              Chat
-            </Button>
+            {/* Tools in header */}
+            <div className="flex items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <AtSign className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Mention a Document</p>
+                </TooltipContent>
+              </Tooltip>
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Attach Files</p>
+                </TooltipContent>
+              </Tooltip>
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsChatMode(!isChatMode)}
+                    className={cn(
+                      "h-8 px-3 text-xs font-medium transition-all duration-200 rounded-md",
+                      isChatMode 
+                        ? "bg-primary/10 text-primary hover:bg-primary/15" 
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                    )}
+                  >
+                    <MessageSquare className="h-3.5 w-3.5 mr-1" />
+                    Chat
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Chat without making edit</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
           </div>
         </div>
-      </div>
 
       {/* Messages */}
       <ScrollArea className="flex-1 p-4">
@@ -287,5 +307,6 @@ export function ChatPanel({ onSendMessage, messages, isLoading }: ChatPanelProps
         </div>
       </div>
     </div>
+    </TooltipProvider>
   );
 }
