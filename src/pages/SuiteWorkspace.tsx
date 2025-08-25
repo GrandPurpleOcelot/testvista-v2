@@ -752,6 +752,22 @@ export default function SuiteWorkspace() {
         aiResponse = `Perfect! I'll generate ${artifactNames} for your test suite. This will provide comprehensive coverage of your testing needs.\n\nGenerating artifacts now...`;
         hasModifiedArtifacts = true;
       }
+      // Handle specific artifact generation commands
+      else if (message.includes("/sample")) {
+        aiResponse = "Perfect! I've generated comprehensive sample test cases for your suite. These include functional tests, edge cases, and integration scenarios with detailed steps and expected outcomes.";
+        hasModifiedArtifacts = true;
+      }
+      else if (message.includes("/viewpoints")) {
+        aiResponse = "Excellent! I've created multiple testing viewpoints including functional, security, performance, and usability perspectives. Each viewpoint provides targeted testing strategies for comprehensive coverage.";
+        hasModifiedArtifacts = true;
+      }
+      else if (message.toLowerCase().includes("generating artifacts") || 
+               (message.toLowerCase().includes("generate") && message.toLowerCase().includes("viewpoints")) ||
+               (message.toLowerCase().includes("generate") && message.toLowerCase().includes("requirements"))) {
+        aiResponse = "✅ **Artifacts Generated Successfully!**\n\nI've created comprehensive requirements and testing viewpoints for your test suite:\n\n**Requirements Generated:**\n- 8 functional requirements covering core functionality\n- 3 non-functional requirements for performance and security\n- 2 integration requirements for system compatibility\n\n**Testing Viewpoints Created:**\n- Functional Testing Viewpoint\n- Security Testing Viewpoint \n- Performance Testing Viewpoint\n- Usability Testing Viewpoint\n- Integration Testing Viewpoint\n\nAll artifacts are now available in your workspace with full traceability established.";
+        hasModifiedArtifacts = true;
+        console.log('🎯 Detected artifact generation message, setting hasModifiedArtifacts to true');
+      }
       // Handle specific commands
       else if (message.startsWith("/sample")) {
         aiResponse = "I'll generate sample test cases based on common user authentication scenarios. These will serve as a foundation that you can customize for your specific needs.\n\n✅ Generated 8 comprehensive test cases covering:\n- Valid registration flows\n- Password validation scenarios\n- Email verification processes\n- Error handling cases\n\nEach test case includes detailed steps, expected results, and traceability links to requirements.";
@@ -794,23 +810,37 @@ export default function SuiteWorkspace() {
       
       // Auto-save version for AI modifications
       let command = '';
+      const lowerMessage = message.toLowerCase();
+      
       if (message.includes('/sample')) command = '/sample';
       else if (message.includes('/viewpoints')) command = '/viewpoints';
       else if (message.includes('ARTIFACT_SELECTION')) command = 'ARTIFACT_SELECTION';
-      else if (message.includes('Generating artifacts now')) command = '/viewpoints'; // Treat as viewpoints generation
+      else if (lowerMessage.includes('generating artifacts') || 
+               (lowerMessage.includes('generate') && lowerMessage.includes('viewpoints')) ||
+               (lowerMessage.includes('generate') && lowerMessage.includes('requirements'))) {
+        command = '/viewpoints'; // Treat as viewpoints generation
+        console.log('🎯 Matched artifact generation pattern, command set to:', command);
+      }
       
       if (command) {
+        console.log('🚀 Creating auto-save version with command:', command);
         const currentArtifacts = { requirements, viewpoints, testCases };
         const newVersion = versionManager.autoSaveVersion(currentArtifacts, command);
         setLatestVersionForDisplay(newVersion);
+        console.log('📦 Version created:', newVersion);
+        
         setTimeout(() => {
+          console.log('💫 Showing action chips');
           setShowActionChips(true);
         }, 2000); // 2 second delay to simulate AI finishing
         
         // Auto-hide action chips after 10 seconds
         setTimeout(() => {
+          console.log('🫥 Hiding action chips');
           setShowActionChips(false);
         }, 12000);
+      } else {
+        console.log('❌ No command matched for message:', message);
       }
     }, 1500);
   };
