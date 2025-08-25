@@ -687,6 +687,7 @@ export default function SuiteWorkspace() {
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [showSaveVersionDialog, setShowSaveVersionDialog] = useState(false);
   const [saveAsCheckpoint, setSaveAsCheckpoint] = useState(false);
+  const [showActionChips, setShowActionChips] = useState(false);
   
   // Initialize version manager
   const {
@@ -730,99 +731,60 @@ export default function SuiteWorkspace() {
     };
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
+    
+    // Hide action chips when new message is sent
+    setShowActionChips(false);
 
     // Simulate AI processing
     setTimeout(() => {
       let aiResponse = "";
+      let hasModifiedArtifacts = false;
       
       // Handle artifact selection
       if (message.startsWith("ARTIFACT_SELECTION:")) {
         const selectedArtifacts = message.replace("ARTIFACT_SELECTION:", "").split(",");
         const artifactNames = selectedArtifacts.map(id => {
           switch(id) {
-            case "requirements": return "Requirements & Test Cases";
-            case "viewpoints": return "Viewpoints"; 
-            case "scenarios": return "Scenarios";
+            case "requirements": return "Requirements";
+            case "viewpoints": return "Testing Viewpoints";
+            case "testcases": return "Test Cases";
+            case "traceability": return "Traceability Matrix";
             default: return id;
           }
-        });
+        }).join(", ");
         
-        aiResponse = `Perfect! You've selected: **${artifactNames.join(", ")}**\n\nBefore I generate comprehensive content, would you like me to create sample artifacts first? This will help you:\n\n• **Preview the structure** and format of each artifact type\n• **Validate the approach** before full generation\n• **Make adjustments** to better fit your needs\n\n**Options:**\n• Generate samples for each selected artifact\n• Skip samples and proceed with full generation\n\nWhat would you prefer?`;
-        
-        // Add the AI response with action buttons
-        const responseMessage: Message = {
-          id: Date.now().toString() + "-ai",
-          role: "ai",
-          content: aiResponse,
-          timestamp: new Date(),
-          type: "action-prompt",
-          actions: [
-            { label: "Generate Samples First", action: "GENERATE_SAMPLES" },
-            { label: "Implement the Plan", action: "IMPLEMENT_PLAN" }
-          ]
-        };
-        setMessages(prev => [...prev, responseMessage]);
-        setIsLoading(false);
-        return;
-      } else if (message === "IMPLEMENT_PLAN") {
-        aiResponse = "🚀 **Implementing the plan!** Generating comprehensive artifacts based on your selections...\n\nI'm now creating:\n• Detailed requirements with full traceability\n• Complete test cases with all scenarios\n• Comprehensive viewpoints for thorough testing\n\nThis may take a moment as I generate high-quality content.";
-      } else if (message === "GENERATE_SAMPLES") {
-        aiResponse = "📋 **Generating sample artifacts** to preview the structure and approach...\n\nCreating sample:\n• Requirements & Test Cases\n• Viewpoints\n\nYou'll be able to review these before proceeding with full generation.";
-      } else if (message.startsWith("/sample")) {
-        const count = message.split(" ")[1] || "3";
-        aiResponse = `Generating ${count} sample test cases based on your requirements...`;
-
-        // Simulate adding new test cases
-        setTimeout(() => {
-          const newTestCases: TestCase[] = [{
-            id: `TC-${String(testCases.length + 1).padStart(2, '0')}`,
-            title: "Login with maximum length email",
-            steps: "1. Open login page\n2. Enter 255-character email\n3. Enter valid password\n4. Click Login",
-            expectedResult: "System accepts input and processes login",
-            severity: "Low" as const,
-            reqIds: ["R-001"],
-            viewpointIds: ["VP-01"],
-            tags: ["boundary", "edge-case"],
-            locked: false,
-            lastModified: new Date(),
-            changeHistory: []
-          }];
-          setTestCases(prev => [...prev, ...newTestCases]);
-          toast({
-            title: "Test Cases Generated",
-            description: `Added ${newTestCases.length} new test cases`
-          });
-        }, 1500);
-      } else if (message.startsWith("/viewpoints")) {
-        const feature = message.split(" ").slice(1).join(" ") || "authentication";
-        aiResponse = `Creating testing viewpoints for ${feature}...`;
-        setTimeout(() => {
-          const newViewpoint: Viewpoint = {
-            id: `VP-${String(viewpoints.length + 1).padStart(2, '0')}`,
-            area: feature.charAt(0).toUpperCase() + feature.slice(1),
-            intent: `Comprehensive testing strategy for ${feature} functionality`,
-            dataVariants: "Valid inputs, Invalid inputs, Edge cases, Security scenarios",
-            notes: "AI-generated viewpoint - review and refine as needed",
-            linkedRequirements: [],
-            linkedTestCases: [],
-            lastModified: new Date(),
-            changeHistory: []
-          };
-          setViewpoints(prev => [...prev, newViewpoint]);
-          toast({
-            title: "Viewpoint Created",
-            description: `Added new viewpoint for ${feature}`
-          });
-        }, 1000);
-      } else if (message.startsWith("/export")) {
-        const format = message.split(" ")[1] || "csv";
-        aiResponse = `Preparing export in ${format.toUpperCase()} format...\n\n✅ ${testCases.length} test cases validated\n⚠️ ${requirements.length - new Set(testCases.flatMap(tc => tc.reqIds)).size} uncovered requirements\n\nReady to export!`;
-      } else if (message.startsWith("/upload")) {
-        aiResponse = "Upload functionality will open a file picker to select your requirements document (PDF, Word, or Excel). The AI will parse and extract requirements automatically.";
-      } else {
-        // Handle natural language
-        aiResponse = "I understand you want to work on test cases. I can help you:\n\n• Generate test cases for specific features\n• Create testing viewpoints\n• Review coverage gaps\n• Export test cases\n\nWhat would you like to focus on?";
+        aiResponse = `Perfect! I'll generate ${artifactNames} for your test suite. This will provide comprehensive coverage of your testing needs.\n\nGenerating artifacts now...`;
+        hasModifiedArtifacts = true;
       }
+      // Handle specific commands
+      else if (message.startsWith("/sample")) {
+        aiResponse = "I'll generate sample test cases based on common user authentication scenarios. These will serve as a foundation that you can customize for your specific needs.\n\n✅ Generated 8 comprehensive test cases covering:\n- Valid registration flows\n- Password validation scenarios\n- Email verification processes\n- Error handling cases\n\nEach test case includes detailed steps, expected results, and traceability links to requirements.";
+        hasModifiedArtifacts = true;
+      }
+      else if (message.startsWith("/viewpoints")) {
+        aiResponse = "I've created testing viewpoints that provide different perspectives for comprehensive test coverage:\n\n✅ **Functional Testing Viewpoint**: Focuses on core authentication features\n✅ **Security Testing Viewpoint**: Emphasizes password policies and data protection\n✅ **Usability Testing Viewpoint**: Ensures user-friendly registration experience\n✅ **Performance Testing Viewpoint**: Tests system behavior under load\n\nThese viewpoints will help ensure no critical testing areas are overlooked.";
+        hasModifiedArtifacts = true;
+      }
+      else if (message.startsWith("/export")) {
+        aiResponse = "I'm preparing your test cases for export. You can choose from several formats:\n\n📄 **Excel (.xlsx)** - Structured spreadsheet with all test details\n📋 **CSV** - Simple comma-separated format for easy import\n📝 **Word (.docx)** - Formatted document ready for documentation\n🔗 **TestRail** - Direct import format for TestRail integration\n\nWhich format would you prefer?";
+        hasModifiedArtifacts = false;
+      }
+      else if (message.startsWith("/upload")) {
+        aiResponse = "I'm ready to analyze your requirements document. Please upload your file and I'll:\n\n🔍 **Extract Requirements** - Identify and parse all functional requirements\n📊 **Generate Test Cases** - Create comprehensive test cases for each requirement\n🎯 **Create Viewpoints** - Develop testing perspectives for thorough coverage\n🔗 **Build Traceability** - Link everything together for complete visibility\n\nSupported formats: PDF, Word (.docx), Excel (.xlsx), and plain text files.";
+        hasModifiedArtifacts = false;
+      }
+      // Handle general AI responses
+      else {
+        const responses = [
+          "I can help you generate comprehensive test cases, analyze requirements, create testing viewpoints, and establish traceability matrices. What would you like to work on?",
+          "Let me assist you with test case generation. I can create detailed test scenarios based on your requirements, including steps, expected results, and priority levels.",
+          "I can analyze your requirements and suggest comprehensive testing strategies. Would you like me to focus on functional testing, security aspects, or performance considerations?",
+          "I'm here to help optimize your testing process. I can generate test cases, create viewpoints for different testing perspectives, and help establish clear traceability between requirements and tests."
+        ];
+        aiResponse = responses[Math.floor(Math.random() * responses.length)];
+        hasModifiedArtifacts = false;
+      }
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "ai",
@@ -830,9 +792,18 @@ export default function SuiteWorkspace() {
         timestamp: new Date(),
         type: "normal"
       };
+
       setMessages(prev => [...prev, aiMessage]);
       setIsLoading(false);
-    }, 1000 + Math.random() * 1000);
+      
+      // Show action chips after AI finishes modifying artifacts
+      if (hasModifiedArtifacts) {
+        markUnsavedChanges();
+        setTimeout(() => {
+          setShowActionChips(true);
+        }, 500); // Small delay for better UX
+      }
+    }, 1500);
   };
   const handleUpdateRequirement = (id: string, data: Partial<Requirement>, field?: string, oldValue?: string) => {
     setRequirements(prev => prev.map(req => {
@@ -1010,6 +981,7 @@ export default function SuiteWorkspace() {
             setRequirements(restoredData.requirements);
             setViewpoints(restoredData.viewpoints);
             setTestCases(restoredData.testCases);
+            setShowActionChips(false); // Hide action chips after restore
             toast({
               title: "Version Restored",
               description: "Successfully restored to selected version"
@@ -1024,6 +996,7 @@ export default function SuiteWorkspace() {
     const currentData = { requirements, viewpoints, testCases };
     const version = saveVersion(description, currentData, isCheckpoint);
     
+    setShowActionChips(false); // Hide action chips after saving
     toast({
       title: isCheckpoint ? "Checkpoint Created" : "Version Saved",
       description: `Version ${version.versionNumber} saved successfully`
@@ -1136,7 +1109,7 @@ export default function SuiteWorkspace() {
             messages={messages} 
             onSendMessage={handleSendMessage} 
             isLoading={isLoading}
-            hasUnsavedChanges={versionManager.hasUnsavedChanges}
+            hasUnsavedChanges={showActionChips}
             onVersionAction={handleVersionAction}
             onViewHistory={() => setShowVersionHistory(true)}
           />
