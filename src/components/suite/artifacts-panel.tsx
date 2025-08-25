@@ -40,11 +40,13 @@ interface Requirement {
   description: string;
   priority: "High" | "Medium" | "Low";
   status: "Parsed" | "Reviewed" | "Approved";
+  relationshipStatus?: "New" | "Linked" | "Complete";
   linkedViewpoints: string[];
   linkedTestCases: string[];
   sourceDocument?: string;
   sourceSection?: string;
   extractedContent?: string;
+  createdAt?: Date;
   lastModified: Date;
   changeHistory: Array<{
     timestamp: Date;
@@ -101,6 +103,7 @@ interface ArtifactsPanelProps {
   selectedArtifact: {type: string, id: string} | null;
   onSelectArtifact: (artifact: {type: string, id: string} | null) => void;
   onExport: (format: string) => void;
+  onGenerateArtifacts?: (requirementId: string) => void;
   isFullScreen?: boolean;
 }
 
@@ -115,6 +118,7 @@ export function ArtifactsPanel({
   selectedArtifact,
   onSelectArtifact,
   onExport,
+  onGenerateArtifacts,
   isFullScreen = false
 }: ArtifactsPanelProps) {
   const [activeTab, setActiveTab] = useState("requirements");
@@ -294,6 +298,7 @@ export function ArtifactsPanel({
                       selectedArtifact={selectedArtifact}
                       onSelectArtifact={onSelectArtifact}
                       onExport={onExport}
+                      onGenerateArtifacts={onGenerateArtifacts}
                       isFullScreen={true}
                     />
                   </FullScreenModalContent>
@@ -664,6 +669,7 @@ export function ArtifactsPanel({
                 else if (type === "viewpoint") setActiveTab("viewpoints");
                 else if (type === "testcase") setActiveTab("testcases");
               }}
+              onGenerateArtifacts={onGenerateArtifacts}
               showViewpointLayer={true}
             />
           </div>

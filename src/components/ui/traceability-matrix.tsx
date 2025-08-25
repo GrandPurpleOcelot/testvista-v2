@@ -10,7 +10,7 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { CheckCircle2, XCircle, ArrowRight, Filter, FileText, ChevronDown, ChevronRight } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, Filter, FileText, ChevronDown, ChevronRight, Sparkles, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
@@ -19,11 +19,13 @@ interface Requirement {
   description: string;
   priority: "High" | "Medium" | "Low";
   status: "Parsed" | "Reviewed" | "Approved";
+  relationshipStatus?: "New" | "Linked" | "Complete";
   linkedViewpoints: string[];
   linkedTestCases: string[];
   sourceDocument?: string;
   sourceSection?: string;
   extractedContent?: string;
+  createdAt?: Date;
 }
 
 interface TestCase {
@@ -46,6 +48,7 @@ interface TraceabilityMatrixProps {
   viewpoints: Viewpoint[];
   testCases: TestCase[];
   onNavigateToArtifact?: (type: string, id: string) => void;
+  onGenerateArtifacts?: (requirementId: string) => void;
   showViewpointLayer?: boolean;
 }
 
@@ -54,6 +57,7 @@ export function TraceabilityMatrix({
   viewpoints,
   testCases,
   onNavigateToArtifact,
+  onGenerateArtifacts,
   showViewpointLayer = true
 }: TraceabilityMatrixProps) {
   const [expandedContent, setExpandedContent] = useState<string | null>(null);
@@ -89,6 +93,60 @@ export function TraceabilityMatrix({
 
   const toggleContentExpansion = (reqId: string) => {
     setExpandedContent(expandedContent === reqId ? null : reqId);
+  };
+
+  const getRelationshipStatus = (req: Requirement) => {
+    // If explicitly set, use that status
+    if (req.relationshipStatus) return req.relationshipStatus;
+    
+    // Auto-detect based on relationships
+    const hasLinkedViewpoints = req.linkedViewpoints.length > 0;
+    const hasLinkedTestCases = req.linkedTestCases.length > 0;
+    const reqViewpoints = viewpoints.filter(vp => vp.linkedRequirements.includes(req.id));
+    const hasViewpointTestCases = testCases.filter(tc => 
+      tc.viewpointIds.some(vpId => reqViewpoints.some(vp => vp.id === vpId))
+    ).length > 0;
+    
+    // Check if requirement is new (created in the last 5 minutes)
+    const isNew = req.createdAt && (Date.now() - req.createdAt.getTime()) < 5 * 60 * 1000;
+    
+    if (isNew && !hasLinkedViewpoints && !hasLinkedTestCases && !hasViewpointTestCases) {
+      return "New";
+    }
+    
+    if ((hasLinkedViewpoints || hasLinkedTestCases || hasViewpointTestCases) && 
+        (!hasLinkedViewpoints || !hasLinkedTestCases)) {
+      return "Linked";
+    }
+    
+    if (hasLinkedViewpoints && hasLinkedTestCases) {
+      return "Complete";
+    }
+    
+    return "New";
+  };
+
+  const getRelationshipStatusBadge = (status: "New" | "Linked" | "Complete") => {
+    switch (status) {
+      case "New":
+        return {
+          color: "bg-warning/20 text-warning border-warning",
+          icon: <AlertTriangle className="h-3 w-3" />,
+          text: "New"
+        };
+      case "Linked":
+        return {
+          color: "bg-primary/20 text-primary border-primary",
+          icon: <CheckCircle2 className="h-3 w-3" />,
+          text: "Linked"
+        };
+      case "Complete":
+        return {
+          color: "bg-success/20 text-success border-success",
+          icon: <CheckCircle2 className="h-3 w-3" />,
+          text: "Complete"
+        };
+    }
   };
 
   return (
@@ -144,6 +202,7 @@ export function TraceabilityMatrix({
                   {showViewpointLayer && <TableHead className="w-32">Via Viewpoints</TableHead>}
                   <TableHead className="w-32">Direct Test Cases</TableHead>
                   <TableHead className="w-24">Coverage</TableHead>
+                  <TableHead className="w-24">Status</TableHead>
                   <TableHead className="w-20">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -152,6 +211,8 @@ export function TraceabilityMatrix({
                 const coverage = getCoverageStatus(req.id);
                 const testCases = getTestCasesByRequirement(req.id);
                 const linkedViewpoints = viewpoints.filter(vp => vp.linkedRequirements.includes(req.id));
+                const relationshipStatus = getRelationshipStatus(req);
+                const statusBadge = getRelationshipStatusBadge(relationshipStatus);
 
                 return (
                   <TableRow key={req.id} className="hover:bg-muted/50">
@@ -264,6 +325,36 @@ export function TraceabilityMatrix({
                         {coverage.status === "uncovered" && <XCircle className="h-3 w-3 inline mr-1" />}
                         {coverage.status !== "uncovered" && <CheckCircle2 className="h-3 w-3 inline mr-1" />}
                         {coverage.count}
+                      </div>
+                    </TableCell>
+                    
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        <Badge 
+                          variant="outline" 
+                          className={cn("text-xs border", statusBadge.color)}
+                        >
+                          {statusBadge.icon}
+                          <span className="ml-1">{statusBadge.text}</span>
+                        </Badge>
+                        {relationshipStatus === "New" && onGenerateArtifacts && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-6 text-xs px-2 bg-primary/10 hover:bg-primary/20 border-primary/30"
+                                onClick={() => onGenerateArtifacts(req.id)}
+                              >
+                                <Sparkles className="h-3 w-3 mr-1" />
+                                Generate
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Generate viewpoints and test cases for this requirement</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
                       </div>
                     </TableCell>
                     

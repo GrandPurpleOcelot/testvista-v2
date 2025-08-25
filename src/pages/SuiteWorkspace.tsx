@@ -43,11 +43,13 @@ interface Requirement {
   description: string;
   priority: "High" | "Medium" | "Low";
   status: "Parsed" | "Reviewed" | "Approved";
+  relationshipStatus?: "New" | "Linked" | "Complete";
   linkedViewpoints: string[];
   linkedTestCases: string[];
   sourceDocument?: string;
   sourceSection?: string;
   extractedContent?: string;
+  createdAt?: Date;
   lastModified: Date;
   changeHistory: Array<{
     timestamp: Date;
@@ -97,11 +99,13 @@ const mockRequirements: Requirement[] = [{
   description: "User can register with email and password",
   priority: "High",
   status: "Parsed",
+  relationshipStatus: "Complete",
   linkedViewpoints: ["VP-01"],
   linkedTestCases: ["TC-01", "TC-02", "TC-03"],
   sourceDocument: "User Requirements Specification v2.1",
   sourceSection: "Section 3.1.1 - User Registration",
   extractedContent: "The system shall allow new users to create an account using a valid email address and a password that meets the security policy requirements. The registration process shall include email verification to confirm account ownership.",
+  createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
   lastModified: new Date(),
   changeHistory: []
 }, {
@@ -109,11 +113,13 @@ const mockRequirements: Requirement[] = [{
   description: "User can log in with email and password",
   priority: "High",
   status: "Parsed",
+  relationshipStatus: "Complete",
   linkedViewpoints: ["VP-01", "VP-02"],
   linkedTestCases: ["TC-04", "TC-05", "TC-06"],
   sourceDocument: "User Requirements Specification v2.1",
   sourceSection: "Section 3.1.2 - User Authentication",
   extractedContent: "Registered users shall be able to authenticate themselves using their email address and password. The system shall provide clear feedback for successful and failed login attempts, including appropriate error messages for various failure scenarios.",
+  createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
   lastModified: new Date(),
   changeHistory: []
 }, {
@@ -250,8 +256,38 @@ const mockRequirements: Requirement[] = [{
   description: "Wishlist functionality for registered users",
   priority: "Low",
   status: "Parsed",
+  relationshipStatus: "Linked",
   linkedViewpoints: ["VP-10"],
   linkedTestCases: [],
+  createdAt: new Date(Date.now() - 48 * 60 * 60 * 1000), // 2 days ago
+  lastModified: new Date(),
+  changeHistory: []
+}, {
+  id: "R-016",
+  description: "Multi-factor authentication for enhanced security",
+  priority: "High",
+  status: "Parsed",
+  relationshipStatus: "New",
+  linkedViewpoints: [],
+  linkedTestCases: [],
+  sourceDocument: "Security Requirements Document v2.0",
+  sourceSection: "Section 2.1 - Enhanced Authentication",
+  extractedContent: "The system shall support multi-factor authentication (MFA) using SMS, email, or authenticator apps for enhanced user account security. Users should be able to enable/disable MFA from their profile settings.",
+  createdAt: new Date(Date.now() - 2 * 60 * 1000), // 2 minutes ago (new)
+  lastModified: new Date(),
+  changeHistory: []
+}, {
+  id: "R-017",
+  description: "Real-time inventory tracking and notifications",
+  priority: "Medium",
+  status: "Parsed",
+  relationshipStatus: "New",
+  linkedViewpoints: [],
+  linkedTestCases: [],
+  sourceDocument: "Business Requirements Document v2.1",
+  sourceSection: "Section 4.3 - Inventory Management",
+  extractedContent: "The system shall provide real-time inventory tracking with automatic low-stock notifications to administrators and out-of-stock notifications to customers attempting to purchase unavailable items.",
+  createdAt: new Date(Date.now() - 1 * 60 * 1000), // 1 minute ago (new)
   lastModified: new Date(),
   changeHistory: []
 }];
@@ -726,6 +762,107 @@ export default function SuiteWorkspace() {
       }
     ]);
   }, []);
+
+  const handleGenerateArtifacts = async (requirementId: string) => {
+    const requirement = requirements.find(req => req.id === requirementId);
+    if (!requirement) return;
+
+    setIsLoading(true);
+    
+    // Add AI message indicating generation started
+    const generationMessage: Message = {
+      id: `generation-${Date.now()}`,
+      role: "ai",
+      content: `🚀 **Generating Related Artifacts for ${requirementId}**\n\nAnalyzing requirement: "${requirement.description}"\n\nGenerating:\n• Testing viewpoints based on requirement scope\n• Initial test cases for validation\n• Establishing traceability links\n\nThis will take a moment...`,
+      timestamp: new Date(),
+      type: "normal"
+    };
+    setMessages(prev => [...prev, generationMessage]);
+
+    // Simulate AI processing time
+    setTimeout(() => {
+      // Generate new viewpoint
+      const newViewpointId = `VP-${String(viewpoints.length + 1).padStart(2, '0')}`;
+      const newViewpoint: Viewpoint = {
+        id: newViewpointId,
+        area: requirement.description.includes('security') || requirement.description.includes('authentication') 
+          ? 'Security & Authentication' 
+          : requirement.description.includes('inventory') 
+          ? 'Data Management' 
+          : 'Functional Testing',
+        intent: `Validate requirements related to: ${requirement.description}`,
+        dataVariants: 'Valid/Invalid inputs, Edge cases, Boundary conditions',
+        notes: `Auto-generated viewpoint for requirement ${requirementId}`,
+        linkedRequirements: [requirementId],
+        linkedTestCases: [],
+        lastModified: new Date(),
+        changeHistory: []
+      };
+
+      // Generate test cases
+      const newTestCases: TestCase[] = [];
+      for (let i = 0; i < 2; i++) {
+        const tcId = `TC-${String(testCases.length + newTestCases.length + 1).padStart(2, '0')}`;
+        newTestCases.push({
+          id: tcId,
+          title: `Test ${requirement.description} - Scenario ${i + 1}`,
+          steps: `1. Navigate to relevant feature\n2. Execute test scenario for ${requirement.description}\n3. Verify expected behavior`,
+          expectedResult: `Feature behaves as specified in ${requirementId}`,
+          severity: requirement.priority as "High" | "Medium" | "Low",
+          reqIds: [requirementId],
+          viewpointIds: [newViewpointId],
+          tags: ['auto-generated', 'functional'],
+          locked: false,
+          lastModified: new Date(),
+          changeHistory: []
+        });
+      }
+
+      // Update viewpoint with test case links
+      newViewpoint.linkedTestCases = newTestCases.map(tc => tc.id);
+
+      // Update requirement status and links
+      const updatedRequirements = requirements.map(req => 
+        req.id === requirementId 
+          ? { 
+              ...req, 
+              relationshipStatus: 'Complete' as const,
+              linkedViewpoints: [...req.linkedViewpoints, newViewpointId],
+              linkedTestCases: [...req.linkedTestCases, ...newTestCases.map(tc => tc.id)],
+              lastModified: new Date()
+            }
+          : req
+      );
+
+      // Update states
+      setRequirements(updatedRequirements);
+      setViewpoints(prev => [...prev, newViewpoint]);
+      setTestCases(prev => [...prev, ...newTestCases]);
+
+      // Mark as having unsaved changes for version management
+      versionManager.markUnsavedChanges();
+
+      // Add completion message
+      const completionMessage: Message = {
+        id: `completion-${Date.now()}`,
+        role: "ai",
+        content: `✅ **Artifacts Generated Successfully!**\n\n**Created for ${requirementId}: "${requirement.description}"**\n\n🎯 **New Viewpoint:** ${newViewpointId} - ${newViewpoint.area}\n📋 **Test Cases:** ${newTestCases.map(tc => tc.id).join(', ')}\n🔗 **Traceability:** Full coverage established\n\nRequirement status updated to "Complete". All artifacts are now linked and ready for review.`,
+        timestamp: new Date(),
+        type: "normal",
+        hasModifiedArtifacts: true
+      };
+      setMessages(prev => [...prev, completionMessage]);
+
+      // Show success toast
+      toast({
+        title: "Artifacts Generated",
+        description: `Created viewpoint and test cases for ${requirementId}`,
+      });
+
+      setIsLoading(false);
+    }, 2000);
+  };
+
   const handleSendMessage = async (message: string) => {
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -758,6 +895,44 @@ export default function SuiteWorkspace() {
         
         aiResponse = `Perfect! I'll generate ${artifactNames} for your test suite. This will provide comprehensive coverage of your testing needs.\n\nGenerating artifacts now...`;
         hasModifiedArtifacts = !chatMode; // Only modify artifacts if chat mode is OFF
+      }
+      // Handle new requirement detection from chat
+      else if (message.toLowerCase().includes("new requirement") || 
+               message.toLowerCase().includes("add requirement") ||
+               message.toLowerCase().includes("requirement:") ||
+               message.toLowerCase().includes("upload") && message.toLowerCase().includes("requirement")) {
+        
+        // Simulate detecting new requirements from user input
+        const newReqId = `R-${String(requirements.length + 1).padStart(3, '0')}`;
+        const newRequirement: Requirement = {
+          id: newReqId,
+          description: message.toLowerCase().includes("requirement:") 
+            ? message.split("requirement:")[1].trim() 
+            : "User-defined requirement from chat discussion",
+          priority: "Medium",
+          status: "Parsed",
+          relationshipStatus: "New",
+          linkedViewpoints: [],
+          linkedTestCases: [],
+          createdAt: new Date(), // Mark as just created
+          lastModified: new Date(),
+          changeHistory: []
+        };
+
+        // Update requirements state
+        setRequirements(prev => [...prev, newRequirement]);
+        
+        if (chatMode) {
+          aiResponse = `✅ **New Requirement Detected!**\n\n**${newReqId}**: "${newRequirement.description}"\n\nI've added this requirement to your workspace with status "New". \n\n🔧 **Next Steps:**\n• Click the "Generate" button in the traceability matrix to auto-create related viewpoints and test cases\n• Or specify additional requirements and I'll handle them in bulk\n\nWould you like me to generate related artifacts for this requirement now?`;
+        } else {
+          aiResponse = `✅ **New Requirement Added!**\n\n**${newReqId}**: "${newRequirement.description}"\n\nRequirement has been added to your workspace. You can generate related artifacts from the Coverage tab.`;
+          // Trigger automatic artifact generation if not in chat mode
+          setTimeout(() => {
+            handleGenerateArtifacts(newReqId);
+          }, 1000);
+        }
+        hasModifiedArtifacts = true;
+        versionManager.markUnsavedChanges();
       }
       // Handle specific artifact generation commands
       else if (message.includes("/sample")) {
@@ -1181,7 +1356,7 @@ export default function SuiteWorkspace() {
 
         {/* Right Panel - Artifacts */}
         <div className="flex-1 h-full">
-          <ArtifactsPanel requirements={requirements} viewpoints={viewpoints} testCases={testCases} onUpdateRequirement={handleUpdateRequirement} onUpdateViewpoint={handleUpdateViewpoint} onUpdateTestCase={handleUpdateTestCase} onLinkArtifacts={handleLinkArtifacts} selectedArtifact={selectedArtifact} onSelectArtifact={setSelectedArtifact} onExport={handleExport} />
+          <ArtifactsPanel requirements={requirements} viewpoints={viewpoints} testCases={testCases} onUpdateRequirement={handleUpdateRequirement} onUpdateViewpoint={handleUpdateViewpoint} onUpdateTestCase={handleUpdateTestCase} onLinkArtifacts={handleLinkArtifacts} selectedArtifact={selectedArtifact} onSelectArtifact={setSelectedArtifact} onExport={handleExport} onGenerateArtifacts={handleGenerateArtifacts} />
         </div>
       </div>
 
