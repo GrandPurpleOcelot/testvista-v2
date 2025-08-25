@@ -6,6 +6,10 @@ import { ArrowLeft, Play, Pause, RotateCcw } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { VersionHistoryModal } from "@/components/suite/version-history-modal";
+import { SaveVersionDialog } from "@/components/suite/save-version-dialog";
+import { useVersionManager } from "@/hooks/use-version-manager";
+import { VersionAction } from "@/types/version";
 interface Message {
   id: string;
   role: "user" | "ai";
@@ -678,6 +682,24 @@ export default function SuiteWorkspace() {
     id: string;
   } | null>(null);
   const [suiteStatus, setSuiteStatus] = useState<"idle" | "running" | "paused">("idle");
+  
+  // Version management state
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
+  const [showSaveVersionDialog, setShowSaveVersionDialog] = useState(false);
+  const [saveAsCheckpoint, setSaveAsCheckpoint] = useState(false);
+  
+  // Initialize version manager
+  const {
+    versionManager,
+    saveVersion,
+    restoreVersion,
+    markUnsavedChanges,
+    detectChanges
+  } = useVersionManager({
+    requirements,
+    viewpoints,
+    testCases
+  });
 
   // Initialize with context-aware continuation from suite creation
   useEffect(() => {
@@ -835,6 +857,9 @@ export default function SuiteWorkspace() {
       }
       return req;
     }));
+    
+    // Mark as having unsaved changes
+    markUnsavedChanges();
   };
   const handleUpdateViewpoint = (id: string, data: Partial<Viewpoint>, field?: string, oldValue?: string) => {
     setViewpoints(prev => prev.map(vp => {
@@ -859,6 +884,9 @@ export default function SuiteWorkspace() {
       }
       return vp;
     }));
+    
+    // Mark as having unsaved changes
+    markUnsavedChanges();
   };
   const handleUpdateTestCase = (id: string, data: Partial<TestCase>, field?: string, oldValue?: string) => {
     setTestCases(prev => prev.map(tc => {
@@ -883,6 +911,9 @@ export default function SuiteWorkspace() {
       }
       return tc;
     }));
+    
+    // Mark as having unsaved changes
+    markUnsavedChanges();
   };
   const analyzeChangeImpact = (artifactType: string, artifactId: string, field: string) => {
     // Get related artifacts based on traceability links
@@ -956,6 +987,70 @@ export default function SuiteWorkspace() {
       title: "Suite Reset",
       description: "Workspace reset to initial state"
     });
+  };
+
+  // Version action handlers
+  const handleVersionAction = (action: VersionAction) => {
+    switch (action.type) {
+      case "save":
+        setSaveAsCheckpoint(false);
+        setShowSaveVersionDialog(true);
+        break;
+      case "create-checkpoint":
+        setSaveAsCheckpoint(true);
+        setShowSaveVersionDialog(true);
+        break;
+      case "view-history":
+        setShowVersionHistory(true);
+        break;
+      case "restore":
+        if (action.versionId) {
+          const restoredData = restoreVersion(action.versionId);
+          if (restoredData) {
+            setRequirements(restoredData.requirements);
+            setViewpoints(restoredData.viewpoints);
+            setTestCases(restoredData.testCases);
+            toast({
+              title: "Version Restored",
+              description: "Successfully restored to selected version"
+            });
+          }
+        }
+        break;
+    }
+  };
+
+  const handleSaveVersion = (description: string, isCheckpoint?: boolean) => {
+    const currentData = { requirements, viewpoints, testCases };
+    const version = saveVersion(description, currentData, isCheckpoint);
+    
+    toast({
+      title: isCheckpoint ? "Checkpoint Created" : "Version Saved",
+      description: `Version ${version.versionNumber} saved successfully`
+    });
+  };
+
+  const getChangedArtifacts = () => {
+    const changes = detectChanges({ requirements, viewpoints, testCases });
+    const artifacts: Array<{ type: string; id: string; changes: string[] }> = [];
+    
+    // Group changes by artifact type and id
+    const changesByArtifact = new Map<string, string[]>();
+    changes.forEach(change => {
+      const [artifactInfo, ...changeDetails] = change.split(': ');
+      const key = artifactInfo;
+      if (!changesByArtifact.has(key)) {
+        changesByArtifact.set(key, []);
+      }
+      changesByArtifact.get(key)?.push(changeDetails.join(': ') || change);
+    });
+    
+    changesByArtifact.forEach((changes, key) => {
+      const [type, id] = key.split(' ');
+      artifacts.push({ type, id, changes });
+    });
+    
+    return artifacts;
   };
   const {
     id
@@ -1037,7 +1132,14 @@ export default function SuiteWorkspace() {
       <div className="flex-1 flex overflow-hidden">
         {/* Left Panel - Chat */}
         <div className="w-1/3 min-w-[400px] max-w-[500px] h-full">
-          <ChatPanel messages={messages} onSendMessage={handleSendMessage} isLoading={isLoading} />
+          <ChatPanel 
+            messages={messages} 
+            onSendMessage={handleSendMessage} 
+            isLoading={isLoading}
+            hasUnsavedChanges={versionManager.hasUnsavedChanges}
+            onVersionAction={handleVersionAction}
+            onViewHistory={() => setShowVersionHistory(true)}
+          />
         </div>
 
         {/* Right Panel - Artifacts */}
@@ -1045,5 +1147,23 @@ export default function SuiteWorkspace() {
           <ArtifactsPanel requirements={requirements} viewpoints={viewpoints} testCases={testCases} onUpdateRequirement={handleUpdateRequirement} onUpdateViewpoint={handleUpdateViewpoint} onUpdateTestCase={handleUpdateTestCase} onLinkArtifacts={handleLinkArtifacts} selectedArtifact={selectedArtifact} onSelectArtifact={setSelectedArtifact} onExport={handleExport} />
         </div>
       </div>
+
+      {/* Version History Modal */}
+      <VersionHistoryModal
+        open={showVersionHistory}
+        onOpenChange={setShowVersionHistory}
+        versions={versionManager.versions}
+        currentVersion={versionManager.currentVersion}
+        onAction={handleVersionAction}
+      />
+
+      {/* Save Version Dialog */}
+      <SaveVersionDialog
+        open={showSaveVersionDialog}
+        onOpenChange={setShowSaveVersionDialog}
+        onSave={handleSaveVersion}
+        isCheckpoint={saveAsCheckpoint}
+        changedArtifacts={getChangedArtifacts()}
+      />
     </div>;
 }

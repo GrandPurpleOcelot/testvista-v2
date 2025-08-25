@@ -6,11 +6,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
-import { Send, Bot, User, Upload, Zap, Target, Plus, Lightbulb, ArrowUp, AtSign, MessageSquare } from "lucide-react";
+import { Send, Bot, User, Upload, Zap, Target, Plus, Lightbulb, ArrowUp, AtSign, MessageSquare, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 import { ArtifactSelectionModal } from "./artifact-selection-modal";
 import { Logo } from "@/components/ui/logo";
+import { VersionActionChips } from "./version-action-chips";
+import { VersionAction } from "@/types/version";
 interface Message {
   id: string;
   role: "user" | "ai";
@@ -23,6 +25,9 @@ interface ChatPanelProps {
   onSendMessage: (message: string) => void;
   messages: Message[];
   isLoading?: boolean;
+  hasUnsavedChanges?: boolean;
+  onVersionAction?: (action: VersionAction) => void;
+  onViewHistory?: () => void;
 }
 const slashCommands = [{
   cmd: "/upload",
@@ -44,7 +49,10 @@ const slashCommands = [{
 export function ChatPanel({
   onSendMessage,
   messages,
-  isLoading
+  isLoading,
+  hasUnsavedChanges = false,
+  onVersionAction,
+  onViewHistory
 }: ChatPanelProps) {
   const [input, setInput] = useState("");
   const [showCommands, setShowCommands] = useState(false);
@@ -99,9 +107,18 @@ export function ChatPanel({
         {/* Header */}
         <div className="p-4 border-b border-border/50 bg-card">
           <div className="flex items-center justify-between">
-            <div>
+            <div className="flex items-center gap-2">
+              <Logo size="sm" iconOnly />
               <h2 className="font-semibold text-card-foreground">AI Test Case Assistant</h2>
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onViewHistory}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <Clock className="h-4 w-4" />
+            </Button>
           </div>
         </div>
 
@@ -183,6 +200,14 @@ export function ChatPanel({
                 </div>
               </div>
             </div>}
+
+          {/* Version Action Chips */}
+          {hasUnsavedChanges && onVersionAction && (
+            <VersionActionChips
+              hasUnsavedChanges={hasUnsavedChanges}
+              onAction={onVersionAction}
+            />
+          )}
           
           <div ref={messagesEndRef} />
         </div>
