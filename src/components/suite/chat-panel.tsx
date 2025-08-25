@@ -172,56 +172,56 @@ export function ChatPanel({
       {/* Input */}
       <div className="p-3 border-t border-border/20">
         <div className="relative bg-background/50 border border-border/30 rounded-xl hover:border-border/50 transition-colors duration-200 focus-within:border-primary/50 focus-within:bg-background">
-          <div className="flex items-end gap-2 p-3">
-            {/* Tool buttons on the left */}
-            <div className="flex items-center gap-1 pb-1">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors">
-                    <AtSign className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Mention a Document</p>
-                </TooltipContent>
-              </Tooltip>
-              
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors">
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Attach Files</p>
-                </TooltipContent>
-              </Tooltip>
-              
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="sm" onClick={() => setIsChatMode(!isChatMode)} className={cn("h-8 px-3 text-xs font-medium transition-all duration-200 rounded-md", isChatMode ? "bg-primary/10 text-primary hover:bg-primary/15" : "text-muted-foreground hover:text-foreground hover:bg-accent/50")}>
-                    <MessageSquare className="h-3.5 w-3.5 mr-1" />
-                    Chat
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Chat without making edit</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-
-            {/* Text input area */}
-            <div className="flex-1 min-h-[56px] max-h-[120px]">
+          <div className="flex flex-col p-3 gap-3">
+            {/* Text input area - now on top and full width */}
+            <div className="w-full">
               <Textarea ref={inputRef} value={input} onChange={e => {
                 setInput(e.target.value);
                 adjustTextareaHeight();
-              }} onKeyPress={handleKeyPress} placeholder="Ask TestVista anything..." className="min-h-[56px] max-h-[120px] resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-sm p-0 placeholder:text-muted-foreground/60" disabled={isLoading} style={{
+              }} onKeyPress={handleKeyPress} placeholder="Ask TestVista anything..." className="min-h-[56px] max-h-[120px] resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-sm p-0 placeholder:text-muted-foreground/60 w-full" disabled={isLoading} style={{
                 height: "56px"
               }} />
             </div>
-            
-            {/* Send button */}
-            <div className="pb-1">
+
+            {/* Tool buttons row - now below text input */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors">
+                      <AtSign className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Mention a Document</p>
+                  </TooltipContent>
+                </Tooltip>
+                
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors">
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Attach Files</p>
+                  </TooltipContent>
+                </Tooltip>
+                
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="sm" onClick={() => setIsChatMode(!isChatMode)} className={cn("h-8 px-3 text-xs font-medium transition-all duration-200 rounded-md", isChatMode ? "bg-primary/10 text-primary hover:bg-primary/15" : "text-muted-foreground hover:text-foreground hover:bg-accent/50")}>
+                      <MessageSquare className="h-3.5 w-3.5 mr-1" />
+                      Chat
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Chat without making edit</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+
+              {/* Send button - positioned on the right */}
               <Button onClick={handleSend} disabled={!input.trim() || isLoading} size="sm" className={cn("h-8 w-8 p-0 rounded-md transition-all duration-200", input.trim() && !isLoading ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm" : "bg-muted/50 text-muted-foreground cursor-not-allowed")}>
                 {isLoading ? <div className="h-3 w-3 animate-spin rounded-full border border-current border-t-transparent" /> : <ArrowUp className="h-4 w-4" />}
               </Button>
