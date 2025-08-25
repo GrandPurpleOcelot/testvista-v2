@@ -61,7 +61,7 @@ export function ChatPanel({ onSendMessage, messages, isLoading }: ChatPanelProps
   // Auto-resize textarea
   const adjustTextareaHeight = () => {
     if (inputRef.current) {
-      inputRef.current.style.height = "36px"; // Reset to minimum height
+      inputRef.current.style.height = "56px"; // Reset to minimum height (taller default)
       const maxHeight = 120; // Maximum height in pixels
       const newHeight = Math.min(inputRef.current.scrollHeight, maxHeight);
       inputRef.current.style.height = `${newHeight}px`;
@@ -227,7 +227,7 @@ export function ChatPanel({ onSendMessage, messages, isLoading }: ChatPanelProps
             </div>
             
             {/* Text input area */}
-            <div className="flex-1 min-h-[36px] max-h-[120px]">
+            <div className="flex-1 min-h-[56px] max-h-[120px] mb-2">
               <Textarea
                 ref={inputRef}
                 value={input}
@@ -237,9 +237,9 @@ export function ChatPanel({ onSendMessage, messages, isLoading }: ChatPanelProps
                 }}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask TestVista anything..."
-                className="min-h-[36px] max-h-[120px] resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-sm p-0 placeholder:text-muted-foreground/60"
+                className="min-h-[56px] max-h-[120px] resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-sm p-0 placeholder:text-muted-foreground/60"
                 disabled={isLoading}
-                style={{ height: "36px" }}
+                style={{ height: "56px" }}
               />
             </div>
             
