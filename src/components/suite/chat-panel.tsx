@@ -15,7 +15,8 @@ interface Message {
   role: "user" | "ai";
   content: string;
   timestamp: Date;
-  type?: "command" | "normal" | "artifact-selection";
+  type?: "command" | "normal" | "artifact-selection" | "action-prompt";
+  actions?: { label: string; action: string }[];
 }
 interface ChatPanelProps {
   onSendMessage: (message: string) => void;
@@ -142,6 +143,24 @@ export function ChatPanel({
                     <ReactMarkdown>{message.content}</ReactMarkdown>
                   </div>
                 )}
+                
+                {/* Action chips for action-prompt messages */}
+                {message.type === "action-prompt" && message.actions && (
+                  <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-border/20">
+                    {message.actions.map((action, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        size="sm"
+                        className="bg-primary/5 border-primary/20 hover:bg-primary/10 text-primary"
+                        onClick={() => onSendMessage(action.action)}
+                      >
+                        {action.label}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+                
                 <span className="text-xs opacity-70 mt-1 block">
                   {message.timestamp.toLocaleTimeString()}
                 </span>

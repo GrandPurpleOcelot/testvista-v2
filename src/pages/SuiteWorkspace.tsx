@@ -11,7 +11,8 @@ interface Message {
   role: "user" | "ai";
   content: string;
   timestamp: Date;
-  type?: "command" | "normal" | "artifact-selection";
+  type?: "command" | "normal" | "artifact-selection" | "action-prompt";
+  actions?: { label: string; action: string }[];
 }
 interface TraceabilityLink {
   id: string;
@@ -725,6 +726,26 @@ export default function SuiteWorkspace() {
         });
         
         aiResponse = `Perfect! You've selected: **${artifactNames.join(", ")}**\n\nBefore I generate comprehensive content, would you like me to create sample artifacts first? This will help you:\n\n• **Preview the structure** and format of each artifact type\n• **Validate the approach** before full generation\n• **Make adjustments** to better fit your needs\n\n**Options:**\n• Generate samples for each selected artifact\n• Skip samples and proceed with full generation\n\nWhat would you prefer?`;
+        
+        // Add the AI response with action buttons
+        const responseMessage: Message = {
+          id: Date.now().toString() + "-ai",
+          role: "ai",
+          content: aiResponse,
+          timestamp: new Date(),
+          type: "action-prompt",
+          actions: [
+            { label: "Generate Samples First", action: "GENERATE_SAMPLES" },
+            { label: "Implement the Plan", action: "IMPLEMENT_PLAN" }
+          ]
+        };
+        setMessages(prev => [...prev, responseMessage]);
+        setIsLoading(false);
+        return;
+      } else if (message === "IMPLEMENT_PLAN") {
+        aiResponse = "🚀 **Implementing the plan!** Generating comprehensive artifacts based on your selections...\n\nI'm now creating:\n• Detailed requirements with full traceability\n• Complete test cases with all scenarios\n• Comprehensive viewpoints for thorough testing\n\nThis may take a moment as I generate high-quality content.";
+      } else if (message === "GENERATE_SAMPLES") {
+        aiResponse = "📋 **Generating sample artifacts** to preview the structure and approach...\n\nCreating sample:\n• Requirements & Test Cases\n• Viewpoints\n\nYou'll be able to review these before proceeding with full generation.";
       } else if (message.startsWith("/sample")) {
         const count = message.split(" ")[1] || "3";
         aiResponse = `Generating ${count} sample test cases based on your requirements...`;
