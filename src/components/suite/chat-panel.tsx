@@ -28,6 +28,8 @@ interface ChatPanelProps {
   hasUnsavedChanges?: boolean;
   onVersionAction?: (action: VersionAction) => void;
   onViewHistory?: () => void;
+  showActionChips?: boolean;
+  latestVersionForDisplay?: any;
 }
 const slashCommands = [{
   cmd: "/upload",
@@ -52,7 +54,9 @@ export function ChatPanel({
   isLoading,
   hasUnsavedChanges = false,
   onVersionAction,
-  onViewHistory
+  onViewHistory,
+  showActionChips,
+  latestVersionForDisplay
 }: ChatPanelProps) {
   const [input, setInput] = useState("");
   const [showCommands, setShowCommands] = useState(false);
@@ -184,6 +188,16 @@ export function ChatPanel({
                 </span>
               </div>
             </div>)}
+
+          {/* Action Chips - Inline with conversation */}
+          {showActionChips && latestVersionForDisplay && (
+            <div className="px-4">
+              <VersionActionChips
+                latestVersion={latestVersionForDisplay}
+                onAction={onVersionAction || (() => {})}
+              />
+            </div>
+          )}
 
           {isLoading && <div className="flex gap-3 justify-start">
               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">

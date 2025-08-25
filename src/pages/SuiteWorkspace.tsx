@@ -1115,15 +1115,6 @@ export default function SuiteWorkspace() {
 
       </header>
 
-      {/* Action Chips - Global Position */}
-      {showActionChips && latestVersionForDisplay && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-[600px]">
-          <VersionActionChips
-            latestVersion={latestVersionForDisplay}
-            onAction={handleVersionAction}
-          />
-        </div>
-      )}
 
       {/* Main Content - Split Screen */}
       <div className="flex-1 flex overflow-hidden">
@@ -1136,6 +1127,8 @@ export default function SuiteWorkspace() {
             hasUnsavedChanges={versionManager.hasUnsavedChanges}
             onVersionAction={handleVersionAction}
             onViewHistory={() => setShowVersionHistory(true)}
+            showActionChips={showActionChips}
+            latestVersionForDisplay={latestVersionForDisplay}
           />
         </div>
 
