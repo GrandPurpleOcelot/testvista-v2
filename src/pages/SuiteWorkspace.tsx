@@ -711,7 +711,21 @@ export default function SuiteWorkspace() {
     // Simulate AI processing
     setTimeout(() => {
       let aiResponse = "";
-      if (message.startsWith("/sample")) {
+      
+      // Handle artifact selection
+      if (message.startsWith("ARTIFACT_SELECTION:")) {
+        const selectedArtifacts = message.replace("ARTIFACT_SELECTION:", "").split(",");
+        const artifactNames = selectedArtifacts.map(id => {
+          switch(id) {
+            case "requirements": return "Requirements & Test Cases";
+            case "viewpoints": return "Viewpoints"; 
+            case "scenarios": return "Scenarios";
+            default: return id;
+          }
+        });
+        
+        aiResponse = `Perfect! You've selected: **${artifactNames.join(", ")}**\n\nBefore I generate comprehensive content, would you like me to create sample artifacts first? This will help you:\n\n• **Preview the structure** and format of each artifact type\n• **Validate the approach** before full generation\n• **Make adjustments** to better fit your needs\n\n**Options:**\n• Generate samples for each selected artifact\n• Skip samples and proceed with full generation\n\nWhat would you prefer?`;
+      } else if (message.startsWith("/sample")) {
         const count = message.split(" ")[1] || "3";
         aiResponse = `Generating ${count} sample test cases based on your requirements...`;
 

@@ -253,7 +253,7 @@ export function ChatPanel({
         isOpen={showArtifactModal}
         onClose={() => setShowArtifactModal(false)}
         onConfirm={(selectedArtifacts) => {
-          onSendMessage(`Selected artifacts: ${selectedArtifacts.join(', ')}`);
+          onSendMessage(`ARTIFACT_SELECTION:${selectedArtifacts.join(',')}`);
         }}
       />
     </TooltipProvider>;
