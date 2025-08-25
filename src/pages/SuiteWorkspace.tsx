@@ -678,15 +678,31 @@ export default function SuiteWorkspace() {
   } | null>(null);
   const [suiteStatus, setSuiteStatus] = useState<"idle" | "running" | "paused">("idle");
 
-  // Initialize with welcome message
+  // Initialize with context-aware continuation from suite creation
   useEffect(() => {
-    setMessages([{
-      id: "welcome",
-      role: "ai",
-      content: "Welcome to your test suite workspace! I've loaded some sample requirements and test cases to get you started.\n\nTry these commands:\n• `/sample 5` - Generate 5 sample test cases\n• `/viewpoints login` - Create viewpoints for login feature\n• `/upload` - Upload requirements document\n• `/export testrail` - Export to TestRail format",
-      timestamp: new Date(),
-      type: "normal"
-    }]);
+    setMessages([
+      {
+        id: "context-acknowledgment",
+        role: "ai",
+        content: "Perfect! I've received your test suite description and I'm ready to help you generate comprehensive test artifacts. Let me set up your workspace with the initial structure.",
+        timestamp: new Date(),
+        type: "normal"
+      },
+      {
+        id: "artifact-selection",
+        role: "ai",
+        content: "Now, let's configure what artifacts you'd like me to generate for your test suite:\n\n**Artifact Selection:**\n✅ Requirements & Test Cases (selected by default)\n☐ Viewpoints - Different perspectives and stakeholder views\n☐ Scenarios - User journey and use case scenarios\n\nPlease let me know which additional artifacts you'd like to include, or type 'continue' if the default selection works for you.",
+        timestamp: new Date(),
+        type: "normal"
+      },
+      {
+        id: "template-selection",
+        role: "ai",
+        content: "**Prompt Template Selection:**\n\nChoose a template approach for generating your test artifacts:\n\n• **Comprehensive Testing** - Covers functional, non-functional, and edge cases\n• **Security-Focused** - Emphasizes security testing and vulnerability scenarios\n• **Performance Testing** - Focuses on load, stress, and performance validation\n• **Custom** - Tailored approach based on your specific requirements\n\nWhich template approach would work best for your project?",
+        timestamp: new Date(),
+        type: "normal"
+      }
+    ]);
   }, []);
   const handleSendMessage = async (message: string) => {
     const userMessage: Message = {
