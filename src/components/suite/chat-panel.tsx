@@ -270,18 +270,16 @@ export function ChatPanel({
                <div className="flex items-center gap-1">
                 <Popover open={showFileMention} onOpenChange={setShowFileMention}>
                   <PopoverTrigger asChild>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors">
-                          <AtSign className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Mention a Document</p>
-                      </TooltipContent>
-                    </Tooltip>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+                      title="Mention a Document"
+                    >
+                      <AtSign className="h-4 w-4" />
+                    </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-80 p-2" align="start" side="top">
+                  <PopoverContent className="w-80 p-2 bg-background border shadow-md z-50" align="start" side="top">
                     <div className="space-y-1">
                       <div className="text-sm font-medium px-2 py-1 text-muted-foreground">
                         Uploaded Files
