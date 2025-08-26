@@ -196,6 +196,10 @@ export default function CreateSuite() {
     setShowMentionDropdown(!showMentionDropdown);
   };
 
+  const handleAttachClick = () => {
+    setShowMentionDropdown(!showMentionDropdown);
+  };
+
   const handleMentionFile = (file: ReferenceFile | StandardFile) => {
     const mentionText = `@${file.name}`;
     setChatInput(prev => prev + mentionText + " ");
@@ -303,7 +307,7 @@ export default function CreateSuite() {
                             <Button 
                               variant="ghost" 
                               size="sm" 
-                              onClick={handleMentionClick}
+                              onClick={handleAttachClick}
                               className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
                             >
                               <PaperclipIcon className="h-4 w-4" />
