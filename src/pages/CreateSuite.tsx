@@ -265,7 +265,7 @@ export default function CreateSuite() {
             <div className="w-20 h-20 mx-auto mb-6 bg-primary/10 rounded-full flex items-center justify-center">
               <MessageSquare className="h-10 w-10 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold mb-4">Let's create your test suite</h1>
+            <h1 className="text-3xl font-bold mb-4">Start creating your test cases</h1>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
               Describe what you want to test, mention relevant documents, or upload files to get started. 
               Our AI will help you create comprehensive test artifacts.
