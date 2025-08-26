@@ -142,7 +142,7 @@ export default function CreateSuite() {
   };
 
   const handleChatSubmit = () => {
-    if (!suiteName.trim()) return;
+    if (!chatInput.trim()) return;
     
     setIsCreating(true);
     
@@ -247,7 +247,7 @@ export default function CreateSuite() {
           <div className="flex items-center gap-3">
             <Button 
               onClick={handleCreateSuite}
-              disabled={!suiteName.trim() || isCreating}
+              disabled={!chatInput.trim() || isCreating}
               className="bg-primary hover:bg-primary/90"
             >
               {isCreating ? "Creating..." : "Create Suite"}
@@ -256,131 +256,79 @@ export default function CreateSuite() {
         </div>
       </header>
 
-      {/* Main Layout: Chat + File Sidebar */}
-      <main className="flex max-w-7xl mx-auto h-[calc(100vh-4rem)]">
-        
-        {/* Chat Section - 80% */}
-        <div className="flex-1 flex flex-col p-6">
-          <Card className="flex-1 flex flex-col">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <MessageSquare className="h-5 w-5 text-primary" />
-                Describe Your Test Suite
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Tell the AI what you want to test. Use @ to mention documents and + to upload files.
-              </p>
-            </CardHeader>
-            
-            <CardContent className="flex-1 flex flex-col">
-              {/* Welcome Message */}
-              <div className="flex-1 flex items-center justify-center">
-                <div className="text-center max-w-md space-y-4">
-                  <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-                    <MessageSquare className="h-8 w-8 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-medium">Let's create your test suite</h3>
-                  <p className="text-muted-foreground">
-                    Describe what you want to test, mention any relevant documents, or upload new files to get started.
-                  </p>
-                  
-                  {/* Template Selectors */}
-                  <div className="space-y-3 pt-4">
-                    <p className="text-sm font-medium">Select templates for your artifacts:</p>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      {/* Requirements Template */}
-                      <div className="space-y-1">
-                        <label className="text-xs font-medium text-muted-foreground">Requirements</label>
-                        <select className="w-full text-xs border border-border rounded-md px-2 py-1 bg-background">
-                          <option value="default">Default Requirements Template</option>
-                          <option value="functional">Functional Requirements Template</option>
-                          <option value="non-functional">Non-Functional Requirements Template</option>
-                          <option value="api">API Requirements Template</option>
-                        </select>
-                      </div>
+      {/* Main Content - Centered Chat Interface */}
+      <main className="flex-1 flex items-center justify-center p-6">
+        <div className="w-full max-w-4xl mx-auto">
+          
+          {/* Hero Section */}
+          <div className="text-center mb-12">
+            <div className="w-20 h-20 mx-auto mb-6 bg-primary/10 rounded-full flex items-center justify-center">
+              <MessageSquare className="h-10 w-10 text-primary" />
+            </div>
+            <h1 className="text-3xl font-bold mb-4">Let's create your test suite</h1>
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+              Describe what you want to test, mention relevant documents, or upload files to get started. 
+              Our AI will help you create comprehensive test artifacts.
+            </p>
+          </div>
 
-                      {/* Viewpoints Template */}
-                      <div className="space-y-1">
-                        <label className="text-xs font-medium text-muted-foreground">Viewpoints</label>
-                        <select className="w-full text-xs border border-border rounded-md px-2 py-1 bg-background">
-                          <option value="default">Default Viewpoint Template</option>
-                          <option value="user">User Viewpoint Template</option>
-                          <option value="system">System Viewpoint Template</option>
-                          <option value="security">Security Viewpoint Template</option>
-                        </select>
-                      </div>
-
-                      {/* Test Cases Template */}
-                      <div className="space-y-1">
-                        <label className="text-xs font-medium text-muted-foreground">Test Cases</label>
-                        <select className="w-full text-xs border border-border rounded-md px-2 py-1 bg-background">
-                          <option value="default">Default Test Case Template</option>
-                          <option value="integration">Integration Test Template</option>
-                          <option value="unit">Unit Test Template</option>
-                          <option value="e2e">End-to-End Test Template</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Chat Input */}
+          {/* Central Chat Input */}
+          <Card className="mb-8 shadow-lg border-primary/20">
+            <CardContent className="p-8">
               <div className="relative">
-                <div className="flex items-end gap-3 p-4 border rounded-lg bg-muted/20">
-                  <div className="flex gap-2">
+                <div className="flex items-end gap-4 p-6 border-2 rounded-xl bg-gradient-to-br from-background to-muted/20 border-primary/20 focus-within:border-primary/40 transition-all">
+                  <div className="flex gap-3">
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={handleMentionClick}
-                      className="h-8 w-8 p-0"
+                      className="h-10 w-10 p-0 hover:bg-primary/10"
                       title="Mention document"
                     >
-                      <AtSign className="h-4 w-4" />
+                      <AtSign className="h-5 w-5" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => fileInputRef.current?.click()}
-                      className="h-8 w-8 p-0"
+                      className="h-10 w-10 p-0 hover:bg-primary/10"
                       title="Upload file"
                     >
-                      <PaperclipIcon className="h-4 w-4" />
+                      <PaperclipIcon className="h-5 w-5" />
                     </Button>
                   </div>
                   
                   <Textarea
                     ref={chatInputRef}
-                    placeholder="Describe your test suite requirements, mention documents with @, or upload files with +"
+                    placeholder="Describe your test suite requirements, mention documents with @, or upload files..."
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    className="flex-1 min-h-[60px] max-h-32 resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="flex-1 min-h-[80px] max-h-40 resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-lg placeholder:text-muted-foreground/60"
                   />
                   
                   <Button
                     onClick={handleChatSubmit}
-                    disabled={isCreating}
-                    size="sm"
-                    className="h-8 w-8 p-0"
+                    disabled={isCreating || !chatInput.trim()}
+                    size="lg"
+                    className="h-12 w-12 p-0 bg-primary hover:bg-primary/90"
                   >
-                    <Send className="h-4 w-4" />
+                    <Send className="h-5 w-5" />
                   </Button>
                 </div>
 
                 {/* Mention Dropdown */}
                 {showMentionDropdown && (
-                  <div className="absolute bottom-full left-0 right-0 mb-2 bg-background border rounded-lg shadow-lg max-h-48 overflow-y-auto z-10">
-                    <div className="p-2">
-                      <p className="text-xs font-medium text-muted-foreground mb-2">Available Documents</p>
+                  <div className="absolute bottom-full left-0 right-0 mb-2 bg-background border rounded-lg shadow-lg max-h-64 overflow-y-auto z-10">
+                    <div className="p-3">
+                      <p className="text-sm font-medium text-muted-foreground mb-3">Available Documents</p>
                       {allAvailableFiles.map((file) => (
                         <button
                           key={file.id}
                           onClick={() => handleMentionFile(file)}
-                          className="w-full text-left p-2 hover:bg-muted rounded text-sm flex items-center gap-2"
+                          className="w-full text-left p-3 hover:bg-muted rounded-lg text-sm flex items-center gap-3 transition-colors"
                         >
-                          <span>{getFileIcon('type' in file ? file.type : 'text/markdown')}</span>
+                          <span className="text-lg">{getFileIcon('type' in file ? file.type : 'text/markdown')}</span>
                           <div className="flex-1 min-w-0">
                             <div className="truncate font-medium">{file.name}</div>
                             <div className="text-xs text-muted-foreground">{file.category}</div>
@@ -393,39 +341,42 @@ export default function CreateSuite() {
               </div>
             </CardContent>
           </Card>
-        </div>
 
-        {/* File Sidebar - 20% */}
-        <div className="w-80 p-6 pl-0">
-          <Card className="h-full">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-sm flex items-center justify-between">
-                <span className="flex items-center gap-2">
+          {/* Secondary Actions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            
+            {/* Quick Upload Zone */}
+            <Card className="border-dashed border-2 hover:border-primary/40 transition-colors cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+              <CardContent className="p-6 text-center">
+                <Upload className="h-8 w-8 mx-auto mb-3 text-muted-foreground" />
+                <h3 className="font-medium mb-2">Upload Files</h3>
+                <p className="text-sm text-muted-foreground">
+                  Add documents, specifications, or reference materials
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Recent Files Preview */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
                   <FileText className="h-4 w-4" />
                   Recent Files
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="h-7 w-7 p-0"
-                >
-                  <Plus className="h-3 w-3" />
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            
-            <CardContent className="space-y-4">
-              {/* Recently Uploaded Files */}
-              {uploadedFiles.length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="text-xs font-medium text-muted-foreground">UPLOADED</h4>
-                  {uploadedFiles.slice(-5).map((file, index) => (
-                    <div key={index} className="flex items-center gap-2 p-2 bg-muted/30 rounded text-xs">
-                      <span className="text-sm">{getFileIcon(file.type)}</span>
+                  {uploadedFiles.length > 0 && (
+                    <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+                      {uploadedFiles.length}
+                    </span>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {uploadedFiles.length > 0 ? (
+                  uploadedFiles.slice(-3).map((file, index) => (
+                    <div key={index} className="flex items-center gap-3 p-2 bg-muted/30 rounded-lg text-sm">
+                      <span>{getFileIcon(file.type)}</span>
                       <div className="flex-1 min-w-0">
                         <div className="truncate font-medium">{file.name}</div>
-                        <div className="text-muted-foreground">{formatFileSize(file.size)}</div>
+                        <div className="text-xs text-muted-foreground">{formatFileSize(file.size)}</div>
                       </div>
                       <Button
                         variant="ghost"
@@ -436,70 +387,79 @@ export default function CreateSuite() {
                         <X className="h-3 w-3" />
                       </Button>
                     </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Available Files */}
-              <div className="space-y-2">
-                <h4 className="text-xs font-medium text-muted-foreground">AVAILABLE</h4>
-                <div className="space-y-1 max-h-48 overflow-y-auto">
-                  {allAvailableFiles.slice(0, 8).map((file) => (
-                    <button
-                      key={file.id}
-                      onClick={() => handleMentionFile(file)}
-                      className={cn(
-                        "w-full text-left p-2 rounded text-xs hover:bg-muted/50 transition-colors",
-                        mentionedFiles.includes(file.id) && "bg-primary/10"
-                      )}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm">{getFileIcon('type' in file ? file.type : 'text/markdown')}</span>
-                        <div className="flex-1 min-w-0">
-                          <div className="truncate font-medium">{file.name}</div>
-                          <div className="text-muted-foreground">{file.category}</div>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Upload Drop Zone */}
-              <div
-                className={cn(
-                  "border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-all",
-                  isDragOver 
-                    ? "border-primary bg-primary/10" 
-                    : "border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/20"
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground py-4">
+                    No files uploaded yet. Use the upload area above to add files.
+                  </p>
                 )}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Upload className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-xs text-muted-foreground">Drop files here or click to upload</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Template Configuration - Collapsed by default */}
+          <Card className="border-muted/50">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base text-muted-foreground">
+                Advanced: Template Configuration
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Requirements Template */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Requirements</label>
+                  <select className="w-full text-sm border border-border rounded-md px-3 py-2 bg-background">
+                    <option value="default">Default Requirements Template</option>
+                    <option value="functional">Functional Requirements Template</option>
+                    <option value="non-functional">Non-Functional Requirements Template</option>
+                    <option value="api">API Requirements Template</option>
+                  </select>
+                </div>
+
+                {/* Viewpoints Template */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Viewpoints</label>
+                  <select className="w-full text-sm border border-border rounded-md px-3 py-2 bg-background">
+                    <option value="default">Default Viewpoint Template</option>
+                    <option value="user">User Viewpoint Template</option>
+                    <option value="system">System Viewpoint Template</option>
+                    <option value="security">Security Viewpoint Template</option>
+                  </select>
+                </div>
+
+                {/* Test Cases Template */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Test Cases</label>
+                  <select className="w-full text-sm border border-border rounded-md px-3 py-2 bg-background">
+                    <option value="default">Default Test Case Template</option>
+                    <option value="integration">Integration Test Template</option>
+                    <option value="unit">Unit Test Template</option>
+                    <option value="e2e">End-to-End Test Template</option>
+                  </select>
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
-
-        {/* Hidden File Input */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.md"
-          onChange={handleFileUpload}
-          className="hidden"
-        />
       </main>
 
-      {/* Drag Overlay */}
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        accept=".pdf,.doc,.docx,.txt,.md,.xlsx,.xls,.ppt,.pptx"
+        onChange={handleFileUpload}
+        className="hidden"
+      />
+
+      {/* Drag overlay */}
       {isDragOver && (
-        <div className="fixed inset-0 bg-primary/10 border-4 border-dashed border-primary z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-primary/10 border-4 border-dashed border-primary/50 flex items-center justify-center z-50">
           <div className="bg-background p-8 rounded-lg shadow-lg text-center">
             <Upload className="h-12 w-12 mx-auto mb-4 text-primary" />
-            <p className="text-lg font-medium">Drop files to upload</p>
-            <p className="text-muted-foreground">PDF, Word, Excel, and Text files supported</p>
+            <p className="text-lg font-medium">Drop your files here</p>
           </div>
         </div>
       )}
