@@ -291,15 +291,21 @@ export default function CreateSuite() {
                   <div className="flex items-center gap-1">
                     <Popover open={showMentionDropdown} onOpenChange={setShowMentionDropdown}>
                       <PopoverTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={handleMentionClick}
-                          className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
-                          title="Mention a Document"
-                        >
-                          <AtSign className="h-4 w-4" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={handleMentionClick}
+                              className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                              <AtSign className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Mention a Document</p>
+                          </TooltipContent>
+                        </Tooltip>
                       </PopoverTrigger>
                       <PopoverContent className="w-80 p-3 bg-background border shadow-md z-50" align="start" side="bottom">
                         <div className="space-y-3">
@@ -311,15 +317,21 @@ export default function CreateSuite() {
                                 className="h-8 text-sm"
                               />
                             </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => fileInputRef.current?.click()}
-                              className="h-8 w-8 p-0 hover:bg-accent/50"
-                              title="Upload from device"
-                            >
-                              <Upload className="h-4 w-4" />
-                            </Button>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => fileInputRef.current?.click()}
+                                  className="h-8 w-8 p-0 hover:bg-accent/50"
+                                >
+                                  <Upload className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Upload from device</p>
+                              </TooltipContent>
+                            </Tooltip>
                           </div>
                           
                           {/* Available Documents */}
