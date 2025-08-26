@@ -302,21 +302,15 @@ export default function CreateSuite() {
                   <div className="flex items-center gap-1">
                     <Popover open={showMentionDropdown} onOpenChange={setShowMentionDropdown}>
                       <PopoverTrigger asChild>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              onClick={handleAttachClick}
-                              className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
-                            >
-                              <PaperclipIcon className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Attach Files or Mention Documents</p>
-                          </TooltipContent>
-                        </Tooltip>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={handleAttachClick}
+                          title="Attach Files or Mention Documents"
+                          className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          <PaperclipIcon className="h-4 w-4" />
+                        </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-80 p-3 bg-background border shadow-md z-50" align="start" side="bottom">
                         <div className="space-y-3">
