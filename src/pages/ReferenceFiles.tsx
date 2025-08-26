@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -191,63 +191,75 @@ export default function ReferenceFiles() {
             </select>
           </div>
 
-          {/* Files Grid */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredFiles.map((file) => (
-              <Card key={file.id} className="group relative">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <FileText className="h-8 w-8 text-primary" />
-                    <div className="flex items-center gap-2">
+          {/* Files Table */}
+          <div className="border rounded-lg">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>File</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Size</TableHead>
+                  <TableHead>Uploaded By</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredFiles.map((file) => (
+                  <TableRow key={file.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <FileText className="h-5 w-5 text-primary flex-shrink-0" />
+                        <div>
+                          <div className="font-medium">{file.name}</div>
+                          <div className="text-sm text-muted-foreground">{file.type.toUpperCase()}</div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={`text-xs ${getCategoryColor(file.category)}`}>
+                        {categoryLabels[file.category]}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm">{file.size}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm">{file.uploadedBy}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm">{new Date(file.uploadedAt).toLocaleDateString()}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
                       <Badge 
                         variant={file.analyzed ? "default" : "secondary"}
                         className="text-xs"
                       >
                         {file.analyzed ? "Analyzed" : "Pending"}
                       </Badge>
-                      <Badge className={`text-xs ${getCategoryColor(file.category)}`}>
-                        {categoryLabels[file.category]}
-                      </Badge>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <CardTitle className="text-sm font-medium leading-tight">
-                      {file.name}
-                    </CardTitle>
-                    <CardDescription className="text-xs mt-1">
-                      {file.size} • {file.type.toUpperCase()}
-                    </CardDescription>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="pt-0">
-                  <div className="space-y-2 text-xs text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <User className="h-3 w-3" />
-                      <span>{file.uploadedBy}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-3 w-3" />
-                      <span>{new Date(file.uploadedAt).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="mt-4 flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1">
-                      <Eye className="h-3 w-3 mr-1" />
-                      View
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Download className="h-3 w-3" />
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button variant="outline" size="sm">
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          <Download className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
 
           {filteredFiles.length === 0 && (
