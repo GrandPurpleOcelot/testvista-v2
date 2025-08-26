@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, X, ArrowLeft, Plus, ArrowUp, FileText, MessageSquare, AtSign, PaperclipIcon, Search, ExternalLink } from "lucide-react";
+import { Upload, X, ArrowLeft, Plus, ArrowUp, FileText, MessageSquare, AtSign, PaperclipIcon, Search, ExternalLink, Check } from "lucide-react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -201,7 +201,7 @@ export default function CreateSuite() {
   };
 
   const handleMentionFile = (file: ReferenceFile | StandardFile) => {
-    const mentionText = `@${file.name}`;
+    const mentionText = file.name;
     setChatInput(prev => prev + mentionText + " ");
     setMentionedFiles(prev => [...prev, file.id]);
     setShowMentionDropdown(false);
@@ -349,25 +349,38 @@ export default function CreateSuite() {
                               </Button>
                            </div>
                           
-                          <div className="max-h-48 overflow-y-auto space-y-1">
-                            {filteredFiles.map((file) => (
-                              <button
-                                key={file.id}
-                                onClick={() => handleMentionFile(file)}
-                                className="w-full text-left px-3 py-2 rounded-md hover:bg-accent/50 transition-colors group"
-                              >
-                                <div className="flex items-center gap-2">
-                                  <div className={`p-1.5 rounded ${file.category === 'Reference' ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'}`}>
-                                    <FileText className="h-3 w-3" />
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
-                                    <p className="text-xs text-muted-foreground capitalize">{file.category}</p>
-                                  </div>
-                                </div>
-                              </button>
-                            ))}
-                          </div>
+                           <div className="max-h-48 overflow-y-auto space-y-1">
+                             {filteredFiles.map((file) => {
+                               const isSelected = mentionedFiles.includes(file.id);
+                               return (
+                                 <button
+                                   key={file.id}
+                                   onClick={() => handleMentionFile(file)}
+                                   className={cn(
+                                     "w-full text-left px-3 py-2 rounded-md transition-colors group",
+                                     isSelected 
+                                       ? "bg-primary/10 hover:bg-primary/15 border border-primary/20" 
+                                       : "hover:bg-accent/50"
+                                   )}
+                                 >
+                                   <div className="flex items-center gap-2">
+                                     <div className={`p-1.5 rounded ${file.category === 'Reference' ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'}`}>
+                                       <FileText className="h-3 w-3" />
+                                     </div>
+                                     <div className="flex-1 min-w-0">
+                                       <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
+                                       <p className="text-xs text-muted-foreground capitalize">{file.category}</p>
+                                     </div>
+                                     {isSelected && (
+                                       <div className="flex-shrink-0">
+                                         <Check className="h-4 w-4 text-primary" />
+                                       </div>
+                                     )}
+                                   </div>
+                                 </button>
+                               );
+                             })}
+                           </div>
                           
                           {filteredFiles.length === 0 && (
                             <div className="text-center py-4 text-sm text-muted-foreground">
