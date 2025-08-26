@@ -58,6 +58,156 @@ const mockFiles: ReferenceFile[] = [
     uploadedAt: "2024-01-10",
     size: "945 KB",
     analyzed: false
+  },
+  {
+    id: "4",
+    name: "User Authentication Flow.pdf",
+    type: "pdf",
+    category: "system-description",
+    uploadedBy: "Sarah Wilson",
+    uploadedAt: "2024-01-20",
+    size: "1.5 MB",
+    analyzed: true
+  },
+  {
+    id: "5",
+    name: "Microservices Design Patterns.pdf",
+    type: "pdf",
+    category: "design-pattern",
+    uploadedBy: "David Chen",
+    uploadedAt: "2024-01-18",
+    size: "3.2 MB",
+    analyzed: true
+  },
+  {
+    id: "6",
+    name: "Payment Processing Glossary.docx",
+    type: "docx",
+    category: "domain-glossary",
+    uploadedBy: "Emily Rodriguez",
+    uploadedAt: "2024-01-17",
+    size: "875 KB",
+    analyzed: false
+  },
+  {
+    id: "7",
+    name: "Database Schema Design.sql",
+    type: "sql",
+    category: "system-description",
+    uploadedBy: "Alex Thompson",
+    uploadedAt: "2024-01-16",
+    size: "1.2 MB",
+    analyzed: true
+  },
+  {
+    id: "8",
+    name: "REST API Guidelines.md",
+    type: "md",
+    category: "design-pattern",
+    uploadedBy: "Maria Garcia",
+    uploadedAt: "2024-01-14",
+    size: "425 KB",
+    analyzed: true
+  },
+  {
+    id: "9",
+    name: "Security Requirements.pdf",
+    type: "pdf",
+    category: "other",
+    uploadedBy: "Robert Lee",
+    uploadedAt: "2024-01-13",
+    size: "2.8 MB",
+    analyzed: false
+  },
+  {
+    id: "10",
+    name: "Business Process Diagram.vsdx",
+    type: "vsdx",
+    category: "system-description",
+    uploadedBy: "Lisa Anderson",
+    uploadedAt: "2024-01-11",
+    size: "1.9 MB",
+    analyzed: true
+  },
+  {
+    id: "11",
+    name: "Event-Driven Architecture.pptx",
+    type: "pptx",
+    category: "design-pattern",
+    uploadedBy: "Kevin Zhang",
+    uploadedAt: "2024-01-09",
+    size: "4.1 MB",
+    analyzed: false
+  },
+  {
+    id: "12",
+    name: "Healthcare Domain Terms.xlsx",
+    type: "xlsx",
+    category: "domain-glossary",
+    uploadedBy: "Jennifer Brown",
+    uploadedAt: "2024-01-08",
+    size: "1.1 MB",
+    analyzed: true
+  },
+  {
+    id: "13",
+    name: "CI-CD Pipeline Configuration.yaml",
+    type: "yaml",
+    category: "other",
+    uploadedBy: "Michael Davis",
+    uploadedAt: "2024-01-07",
+    size: "156 KB",
+    analyzed: true
+  },
+  {
+    id: "14",
+    name: "CQRS Implementation Guide.pdf",
+    type: "pdf",
+    category: "design-pattern",
+    uploadedBy: "Angela White",
+    uploadedAt: "2024-01-06",
+    size: "2.7 MB",
+    analyzed: false
+  },
+  {
+    id: "15",
+    name: "E-commerce System Overview.docx",
+    type: "docx",
+    category: "system-description",
+    uploadedBy: "Thomas Miller",
+    uploadedAt: "2024-01-05",
+    size: "1.6 MB",
+    analyzed: true
+  },
+  {
+    id: "16",
+    name: "Retail Business Glossary.pdf",
+    type: "pdf",
+    category: "domain-glossary",
+    uploadedBy: "Rachel Green",
+    uploadedAt: "2024-01-04",
+    size: "987 KB",
+    analyzed: false
+  },
+  {
+    id: "17",
+    name: "Container Orchestration Guide.md",
+    type: "md",
+    category: "other",
+    uploadedBy: "Daniel Kim",
+    uploadedAt: "2024-01-03",
+    size: "678 KB",
+    analyzed: true
+  },
+  {
+    id: "18",
+    name: "Observer Pattern Examples.java",
+    type: "java",
+    category: "design-pattern",
+    uploadedBy: "Sophie Taylor",
+    uploadedAt: "2024-01-02",
+    size: "234 KB",
+    analyzed: true
   }
 ];
 
