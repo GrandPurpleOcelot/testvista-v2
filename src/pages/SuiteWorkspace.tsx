@@ -16,7 +16,7 @@ interface Message {
   role: "user" | "ai";
   content: string;
   timestamp: Date;
-  type?: "command" | "normal" | "artifact-selection";
+  type?: "command" | "normal" | "artifact-selection" | "next-step";
   needsImplementation?: boolean;
   implementationPlan?: string;
   versionInfo?: ArtifactVersion;
@@ -723,6 +723,11 @@ export default function SuiteWorkspace() {
   } | null>(null);
   const [suiteStatus, setSuiteStatus] = useState<"idle" | "running" | "paused">("idle");
   // Removed chatMode - AI always asks for permission now
+  const [loadingStates, setLoadingStates] = useState<{
+    requirements?: boolean;
+    viewpoints?: boolean;
+    testCases?: boolean;
+  }>({});
   
   // Mock uploaded files
   const uploadedFiles = [
@@ -755,13 +760,40 @@ export default function SuiteWorkspace() {
         type: "normal"
       },
       {
-        id: "artifact-selection",
+        id: "parsing-requirements",
         role: "ai",
-        content: "Now, let's configure what artifacts you'd like me to generate for your test suite.",
+        content: "I'm now parsing your test suite description to extract requirements. This will take a moment...",
         timestamp: new Date(),
-        type: "artifact-selection"
+        type: "normal"
       }
     ]);
+
+    // Start requirements parsing simulation
+    setLoadingStates({ requirements: true });
+    setRequirements([]); // Clear requirements initially
+
+    // Simulate parsing and generation after 2 seconds
+    setTimeout(() => {
+      setLoadingStates({});
+      setRequirements(mockRequirements);
+      
+      setMessages(prev => [...prev, 
+        {
+          id: "requirements-generated",
+          role: "ai",
+          content: "Great! I've successfully parsed and generated your requirements. You can see them in the Requirements tab.",
+          timestamp: new Date(),
+          type: "normal"
+        },
+        {
+          id: "next-step-selection",
+          role: "ai",
+          content: "What would you like me to generate next?",
+          timestamp: new Date(),
+          type: "next-step"
+        }
+      ]);
+    }, 2000);
   }, []);
 
   const handleGenerateArtifacts = async (requirementId: string) => {
@@ -892,6 +924,52 @@ export default function SuiteWorkspace() {
         } else {
           aiResponse = "I couldn't find the implementation plan. Please try again.";
         }
+      }
+      // Handle next step selection
+      else if (message.startsWith("NEXT_STEP:")) {
+        const option = message.replace("NEXT_STEP:", "");
+        
+        if (option === "test-cases") {
+          setLoadingStates({ testCases: true });
+          setTestCases([]);
+          
+          setTimeout(() => {
+            setLoadingStates({});
+            setTestCases(mockTestCases);
+            
+            const message: Message = {
+              id: `test-cases-generated-${Date.now()}`,
+              role: "ai",
+              content: "✅ **Test Cases Generated!**\n\nI've created example test cases based on your requirements. You can view them in the Test Cases tab. Each test case includes detailed steps, expected results, and is linked to the appropriate requirements.",
+              timestamp: new Date(),
+              type: "normal"
+            };
+            setMessages(prev => [...prev, message]);
+          }, 2000);
+          
+          aiResponse = "Perfect! I'm now generating example test cases for your requirements...";
+        } else if (option === "viewpoints") {
+          setLoadingStates({ viewpoints: true });
+          setViewpoints([]);
+          
+          setTimeout(() => {
+            setLoadingStates({});
+            setViewpoints(mockViewpoints);
+            
+            const message: Message = {
+              id: `viewpoints-generated-${Date.now()}`,
+              role: "ai",
+              content: "✅ **Viewpoints Generated!**\n\nI've created testing viewpoints that analyze your requirements from different perspectives. Check the Viewpoints tab to see the various testing approaches and strategies.",
+              timestamp: new Date(),
+              type: "normal"
+            };
+            setMessages(prev => [...prev, message]);
+          }, 2000);
+          
+          aiResponse = "Great choice! I'm now generating viewpoints to analyze your requirements from different testing perspectives...";
+        }
+        
+        hasModifiedArtifacts = false;
       }
       // Handle artifact selection
       else if (message.startsWith("ARTIFACT_SELECTION:")) {

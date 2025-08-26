@@ -11,6 +11,7 @@ import { Send, Bot, User, Upload, Zap, Target, Plus, Lightbulb, ArrowUp, AtSign,
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 import { ArtifactSelectionChips } from "./artifact-selection-chips";
+import { NextStepChips } from "./next-step-chips";
 import { Logo } from "@/components/ui/logo";
 import { VersionActionChips } from "./version-action-chips";
 import { VersionAction } from "@/types/version";
@@ -19,7 +20,7 @@ interface Message {
   role: "user" | "ai";
   content: string;
   timestamp: Date;
-  type?: "command" | "normal" | "artifact-selection";
+  type?: "command" | "normal" | "artifact-selection" | "next-step";
   needsImplementation?: boolean;
   implementationPlan?: string;
   versionInfo?: import("@/types/version").ArtifactVersion;
@@ -104,6 +105,10 @@ export function ChatPanel({
     setShowCommands(false);
     inputRef.current?.focus();
   };
+
+  const handleNextStepSelection = (option: "test-cases" | "viewpoints") => {
+    onSendMessage(`NEXT_STEP:${option}`);
+  };
   const filteredCommands = slashCommands.filter(cmd => input.startsWith("/") && cmd.cmd.includes(input.toLowerCase()));
   useEffect(() => {
     setShowCommands(input.startsWith("/") && filteredCommands.length > 0);
@@ -165,6 +170,8 @@ export function ChatPanel({
                       onSendMessage(`ARTIFACT_SELECTION:${selectedArtifacts.join(',')}`);
                     }}
                   />
+                ) : message.type === "next-step" ? (
+                  <NextStepChips onSelect={handleNextStepSelection} />
                 ) : (
                   <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-2 prose-ul:my-2 prose-li:my-0">
                     <ReactMarkdown>{message.content}</ReactMarkdown>

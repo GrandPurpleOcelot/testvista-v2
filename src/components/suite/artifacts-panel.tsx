@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
 import { 
   Table, 
   TableBody, 
@@ -105,6 +106,11 @@ interface ArtifactsPanelProps {
   onExport: (format: string) => void;
   onGenerateArtifacts?: (requirementId: string) => void;
   isFullScreen?: boolean;
+  loadingStates?: {
+    requirements?: boolean;
+    viewpoints?: boolean;
+    testCases?: boolean;
+  };
 }
 
 export function ArtifactsPanel({ 
@@ -119,7 +125,8 @@ export function ArtifactsPanel({
   onSelectArtifact,
   onExport,
   onGenerateArtifacts,
-  isFullScreen = false
+  isFullScreen = false,
+  loadingStates = {}
 }: ArtifactsPanelProps) {
   const [activeTab, setActiveTab] = useState("requirements");
   const [editingCell, setEditingCell] = useState<string | null>(null);
@@ -333,7 +340,22 @@ export function ArtifactsPanel({
             <CardContent className="p-0 flex-1 min-h-0">
               <div className="h-full max-h-[calc(100vh-300px)] overflow-hidden border rounded-md">
                 <div className="h-full overflow-auto">
-                  <Table>
+                  {loadingStates.requirements ? (
+                    <div className="p-4 space-y-4">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                        Parsing requirements...
+                      </div>
+                      {[...Array(3)].map((_, i) => (
+                        <div key={i} className="space-y-2">
+                          <Skeleton className="h-4 w-20" />
+                          <Skeleton className="h-8 w-full" />
+                          <Skeleton className="h-6 w-32" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <Table>
                     <TableHeader className="sticky top-0 bg-muted/50 z-10">
                       <TableRow>
                         <TableHead className={isFullScreen ? "w-24" : "w-20"}>Req ID</TableHead>
@@ -440,6 +462,7 @@ export function ArtifactsPanel({
                       ))}
                     </TableBody>
                   </Table>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -451,7 +474,22 @@ export function ArtifactsPanel({
             <CardContent className="p-0 flex-1 min-h-0">
               <div className="h-full max-h-[calc(100vh-300px)] overflow-hidden border rounded-md">
                 <div className="h-full overflow-auto">
-                  <Table>
+                  {loadingStates.viewpoints ? (
+                    <div className="p-4 space-y-4">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                        Generating viewpoints...
+                      </div>
+                      {[...Array(2)].map((_, i) => (
+                        <div key={i} className="space-y-2">
+                          <Skeleton className="h-4 w-20" />
+                          <Skeleton className="h-6 w-full" />
+                          <Skeleton className="h-4 w-3/4" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <Table>
                     <TableHeader className="sticky top-0 bg-muted/50 z-10">
                       <TableRow>
                         <TableHead className={isFullScreen ? "w-24" : "w-20"}>VP ID</TableHead>
@@ -533,6 +571,7 @@ export function ArtifactsPanel({
                       ))}
                     </TableBody>
                   </Table>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -544,7 +583,22 @@ export function ArtifactsPanel({
             <CardContent className="p-0 flex-1 min-h-0">
               <div className="h-full max-h-[calc(100vh-300px)] overflow-hidden border rounded-md">
                 <div className="h-full overflow-auto">
-                  <Table>
+                  {loadingStates.testCases ? (
+                    <div className="p-4 space-y-4">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                        Generating test cases...
+                      </div>
+                      {[...Array(4)].map((_, i) => (
+                        <div key={i} className="space-y-2">
+                          <Skeleton className="h-4 w-16" />
+                          <Skeleton className="h-6 w-full" />
+                          <Skeleton className="h-8 w-3/4" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <Table>
                     <TableHeader className="sticky top-0 bg-muted/50 z-10">
                       <TableRow>
                         <TableHead className="w-16"></TableHead>
@@ -650,6 +704,7 @@ export function ArtifactsPanel({
                       ))}
                     </TableBody>
                   </Table>
+                  )}
                 </div>
               </div>
             </CardContent>
