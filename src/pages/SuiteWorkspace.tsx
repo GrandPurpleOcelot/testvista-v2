@@ -16,10 +16,16 @@ interface Message {
   role: "user" | "ai";
   content: string;
   timestamp: Date;
-  type?: "command" | "normal" | "artifact-selection" | "next-step";
+  type?: "command" | "normal" | "artifact-selection" | "next-step" | "version-action";
   needsImplementation?: boolean;
   implementationPlan?: string;
   versionInfo?: ArtifactVersion;
+  versionData?: {
+    name: string;
+    id: string;
+    timestamp: Date;
+    changes: string[];
+  };
   hasModifiedArtifacts?: boolean;
 }
 interface TraceabilityLink {
@@ -937,12 +943,17 @@ export default function SuiteWorkspace() {
             setLoadingStates({});
             setTestCases(mockTestCases);
             
+            // Create version for test cases generation
+            const currentArtifacts = { requirements, viewpoints, testCases: mockTestCases };
+            const versionInfo = versionManager.autoSaveVersion(currentArtifacts, 'NEXT_STEP:test-cases');
+            
             const message: Message = {
               id: `test-cases-generated-${Date.now()}`,
               role: "ai",
               content: "✅ **Test Cases Generated!**\n\nI've created example test cases based on your requirements. You can view them in the Test Cases tab. Each test case includes detailed steps, expected results, and is linked to the appropriate requirements.",
               timestamp: new Date(),
-              type: "normal"
+              type: "version-action",
+              versionInfo: versionInfo
             };
             setMessages(prev => [...prev, message]);
           }, 2000);
@@ -956,12 +967,17 @@ export default function SuiteWorkspace() {
             setLoadingStates({});
             setViewpoints(mockViewpoints);
             
+            // Create version for viewpoints generation
+            const currentArtifacts = { requirements, viewpoints: mockViewpoints, testCases };
+            const versionInfo = versionManager.autoSaveVersion(currentArtifacts, 'NEXT_STEP:viewpoints');
+            
             const message: Message = {
               id: `viewpoints-generated-${Date.now()}`,
               role: "ai",
               content: "✅ **Viewpoints Generated!**\n\nI've created testing viewpoints that analyze your requirements from different perspectives. Check the Viewpoints tab to see the various testing approaches and strategies.",
               timestamp: new Date(),
-              type: "normal"
+              type: "version-action",
+              versionInfo: versionInfo
             };
             setMessages(prev => [...prev, message]);
           }, 2000);

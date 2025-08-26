@@ -20,10 +20,16 @@ interface Message {
   role: "user" | "ai";
   content: string;
   timestamp: Date;
-  type?: "command" | "normal" | "artifact-selection" | "next-step";
+  type?: "command" | "normal" | "artifact-selection" | "next-step" | "version-action";
   needsImplementation?: boolean;
   implementationPlan?: string;
   versionInfo?: import("@/types/version").ArtifactVersion;
+  versionData?: {
+    name: string;
+    id: string;
+    timestamp: Date;
+    changes: string[];
+  };
   hasModifiedArtifacts?: boolean;
 }
 interface ChatPanelProps {
@@ -192,13 +198,12 @@ export function ChatPanel({
                   </div>
                 )}
                 
-                {/* Version Action Chips for AI messages that modified artifacts */}
-                {message.role === "ai" && message.versionInfo && (
+                {/* Version Action Chips for messages with version data */}
+                {message.role === "ai" && message.type === "version-action" && message.versionInfo && onVersionAction && (
                   <div className="mt-3 pt-3 border-t border-border/20">
                     <VersionActionChips
                       latestVersion={message.versionInfo}
-                      onAction={onVersionAction || (() => {})}
-                      className="flex gap-3 justify-start"
+                      onAction={onVersionAction}
                     />
                   </div>
                 )}
