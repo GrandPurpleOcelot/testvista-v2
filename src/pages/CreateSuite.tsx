@@ -312,7 +312,7 @@ export default function CreateSuite() {
                           <PaperclipIcon className="h-4 w-4" />
                         </Button>
                       </PopoverTrigger>
-                       <PopoverContent className="w-[calc(100vw-3rem)] max-w-4xl p-3 bg-background border shadow-md z-50" align="center" side="bottom" sideOffset={8}>
+                       <PopoverContent className="w-[calc(100vw-3rem)] max-w-4xl p-3 bg-background border shadow-md z-50" align="start" side="bottom" sideOffset={8}>
                          <div className="space-y-3">
                            {/* Header with search bar and buttons */}
                            <div className="flex items-center gap-2">
