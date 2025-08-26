@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, X, ArrowLeft, Plus, ArrowUp, FileText, MessageSquare, AtSign, PaperclipIcon } from "lucide-react";
+import { Upload, X, ArrowLeft, Plus, ArrowUp, FileText, MessageSquare, AtSign, PaperclipIcon, Search } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -43,6 +43,7 @@ export default function CreateSuite() {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [mentionedFiles, setMentionedFiles] = useState<string[]>([]);
   const [showMentionDropdown, setShowMentionDropdown] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -106,6 +107,12 @@ export default function CreateSuite() {
     ...f,
     category: f.category
   }))];
+
+  // Filter files based on search term
+  const filteredFiles = allAvailableFiles.filter(file =>
+    file.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    file.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files) return;
@@ -279,7 +286,7 @@ export default function CreateSuite() {
                       adjustTextareaHeight();
                     }} 
                     onKeyPress={handleKeyPress} 
-                    placeholder="Describe your test suite requirements, mention documents with @, or upload files..." 
+                    placeholder="Describe your test suite requirements or upload files..." 
                     className="min-h-[56px] max-h-[120px] resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-sm p-0 placeholder:text-muted-foreground/60 w-full" 
                     disabled={isCreating}
                     style={{ height: "56px" }}
@@ -291,82 +298,79 @@ export default function CreateSuite() {
                   <div className="flex items-center gap-1">
                     <Popover open={showMentionDropdown} onOpenChange={setShowMentionDropdown}>
                       <PopoverTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={handleMentionClick}
-                          className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          <AtSign className="h-4 w-4" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={handleMentionClick}
+                              className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                              <PaperclipIcon className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Attach Files or Mention Documents</p>
+                          </TooltipContent>
+                        </Tooltip>
                       </PopoverTrigger>
                       <PopoverContent className="w-80 p-3 bg-background border shadow-md z-50" align="start" side="bottom">
                         <div className="space-y-3">
-                          {/* Header with search and upload */}
-                          <div className="flex items-center gap-2">
-                            <div className="flex-1">
-                              <Input
-                                placeholder="Search documents..."
-                                className="h-8 text-sm"
-                              />
-                            </div>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => fileInputRef.current?.click()}
-                                  className="h-8 w-8 p-0 hover:bg-accent/50"
-                                >
-                                  <Upload className="h-4 w-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Upload from device</p>
-                              </TooltipContent>
-                            </Tooltip>
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-sm font-medium text-foreground">Attach Files or Mention Documents</h4>
                           </div>
                           
-                          {/* Available Documents */}
-                          <div className="space-y-1">
-                            <div className="text-xs font-medium px-2 py-1 text-muted-foreground">
-                              Available Documents
-                            </div>
-                            <div className="space-y-1 max-h-48 overflow-y-auto">
-                              {allAvailableFiles.map((file) => (
-                                <button
-                                  key={file.id}
-                                  onClick={() => handleMentionFile(file)}
-                                  className="w-full flex items-center gap-2 px-2 py-2 text-sm hover:bg-accent rounded-md transition-colors text-left"
-                                >
-                                  <span className="text-base">{getFileIcon('type' in file ? file.type : 'text/markdown')}</span>
-                                  <div className="flex-1 min-w-0">
-                                    <div className="truncate font-medium">{file.name}</div>
-                                    <div className="text-xs text-muted-foreground">{file.category}</div>
-                                  </div>
-                                </button>
-                              ))}
-                            </div>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => fileInputRef.current?.click()}
+                              className="flex-1"
+                            >
+                              <Upload className="h-4 w-4 mr-2" />
+                              Upload File
+                            </Button>
                           </div>
+                          
+                          <div className="relative">
+                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <input
+                              type="text"
+                              placeholder="Search documents to mention..."
+                              className="w-full pl-8 pr-4 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                              value={searchTerm}
+                              onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                          </div>
+                          
+                          <div className="max-h-48 overflow-y-auto space-y-1">
+                            {filteredFiles.map((file) => (
+                              <button
+                                key={file.id}
+                                onClick={() => handleMentionFile(file)}
+                                className="w-full text-left px-3 py-2 rounded-md hover:bg-accent/50 transition-colors group"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <div className={`p-1.5 rounded ${file.category === 'Reference' ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'}`}>
+                                    <FileText className="h-3 w-3" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
+                                    <p className="text-xs text-muted-foreground capitalize">{file.category}</p>
+                                  </div>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                          
+                          {filteredFiles.length === 0 && (
+                            <div className="text-center py-4 text-sm text-muted-foreground">
+                              No documents found
+                            </div>
+                          )}
                         </div>
                       </PopoverContent>
                     </Popover>
-                    
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => fileInputRef.current?.click()}
-                          className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          <PaperclipIcon className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Upload Files</p>
-                      </TooltipContent>
-                    </Tooltip>
                   </div>
 
                   {/* Send button - positioned on the right */}
