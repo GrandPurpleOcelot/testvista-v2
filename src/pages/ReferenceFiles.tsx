@@ -10,7 +10,6 @@ import {
   Upload, 
   Search, 
   FileText, 
-  Download, 
   Trash2, 
   Eye,
   Calendar,
@@ -247,9 +246,6 @@ export default function ReferenceFiles() {
                       <div className="flex items-center justify-end gap-2">
                         <Button variant="outline" size="sm">
                           <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Download className="h-4 w-4" />
                         </Button>
                         <Button variant="outline" size="sm">
                           <Trash2 className="h-4 w-4" />
