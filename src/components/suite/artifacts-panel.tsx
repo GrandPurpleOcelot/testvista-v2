@@ -18,8 +18,7 @@ import {
   FileText, 
   Target, 
   CheckSquare, 
-  BarChart3, 
-  Edit2, 
+  Edit2,
   Check, 
   X,
   Plus,
@@ -259,11 +258,6 @@ export function ArtifactsPanel({
     }
   };
 
-  // Calculate coverage
-  const coveredReqs = new Set(testCases.flatMap(tc => tc.reqIds));
-  const coveragePercentage = requirements.length > 0 
-    ? Math.round((coveredReqs.size / requirements.length) * 100) 
-    : 0;
 
   const renderArtifactsContent = () => (
     <div className="h-full flex flex-col bg-background min-h-0">
@@ -314,7 +308,7 @@ export function ArtifactsPanel({
             </div>
           </div>
           
-          <TabsList className="grid w-full grid-cols-4 mb-0">
+          <TabsList className="grid w-full grid-cols-3 mb-0">
             <TabsTrigger value="requirements" className="gap-2">
               <FileText className="h-4 w-4" />
               Requirements ({requirements.length})
@@ -326,10 +320,6 @@ export function ArtifactsPanel({
             <TabsTrigger value="testcases" className="gap-2">
               <CheckSquare className="h-4 w-4" />
               Test Cases ({testCases.length})
-            </TabsTrigger>
-            <TabsTrigger value="coverage" className="gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Coverage ({coveragePercentage}%)
             </TabsTrigger>
           </TabsList>
         </div>
@@ -709,25 +699,6 @@ export function ArtifactsPanel({
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="coverage" className="flex-1 m-0 p-4 min-h-0">
-          <div className="h-full max-h-[calc(100vh-300px)] overflow-hidden">
-            <TraceabilityMatrix
-              requirements={requirements}
-              viewpoints={viewpoints}
-              testCases={testCases}
-              onNavigateToArtifact={(type, id) => {
-                onSelectArtifact({ type, id });
-                // Switch to appropriate tab
-                if (type === "requirement") setActiveTab("requirements");
-                else if (type === "viewpoint") setActiveTab("viewpoints");
-                else if (type === "testcase") setActiveTab("testcases");
-              }}
-              onGenerateArtifacts={onGenerateArtifacts}
-              showViewpointLayer={true}
-            />
-          </div>
         </TabsContent>
       </Tabs>
     </div>
