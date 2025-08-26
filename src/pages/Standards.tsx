@@ -431,8 +431,8 @@ export default function Standards() {
                     >
                       <Edit className="h-3 w-3" />
                     </Button>
-                    <Button variant="outline" size="sm">
-                      <Download className="h-3 w-3" />
+                    <Button variant="outline" size="sm" className="text-destructive hover:text-destructive-foreground hover:bg-destructive">
+                      <Trash2 className="h-3 w-3" />
                     </Button>
                   </div>
                 </CardContent>
