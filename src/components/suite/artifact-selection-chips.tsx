@@ -86,13 +86,14 @@ export function ArtifactSelectionChips({ onConfirm }: ArtifactSelectionChipsProp
         })}
       </div>
 
-      <Button 
-        onClick={handleConfirm}
-        size="sm"
-        className="w-full"
-      >
-        Continue with Selected Artifacts
-      </Button>
+      <div className="flex justify-end">
+        <Button 
+          onClick={handleConfirm}
+          size="sm"
+        >
+          Continue
+        </Button>
+      </div>
     </div>
   );
 }
