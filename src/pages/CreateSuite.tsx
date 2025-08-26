@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, X, ArrowLeft, Plus, Send, FileText, MessageSquare, AtSign, PaperclipIcon } from "lucide-react";
+import { Upload, X, ArrowLeft, Plus, ArrowUp, FileText, MessageSquare, AtSign, PaperclipIcon } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 interface UploadedFile {
   name: string;
@@ -169,14 +171,30 @@ export default function CreateSuite() {
       handleChatSubmit();
     }
   };
+
+  // Auto-resize textarea
+  const adjustTextareaHeight = () => {
+    if (chatInputRef.current) {
+      chatInputRef.current.style.height = "56px"; // Reset to minimum height
+      const maxHeight = 120; // Maximum height in pixels
+      const newHeight = Math.min(chatInputRef.current.scrollHeight, maxHeight);
+      chatInputRef.current.style.height = `${newHeight}px`;
+    }
+  };
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [chatInput]);
   const handleMentionClick = () => {
     setShowMentionDropdown(!showMentionDropdown);
-    setChatInput(prev => prev + '@');
   };
+
   const handleMentionFile = (file: ReferenceFile | StandardFile) => {
-    setChatInput(prev => prev.replace(/@$/, `@${file.name} `));
+    const mentionText = `@${file.name}`;
+    setChatInput(prev => prev + mentionText + " ");
     setMentionedFiles(prev => [...prev, file.id]);
     setShowMentionDropdown(false);
+    chatInputRef.current?.focus();
   };
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -240,7 +258,7 @@ export default function CreateSuite() {
             <div className="w-20 h-20 mx-auto mb-6 bg-primary/10 rounded-full flex items-center justify-center">
               <MessageSquare className="h-10 w-10 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold mb-4">Let's create your test suite</h1>
+            <h1 className="text-3xl font-bold mb-4">Start creating your test cases</h1>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
               Describe what you want to test, mention relevant documents, or upload files to get started. 
               Our AI will help you create comprehensive test artifacts.
@@ -248,42 +266,104 @@ export default function CreateSuite() {
           </div>
 
           {/* Central Chat Input */}
-          <Card className="mb-8 shadow-lg border-primary/20">
-            <CardContent className="p-8">
-              <div className="relative">
-                <div className="flex items-end gap-4 p-6 border-2 rounded-xl bg-gradient-to-br from-background to-muted/20 border-primary/20 focus-within:border-primary/40 transition-all">
-                  <div className="flex gap-3">
-                    <Button variant="ghost" size="sm" onClick={handleMentionClick} className="h-10 w-10 p-0 hover:bg-primary/10" title="Mention document">
-                      <AtSign className="h-5 w-5" />
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => fileInputRef.current?.click()} className="h-10 w-10 p-0 hover:bg-primary/10" title="Upload file">
-                      <PaperclipIcon className="h-5 w-5" />
-                    </Button>
-                  </div>
-                  
-                  <Textarea ref={chatInputRef} placeholder="Describe your test suite requirements, mention documents with @, or upload files..." value={chatInput} onChange={e => setChatInput(e.target.value)} onKeyPress={handleKeyPress} className="flex-1 min-h-[80px] max-h-40 resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-lg placeholder:text-muted-foreground/60" />
-                  
-                  <Button onClick={handleChatSubmit} disabled={isCreating || !chatInput.trim()} size="lg" className="h-12 w-12 p-0 bg-primary hover:bg-primary/90">
-                    <Send className="h-5 w-5" />
-                  </Button>
+          <TooltipProvider>
+            <div className="relative bg-background/50 border border-border/30 rounded-xl hover:border-border/50 transition-colors duration-200 focus-within:border-primary/50 focus-within:bg-background mb-8 shadow-lg">
+              <div className="flex flex-col p-4 gap-3">
+                {/* Text input area - now on top and full width */}
+                <div className="w-full">
+                  <Textarea 
+                    ref={chatInputRef} 
+                    value={chatInput} 
+                    onChange={(e) => {
+                      setChatInput(e.target.value);
+                      adjustTextareaHeight();
+                    }} 
+                    onKeyPress={handleKeyPress} 
+                    placeholder="Describe your test suite requirements, mention documents with @, or upload files..." 
+                    className="min-h-[56px] max-h-[120px] resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-sm p-0 placeholder:text-muted-foreground/60 w-full" 
+                    disabled={isCreating}
+                    style={{ height: "56px" }}
+                  />
                 </div>
 
-                {/* Mention Dropdown */}
-                {showMentionDropdown && <div className="absolute bottom-full left-0 right-0 mb-2 bg-background border rounded-lg shadow-lg max-h-64 overflow-y-auto z-10">
-                    <div className="p-3">
-                      <p className="text-sm font-medium text-muted-foreground mb-3">Available Documents</p>
-                      {allAvailableFiles.map(file => <button key={file.id} onClick={() => handleMentionFile(file)} className="w-full text-left p-3 hover:bg-muted rounded-lg text-sm flex items-center gap-3 transition-colors">
-                          <span className="text-lg">{getFileIcon('type' in file ? file.type : 'text/markdown')}</span>
-                          <div className="flex-1 min-w-0">
-                            <div className="truncate font-medium">{file.name}</div>
-                            <div className="text-xs text-muted-foreground">{file.category}</div>
+                {/* Tool buttons row - now below text input */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    <Popover open={showMentionDropdown} onOpenChange={setShowMentionDropdown}>
+                      <PopoverTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={handleMentionClick}
+                          className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+                          title="Mention a Document"
+                        >
+                          <AtSign className="h-4 w-4" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80 p-2 bg-background border shadow-md z-50" align="start" side="top">
+                        <div className="space-y-1">
+                          <div className="text-sm font-medium px-2 py-1 text-muted-foreground">
+                            Available Documents
                           </div>
-                        </button>)}
-                    </div>
-                  </div>}
+                          <div className="space-y-1">
+                            {allAvailableFiles.map((file) => (
+                              <button
+                                key={file.id}
+                                onClick={() => handleMentionFile(file)}
+                                className="w-full flex items-center gap-2 px-2 py-2 text-sm hover:bg-accent rounded-md transition-colors text-left"
+                              >
+                                <span className="text-base">{getFileIcon('type' in file ? file.type : 'text/markdown')}</span>
+                                <div className="flex-1 min-w-0">
+                                  <div className="truncate font-medium">{file.name}</div>
+                                  <div className="text-xs text-muted-foreground">{file.category}</div>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                    
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => fileInputRef.current?.click()}
+                          className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          <PaperclipIcon className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Upload Files</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+
+                  {/* Send button - positioned on the right */}
+                  <Button 
+                    onClick={handleChatSubmit} 
+                    disabled={!chatInput.trim() || isCreating} 
+                    size="sm" 
+                    className={cn(
+                      "h-8 w-8 p-0 rounded-md transition-all duration-200",
+                      chatInput.trim() && !isCreating 
+                        ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm" 
+                        : "bg-muted/50 text-muted-foreground cursor-not-allowed"
+                    )}
+                  >
+                    {isCreating ? (
+                      <div className="h-3 w-3 animate-spin rounded-full border border-current border-t-transparent" />
+                    ) : (
+                      <ArrowUp className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </TooltipProvider>
 
           {/* Secondary Actions */}
           
