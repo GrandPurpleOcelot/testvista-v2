@@ -365,53 +365,6 @@ export default function CreateSuite() {
             </div>
           </TooltipProvider>
 
-          {/* Secondary Actions */}
-          
-
-          {/* Template Configuration - Collapsed by default */}
-          <Card className="border-muted/50">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base text-muted-foreground">
-                Advanced: Template Configuration
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Requirements Template */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Requirements</label>
-                  <select className="w-full text-sm border border-border rounded-md px-3 py-2 bg-background">
-                    <option value="default">Default Requirements Template</option>
-                    <option value="functional">Functional Requirements Template</option>
-                    <option value="non-functional">Non-Functional Requirements Template</option>
-                    <option value="api">API Requirements Template</option>
-                  </select>
-                </div>
-
-                {/* Viewpoints Template */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Viewpoints</label>
-                  <select className="w-full text-sm border border-border rounded-md px-3 py-2 bg-background">
-                    <option value="default">Default Viewpoint Template</option>
-                    <option value="user">User Viewpoint Template</option>
-                    <option value="system">System Viewpoint Template</option>
-                    <option value="security">Security Viewpoint Template</option>
-                  </select>
-                </div>
-
-                {/* Test Cases Template */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Test Cases</label>
-                  <select className="w-full text-sm border border-border rounded-md px-3 py-2 bg-background">
-                    <option value="default">Default Test Case Template</option>
-                    <option value="integration">Integration Test Template</option>
-                    <option value="unit">Unit Test Template</option>
-                    <option value="e2e">End-to-End Test Template</option>
-                  </select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </main>
 
