@@ -307,9 +307,10 @@ export default function CreateSuite() {
                           size="sm" 
                           onClick={handleAttachClick}
                           title="Attach Files or Mention Documents"
-                          className="h-8 w-8 p-0 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors"
+                          className="h-8 px-2 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
                         >
                           <PaperclipIcon className="h-4 w-4" />
+                          <span className="text-sm">Add content</span>
                         </Button>
                       </PopoverTrigger>
                        <PopoverContent className="w-[calc(100vw-3rem)] max-w-4xl p-3 bg-background border shadow-md z-50" align="start" side="bottom" sideOffset={16} alignOffset={-16}>
