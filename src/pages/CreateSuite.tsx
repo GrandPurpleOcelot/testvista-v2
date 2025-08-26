@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, X, ArrowLeft, Plus, ArrowUp, FileText, MessageSquare, AtSign, PaperclipIcon, Search } from "lucide-react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Upload, X, ArrowLeft, Plus, ArrowUp, FileText, MessageSquare, AtSign, PaperclipIcon, Search, ExternalLink } from "lucide-react";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
@@ -312,34 +312,41 @@ export default function CreateSuite() {
                           <PaperclipIcon className="h-4 w-4" />
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-80 p-3 bg-background border shadow-md z-50" align="start" side="bottom">
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-medium text-foreground">Attach Files or Mention Documents</h4>
-                          </div>
-                          
-                          <div className="flex gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => fileInputRef.current?.click()}
-                              className="flex-1"
-                            >
-                              <Upload className="h-4 w-4 mr-2" />
-                              Upload File
-                            </Button>
-                          </div>
-                          
-                          <div className="relative">
-                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <input
-                              type="text"
-                              placeholder="Search documents to mention..."
-                              className="w-full pl-8 pr-4 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-                              value={searchTerm}
-                              onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                          </div>
+                       <PopoverContent className="w-full p-3 bg-background border shadow-md z-50" align="center" side="bottom" sideOffset={8}>
+                         <div className="space-y-3">
+                           {/* Header with search bar and buttons */}
+                           <div className="flex items-center gap-2">
+                             <div className="relative flex-1">
+                               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                               <input
+                                 type="text"
+                                 placeholder="Search documents to mention..."
+                                 className="w-full pl-8 pr-4 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                                 value={searchTerm}
+                                 onChange={(e) => setSearchTerm(e.target.value)}
+                               />
+                             </div>
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               onClick={() => fileInputRef.current?.click()}
+                               className="shrink-0"
+                             >
+                               <Upload className="h-4 w-4 mr-2" />
+                               Upload
+                             </Button>
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               asChild
+                               className="shrink-0"
+                             >
+                               <Link to="/reference-files?from=my-space">
+                                 <ExternalLink className="h-4 w-4 mr-2" />
+                                 Link Files
+                               </Link>
+                             </Button>
+                           </div>
                           
                           <div className="max-h-48 overflow-y-auto space-y-1">
                             {filteredFiles.map((file) => (
