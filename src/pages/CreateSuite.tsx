@@ -201,11 +201,28 @@ export default function CreateSuite() {
   };
 
   const handleMentionFile = (file: ReferenceFile | StandardFile) => {
-    const mentionText = file.name;
-    setChatInput(prev => prev + mentionText + " ");
-    setMentionedFiles(prev => [...prev, file.id]);
+    // Only add if not already mentioned
+    if (!mentionedFiles.includes(file.id)) {
+      const mentionText = file.name;
+      setChatInput(prev => prev + mentionText + " ");
+      setMentionedFiles(prev => [...prev, file.id]);
+    }
     setShowMentionDropdown(false);
     chatInputRef.current?.focus();
+  };
+
+  const removeMentionedFile = (fileId: string) => {
+    const fileToRemove = allAvailableFiles.find(f => f.id === fileId);
+    if (fileToRemove) {
+      // Remove file name from chat input
+      setChatInput(prev => prev.replace(fileToRemove.name, "").replace(/\s+/g, " ").trim());
+      // Remove from mentioned files
+      setMentionedFiles(prev => prev.filter(id => id !== fileId));
+    }
+  };
+
+  const getMentionedFileObjects = () => {
+    return mentionedFiles.map(id => allAvailableFiles.find(f => f.id === id)).filter(Boolean);
   };
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -280,6 +297,28 @@ export default function CreateSuite() {
           <TooltipProvider>
             <div className="relative bg-background/50 border border-border/30 rounded-xl hover:border-border/50 transition-colors duration-200 focus-within:border-primary/50 focus-within:bg-background mb-8 shadow-lg">
               <div className="flex flex-col p-4 gap-3">
+                {/* Selected Files Chips */}
+                {getMentionedFileObjects().length > 0 && (
+                  <div className="flex flex-wrap gap-2 pb-2 border-b border-border/30">
+                    {getMentionedFileObjects().map((file) => (
+                      <div
+                        key={file.id}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary text-xs rounded-md border border-primary/20"
+                      >
+                        <FileText className="h-3 w-3" />
+                        <span className="font-medium">{file.name}</span>
+                        <button
+                          onClick={() => removeMentionedFile(file.id)}
+                          className="ml-1 hover:bg-primary/20 rounded-sm p-0.5 transition-colors"
+                          title="Remove file"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 {/* Text input area - now on top and full width */}
                 <div className="w-full">
                   <Textarea 
