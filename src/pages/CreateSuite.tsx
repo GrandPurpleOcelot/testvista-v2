@@ -203,7 +203,7 @@ export default function CreateSuite() {
   const handleMentionFile = (file: ReferenceFile | StandardFile) => {
     // Only add if not already mentioned
     if (!mentionedFiles.includes(file.id)) {
-      const mentionText = file.name;
+      const mentionText = `_${file.name}_`;
       setChatInput(prev => prev + mentionText + " ");
       setMentionedFiles(prev => [...prev, file.id]);
     }
@@ -214,8 +214,9 @@ export default function CreateSuite() {
   const removeMentionedFile = (fileId: string) => {
     const fileToRemove = allAvailableFiles.find(f => f.id === fileId);
     if (fileToRemove) {
-      // Remove file name from chat input
-      setChatInput(prev => prev.replace(fileToRemove.name, "").replace(/\s+/g, " ").trim());
+      // Remove underscored file name from chat input
+      const pattern = `_${fileToRemove.name}_`;
+      setChatInput(prev => prev.replace(pattern, "").replace(/\s+/g, " ").trim());
       // Remove from mentioned files
       setMentionedFiles(prev => prev.filter(id => id !== fileId));
     }
