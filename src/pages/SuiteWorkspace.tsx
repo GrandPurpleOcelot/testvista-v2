@@ -16,8 +16,9 @@ interface Message {
   role: "user" | "ai";
   content: string;
   timestamp: Date;
-  type?: "command" | "normal" | "artifact-selection" | "action-prompt";
-  actions?: { label: string; action: string }[];
+  type?: "command" | "normal" | "artifact-selection";
+  needsImplementation?: boolean;
+  implementationPlan?: string;
   versionInfo?: ArtifactVersion;
   hasModifiedArtifacts?: boolean;
 }
@@ -721,7 +722,7 @@ export default function SuiteWorkspace() {
     id: string;
   } | null>(null);
   const [suiteStatus, setSuiteStatus] = useState<"idle" | "running" | "paused">("idle");
-  const [chatMode, setChatMode] = useState(false); // false = modify artifacts, true = chat only
+  // Removed chatMode - AI always asks for permission now
   
   // Mock uploaded files
   const uploadedFiles = [
@@ -880,8 +881,20 @@ export default function SuiteWorkspace() {
       let hasModifiedArtifacts = false;
       const lowerMessage = message.toLowerCase();
       
+      // Handle implementation permission
+      if (message.startsWith("IMPLEMENT_PLAN:")) {
+        const messageId = message.replace("IMPLEMENT_PLAN:", "");
+        const planMessage = messages.find(msg => msg.id === messageId);
+        
+        if (planMessage && planMessage.implementationPlan) {
+          aiResponse = `✅ **Implementation Started**\n\nExecuting the planned changes:\n${planMessage.implementationPlan}\n\n📝 Artifacts have been generated and updated accordingly.`;
+          hasModifiedArtifacts = true;
+        } else {
+          aiResponse = "I couldn't find the implementation plan. Please try again.";
+        }
+      }
       // Handle artifact selection
-      if (message.startsWith("ARTIFACT_SELECTION:")) {
+      else if (message.startsWith("ARTIFACT_SELECTION:")) {
         const selectedArtifacts = message.replace("ARTIFACT_SELECTION:", "").split(",");
         const artifactNames = selectedArtifacts.map(id => {
           switch(id) {
@@ -893,8 +906,8 @@ export default function SuiteWorkspace() {
           }
         }).join(", ");
         
-        aiResponse = `Perfect! I'll generate ${artifactNames} for your test suite. This will provide comprehensive coverage of your testing needs.\n\nGenerating artifacts now...`;
-        hasModifiedArtifacts = !chatMode; // Only modify artifacts if chat mode is OFF
+        aiResponse = `Perfect! I'll plan to generate ${artifactNames} for your test suite. This will provide comprehensive coverage of your testing needs.\n\n📋 **Implementation Plan:**\n• Analyze existing requirements\n• Generate ${artifactNames.toLowerCase()}\n• Establish traceability links\n• Validate coverage completeness`;
+        hasModifiedArtifacts = false; // AI always provides plans first, never immediate modifications
       }
       // Handle new requirement detection from chat
       else if (message.toLowerCase().includes("new requirement") || 
@@ -919,65 +932,33 @@ export default function SuiteWorkspace() {
           changeHistory: []
         };
 
-        // Update requirements state
-        setRequirements(prev => [...prev, newRequirement]);
-        
-        if (chatMode) {
-          aiResponse = `✅ **New Requirement Detected!**\n\n**${newReqId}**: "${newRequirement.description}"\n\nI've added this requirement to your workspace with status "New". \n\n🔧 **Next Steps:**\n• Click the "Generate" button in the traceability matrix to auto-create related viewpoints and test cases\n• Or specify additional requirements and I'll handle them in bulk\n\nWould you like me to generate related artifacts for this requirement now?`;
-        } else {
-          aiResponse = `✅ **New Requirement Added!**\n\n**${newReqId}**: "${newRequirement.description}"\n\nRequirement has been added to your workspace. You can generate related artifacts from the Coverage tab.`;
-          // Trigger automatic artifact generation if not in chat mode
-          setTimeout(() => {
-            handleGenerateArtifacts(newReqId);
-          }, 1000);
-        }
-        hasModifiedArtifacts = true;
+        aiResponse = `✅ **New Requirement Detected!**\n\n**${newReqId}**: "${newRequirement.description}"\n\n📋 **Implementation Plan:**\n• Add requirement to workspace with "New" status\n• Generate related testing viewpoints\n• Create foundational test cases\n• Establish traceability links\n\nThis will provide a complete foundation for testing this requirement.`;
+        hasModifiedArtifacts = false;
         versionManager.markUnsavedChanges();
       }
       // Handle specific artifact generation commands
       else if (message.includes("/sample")) {
-        if (chatMode) {
-          aiResponse = "I can generate comprehensive sample test cases for your suite, including functional tests, edge cases, and integration scenarios with detailed steps and expected outcomes. Would you like me to implement this?";
-        } else {
-          aiResponse = "Perfect! I've generated comprehensive sample test cases for your suite. These include functional tests, edge cases, and integration scenarios with detailed steps and expected outcomes.";
-        }
-        hasModifiedArtifacts = !chatMode;
+        aiResponse = "📋 **Sample Test Cases Plan**\n\nI can generate comprehensive sample test cases for your suite:\n\n**Planned Test Cases:**\n• Functional authentication tests\n• Edge case scenarios\n• Integration test scenarios\n• Error handling tests\n\nEach test case will include detailed steps, expected outcomes, and traceability links.";
+        hasModifiedArtifacts = false;
       }
       else if (message.includes("/viewpoints")) {
-        if (chatMode) {
-          aiResponse = "I can create multiple testing viewpoints including functional, security, performance, and usability perspectives. Each viewpoint would provide targeted testing strategies for comprehensive coverage. Should I implement this plan?";
-        } else {
-          aiResponse = "Excellent! I've created multiple testing viewpoints including functional, security, performance, and usability perspectives. Each viewpoint provides targeted testing strategies for comprehensive coverage.";
-        }
-        hasModifiedArtifacts = !chatMode;
+        aiResponse = "📋 **Testing Viewpoints Plan**\n\nI can create comprehensive testing viewpoints:\n\n**Planned Viewpoints:**\n• Functional Testing Viewpoint\n• Security Testing Viewpoint\n• Performance Testing Viewpoint\n• Usability Testing Viewpoint\n\nEach viewpoint will provide targeted testing strategies for comprehensive coverage.";
+        hasModifiedArtifacts = false;
       }
       else if (message.toLowerCase().includes("generating artifacts") || 
                (message.toLowerCase().includes("generate") && message.toLowerCase().includes("viewpoints")) ||
                (message.toLowerCase().includes("generate") && message.toLowerCase().includes("requirements"))) {
-        if (chatMode) {
-          aiResponse = "I can create comprehensive requirements and testing viewpoints for your test suite:\n\n**Planned Requirements:**\n- 8 functional requirements covering core functionality\n- 3 non-functional requirements for performance and security\n- 2 integration requirements for system compatibility\n\n**Planned Testing Viewpoints:**\n- Functional Testing Viewpoint\n- Security Testing Viewpoint \n- Performance Testing Viewpoint\n- Usability Testing Viewpoint\n- Integration Testing Viewpoint\n\nWould you like me to implement this plan and generate all artifacts?";
-        } else {
-          aiResponse = "✅ **Artifacts Generated Successfully!**\n\nI've created comprehensive requirements and testing viewpoints for your test suite:\n\n**Requirements Generated:**\n- 8 functional requirements covering core functionality\n- 3 non-functional requirements for performance and security\n- 2 integration requirements for system compatibility\n\n**Testing Viewpoints Created:**\n- Functional Testing Viewpoint\n- Security Testing Viewpoint \n- Performance Testing Viewpoint\n- Usability Testing Viewpoint\n- Integration Testing Viewpoint\n\nAll artifacts are now available in your workspace with full traceability established.";
-        }
-        hasModifiedArtifacts = !chatMode;
-        console.log('🎯 Detected artifact generation message, chatMode:', chatMode, 'hasModifiedArtifacts:', !chatMode);
+        aiResponse = "📋 **Comprehensive Test Suite Plan**\n\nI can create a complete test suite structure:\n\n**Planned Requirements:**\n• 8 functional requirements covering core functionality\n• 3 non-functional requirements for performance and security\n• 2 integration requirements for system compatibility\n\n**Planned Testing Viewpoints:**\n• Functional Testing Viewpoint\n• Security Testing Viewpoint\n• Performance Testing Viewpoint\n• Usability Testing Viewpoint\n• Integration Testing Viewpoint\n\nThis will provide comprehensive coverage for your testing needs.";
+        hasModifiedArtifacts = false;
       }
       // Handle specific commands
       else if (message.startsWith("/sample")) {
-        if (chatMode) {
-          aiResponse = "I can generate sample test cases based on common user authentication scenarios. These would serve as a foundation that you can customize for your specific needs:\n\n**Planned Test Cases:**\n- Valid registration flows\n- Password validation scenarios\n- Email verification processes\n- Error handling cases\n\nEach test case would include detailed steps, expected results, and traceability links to requirements. Should I implement this plan?";
-        } else {
-          aiResponse = "I'll generate sample test cases based on common user authentication scenarios. These will serve as a foundation that you can customize for your specific needs.\n\n✅ Generated 8 comprehensive test cases covering:\n- Valid registration flows\n- Password validation scenarios\n- Email verification processes\n- Error handling cases\n\nEach test case includes detailed steps, expected results, and traceability links to requirements.";
-        }
-        hasModifiedArtifacts = !chatMode;
+        aiResponse = "📋 **Sample Test Cases Plan**\n\nI can generate sample test cases for authentication scenarios:\n\n**Planned Test Cases:**\n• Valid registration flows\n• Password validation scenarios\n• Email verification processes\n• Error handling cases\n\nEach test case will include detailed steps, expected results, and traceability links to requirements.";
+        hasModifiedArtifacts = false;
       }
       else if (message.startsWith("/viewpoints")) {
-        if (chatMode) {
-          aiResponse = "I can create testing viewpoints that provide different perspectives for comprehensive test coverage:\n\n**Planned Viewpoints:**\n- **Functional Testing Viewpoint**: Focuses on core authentication features\n- **Security Testing Viewpoint**: Emphasizes password policies and data protection\n- **Usability Testing Viewpoint**: Ensures user-friendly registration experience\n- **Performance Testing Viewpoint**: Tests system behavior under load\n\nThese viewpoints would help ensure no critical testing areas are overlooked. Would you like me to implement this plan?";
-        } else {
-          aiResponse = "I've created testing viewpoints that provide different perspectives for comprehensive test coverage:\n\n✅ **Functional Testing Viewpoint**: Focuses on core authentication features\n✅ **Security Testing Viewpoint**: Emphasizes password policies and data protection\n✅ **Usability Testing Viewpoint**: Ensures user-friendly registration experience\n✅ **Performance Testing Viewpoint**: Tests system behavior under load\n\nThese viewpoints will help ensure no critical testing areas are overlooked.";
-        }
-        hasModifiedArtifacts = !chatMode;
+        aiResponse = "📋 **Testing Viewpoints Plan**\n\nI can create comprehensive testing viewpoints:\n\n**Planned Viewpoints:**\n• **Functional Testing Viewpoint**: Core authentication features\n• **Security Testing Viewpoint**: Password policies and data protection\n• **Usability Testing Viewpoint**: User-friendly registration experience\n• **Performance Testing Viewpoint**: System behavior under load\n\nThese viewpoints will ensure no critical testing areas are overlooked.";
+        hasModifiedArtifacts = false;
       }
       else if (message.startsWith("/export")) {
         aiResponse = "I'm preparing your test cases for export. You can choose from several formats:\n\n📄 **Excel (.xlsx)** - Structured spreadsheet with all test details\n📋 **CSV** - Simple comma-separated format for easy import\n📝 **Word (.docx)** - Formatted document ready for documentation\n🔗 **TestRail** - Direct import format for TestRail integration\n\nWhich format would you prefer?";
@@ -989,30 +970,15 @@ export default function SuiteWorkspace() {
       }
       // Handle general AI responses
       else {
-        if (chatMode) {
-          const responses = [
-            "I can help you generate comprehensive test cases, analyze requirements, create testing viewpoints, and establish traceability matrices. What would you like to work on?",
-            "Let me assist you with test case generation. I can create detailed test scenarios based on your requirements, including steps, expected results, and priority levels.",
-            "I can analyze your requirements and suggest comprehensive testing strategies. Would you like me to focus on functional testing, security aspects, or performance considerations?",
-            "I'm here to help optimize your testing process. I can generate test cases, create viewpoints for different testing perspectives, and help establish clear traceability between requirements and tests."
-          ];
-          aiResponse = responses[Math.floor(Math.random() * responses.length)];
-        } else {
-          // When chat mode is OFF, provide specific action-oriented responses
-          if (lowerMessage.includes('change') || lowerMessage.includes('modify') || lowerMessage.includes('update')) {
-            aiResponse = "✅ **Test Case Modified Successfully!**\n\nI've analyzed your request and updated the relevant test case with your specifications. The changes include updated test steps, expected results, and any necessary traceability adjustments.\n\nAll modifications have been saved and are ready for review.";
-          } else if (lowerMessage.includes('test case') || lowerMessage.includes('test')) {
-            aiResponse = "✅ **Test Cases Updated!**\n\nI've processed your test case request and made the necessary modifications to ensure comprehensive coverage. The updated test cases include detailed steps, expected outcomes, and proper validation criteria.";
-          } else {
-            aiResponse = "✅ **Workspace Updated!**\n\nI've processed your request and made the appropriate updates to your test suite artifacts. All changes have been applied and are reflected in your current workspace.";
-          }
-        }
-        hasModifiedArtifacts = !chatMode; // Show action chips for all responses when chat mode is OFF
-      }
-
-      // When chat mode is OFF, ALL AI responses should show action chips
-      if (!chatMode) {
-        hasModifiedArtifacts = true;
+        const responses = [
+          "I'm here to help you create comprehensive test suites. I can analyze requirements, create testing viewpoints, generate test cases, and establish traceability links. What would you like to work on?",
+          "I can assist with building structured test artifacts based on your requirements. Feel free to describe your testing needs or use commands like /sample, /viewpoints, or /upload.",
+          "Let me know what testing artifacts you need and I'll create an implementation plan. I can generate requirements, viewpoints, test cases, and ensure proper coverage.",
+          "I'm ready to help with test suite development. Describe your testing objectives and I'll plan the appropriate artifacts and traceability links.",
+          "Feel free to describe your testing requirements or upload documents. I'll analyze them and propose a structured approach for comprehensive test coverage."
+        ];
+        aiResponse = responses[Math.floor(Math.random() * responses.length)];
+        hasModifiedArtifacts = false;
       }
 
       // Auto-save version for AI modifications
@@ -1030,10 +996,6 @@ export default function SuiteWorkspace() {
       }
       
       
-      // For chat mode OFF, always create a version if no specific command was matched
-      if (!chatMode && !command && hasModifiedArtifacts) {
-        command = 'general-update'; // Set a default command for general updates
-      }
       
       if (command && hasModifiedArtifacts) {
         console.log('🚀 Creating auto-save version with command:', command);
@@ -1042,17 +1004,13 @@ export default function SuiteWorkspace() {
         console.log('📦 Version created:', versionInfo);
       }
 
-      // Add action buttons for chat mode responses that suggest implementations
-      let messageType: "normal" | "action-prompt" = "normal";
-      let actions: { label: string; action: string }[] | undefined = undefined;
+      // Check if AI response needs implementation permission
+      let needsImplementation = false;
+      let implementationPlan = "";
       
-      if (chatMode && (lowerMessage.includes('generate') || lowerMessage.includes('/sample') || lowerMessage.includes('/viewpoints'))) {
-        messageType = "action-prompt";
-        actions = [
-          { label: "Implement this plan", action: "Yes, implement this plan and generate the artifacts" },
-          { label: "Modify approach", action: "Can you modify this approach to focus more on security testing?" },
-          { label: "Ask questions", action: "I have some questions about this approach" }
-        ];
+      if (lowerMessage.includes('generate') || lowerMessage.includes('/sample') || lowerMessage.includes('/viewpoints')) {
+        needsImplementation = true;
+        implementationPlan = aiResponse;
       }
 
       const aiMessage: Message = {
@@ -1060,8 +1018,9 @@ export default function SuiteWorkspace() {
         role: "ai",
         content: aiResponse,
         timestamp: new Date(),
-        type: messageType,
-        actions: actions,
+        type: "normal",
+        needsImplementation: needsImplementation,
+        implementationPlan: implementationPlan,
         versionInfo: versionInfo,
         hasModifiedArtifacts: hasModifiedArtifacts
       };
@@ -1348,8 +1307,6 @@ export default function SuiteWorkspace() {
             hasUnsavedChanges={versionManager.hasUnsavedChanges}
             onVersionAction={handleVersionAction}
             onViewHistory={() => setShowVersionHistory(true)}
-            chatMode={chatMode}
-            onChatModeChange={setChatMode}
             uploadedFiles={uploadedFiles}
           />
         </div>

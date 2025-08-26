@@ -19,8 +19,9 @@ interface Message {
   role: "user" | "ai";
   content: string;
   timestamp: Date;
-  type?: "command" | "normal" | "artifact-selection" | "action-prompt";
-  actions?: { label: string; action: string }[];
+  type?: "command" | "normal" | "artifact-selection";
+  needsImplementation?: boolean;
+  implementationPlan?: string;
   versionInfo?: import("@/types/version").ArtifactVersion;
   hasModifiedArtifacts?: boolean;
 }
@@ -31,8 +32,6 @@ interface ChatPanelProps {
   hasUnsavedChanges?: boolean;
   onVersionAction?: (action: VersionAction) => void;
   onViewHistory?: () => void;
-  chatMode: boolean;
-  onChatModeChange: (chatMode: boolean) => void;
   uploadedFiles?: { id: string; name: string; type: string }[];
 }
 const slashCommands = [{
@@ -59,8 +58,6 @@ export function ChatPanel({
   hasUnsavedChanges = false,
   onVersionAction,
   onViewHistory,
-  chatMode,
-  onChatModeChange,
   uploadedFiles = []
 }: ChatPanelProps) {
   const [input, setInput] = useState("");
@@ -174,20 +171,17 @@ export function ChatPanel({
                   </div>
                 )}
                 
-                {/* Action chips for action-prompt messages */}
-                {message.type === "action-prompt" && message.actions && (
-                  <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-border/20">
-                    {message.actions.map((action, index) => (
-                      <Button
-                        key={index}
-                        variant="outline"
-                        size="sm"
-                        className="bg-primary/5 border-primary/20 hover:bg-primary/10 text-primary"
-                        onClick={() => onSendMessage(action.action)}
-                      >
-                        {action.label}
-                      </Button>
-                    ))}
+                {/* Implementation permission chip */}
+                {message.role === "ai" && message.needsImplementation && (
+                  <div className="mt-3 pt-3 border-t border-border/20">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="bg-primary/5 border-primary/20 hover:bg-primary/10 text-primary text-xs"
+                      onClick={() => onSendMessage(`IMPLEMENT_PLAN:${message.id}`)}
+                    >
+                      Implement the plan
+                    </Button>
                   </div>
                 )}
                 
@@ -322,17 +316,6 @@ export function ChatPanel({
                   </TooltipContent>
                 </Tooltip>
                 
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="sm" onClick={() => onChatModeChange(!chatMode)} className={cn("h-8 px-3 text-xs font-medium transition-all duration-200 rounded-md", chatMode ? "bg-primary/10 text-primary hover:bg-primary/15" : "text-muted-foreground hover:text-foreground hover:bg-accent/50")}>
-                      <MessageSquare className="h-3.5 w-3.5 mr-1" />
-                      Chat
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Chat without making edit</p>
-                  </TooltipContent>
-                </Tooltip>
               </div>
 
               {/* Send button - positioned on the right */}
