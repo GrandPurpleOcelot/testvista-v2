@@ -301,25 +301,47 @@ export default function CreateSuite() {
                           <AtSign className="h-4 w-4" />
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-80 p-2 bg-background border shadow-md z-50" align="start" side="top">
-                        <div className="space-y-1">
-                          <div className="text-sm font-medium px-2 py-1 text-muted-foreground">
-                            Available Documents
+                      <PopoverContent className="w-80 p-3 bg-background border shadow-md z-50" align="start" side="bottom">
+                        <div className="space-y-3">
+                          {/* Header with search and upload */}
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1">
+                              <Input
+                                placeholder="Search documents..."
+                                className="h-8 text-sm"
+                              />
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => fileInputRef.current?.click()}
+                              className="h-8 w-8 p-0 hover:bg-accent/50"
+                              title="Upload from device"
+                            >
+                              <Upload className="h-4 w-4" />
+                            </Button>
                           </div>
+                          
+                          {/* Available Documents */}
                           <div className="space-y-1">
-                            {allAvailableFiles.map((file) => (
-                              <button
-                                key={file.id}
-                                onClick={() => handleMentionFile(file)}
-                                className="w-full flex items-center gap-2 px-2 py-2 text-sm hover:bg-accent rounded-md transition-colors text-left"
-                              >
-                                <span className="text-base">{getFileIcon('type' in file ? file.type : 'text/markdown')}</span>
-                                <div className="flex-1 min-w-0">
-                                  <div className="truncate font-medium">{file.name}</div>
-                                  <div className="text-xs text-muted-foreground">{file.category}</div>
-                                </div>
-                              </button>
-                            ))}
+                            <div className="text-xs font-medium px-2 py-1 text-muted-foreground">
+                              Available Documents
+                            </div>
+                            <div className="space-y-1 max-h-48 overflow-y-auto">
+                              {allAvailableFiles.map((file) => (
+                                <button
+                                  key={file.id}
+                                  onClick={() => handleMentionFile(file)}
+                                  className="w-full flex items-center gap-2 px-2 py-2 text-sm hover:bg-accent rounded-md transition-colors text-left"
+                                >
+                                  <span className="text-base">{getFileIcon('type' in file ? file.type : 'text/markdown')}</span>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="truncate font-medium">{file.name}</div>
+                                    <div className="text-xs text-muted-foreground">{file.category}</div>
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       </PopoverContent>
