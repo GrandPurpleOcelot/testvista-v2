@@ -591,15 +591,15 @@ export function ArtifactsPanel({
                     <Table>
                     <TableHeader className="sticky top-0 bg-muted/50 z-10">
                       <TableRow>
-                        <TableHead className="w-16"></TableHead>
-                        <TableHead className={isFullScreen ? "w-24" : "w-20"}>TC ID</TableHead>
-                        <TableHead className={isFullScreen ? "w-80" : "w-64"}>Title</TableHead>
-                        <TableHead className={isFullScreen ? "min-w-[300px]" : ""}>Steps</TableHead>
-                        <TableHead className={isFullScreen ? "w-60" : "w-48"}>Expected Result</TableHead>
-                        <TableHead className={isFullScreen ? "w-24" : "w-20"}>Severity</TableHead>
-                        <TableHead className={isFullScreen ? "w-40" : "w-32"}>Req IDs</TableHead>
-                        <TableHead className={isFullScreen ? "w-40" : "w-32"}>Tags</TableHead>
-                        {isFullScreen && <TableHead className="w-40">Last Modified</TableHead>}
+                        <TableHead className="w-12 min-w-12"></TableHead>
+                        <TableHead className="w-16 min-w-16 sm:w-20">TC ID</TableHead>
+                        <TableHead className="min-w-32 sm:min-w-48">Title</TableHead>
+                        <TableHead className="hidden md:table-cell min-w-40">Steps</TableHead>
+                        <TableHead className="hidden lg:table-cell min-w-32">Expected Result</TableHead>
+                        <TableHead className="w-16 min-w-16 sm:w-20">Severity</TableHead>
+                        <TableHead className="hidden sm:table-cell w-20 min-w-20">Req IDs</TableHead>
+                        <TableHead className="hidden xl:table-cell w-24 min-w-24">Tags</TableHead>
+                        {isFullScreen && <TableHead className="hidden lg:table-cell w-32 min-w-32">Last Modified</TableHead>}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -642,7 +642,7 @@ export function ArtifactsPanel({
                               multiline
                             />
                           </TableCell>
-                          <TableCell className={isFullScreen ? "max-w-[300px]" : ""}>
+                          <TableCell className="hidden md:table-cell">
                             <EditableCell
                               value={tc.steps}
                               cellId={`tc-${tc.id}-steps`}
@@ -652,7 +652,7 @@ export function ArtifactsPanel({
                               multiline
                             />
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="hidden lg:table-cell">
                             <EditableCell
                               value={tc.expectedResult}
                               cellId={`tc-${tc.id}-result`}
@@ -667,7 +667,7 @@ export function ArtifactsPanel({
                               {tc.severity}
                             </Badge>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="hidden sm:table-cell">
                             <div className="flex flex-wrap gap-1">
                               {tc.reqIds.map((reqId) => (
                                 <Badge key={reqId} variant="outline" className="text-xs">
@@ -676,7 +676,7 @@ export function ArtifactsPanel({
                               ))}
                             </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="hidden xl:table-cell">
                             <div className="flex flex-wrap gap-1">
                               {tc.tags.map((tag) => (
                                 <Badge key={tag} variant="secondary" className="text-xs">
@@ -686,7 +686,7 @@ export function ArtifactsPanel({
                             </div>
                           </TableCell>
                           {isFullScreen && (
-                            <TableCell className="text-xs text-muted-foreground">
+                            <TableCell className="hidden lg:table-cell text-xs text-muted-foreground">
                               {tc.lastModified.toLocaleDateString()}
                             </TableCell>
                           )}
