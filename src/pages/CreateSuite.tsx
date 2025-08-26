@@ -9,7 +9,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { ArtifactSelectionChips } from "@/components/suite/artifact-selection-chips";
 interface UploadedFile {
   name: string;
   size: number;
@@ -46,7 +45,6 @@ export default function CreateSuite() {
   const [showMentionDropdown, setShowMentionDropdown] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
-  const [selectedArtifacts, setSelectedArtifacts] = useState<string[]>(["requirements"]);
 
   // Get suite name and folder from URL params
   useEffect(() => {
@@ -155,14 +153,11 @@ export default function CreateSuite() {
     if (!chatInput.trim()) return;
     setIsCreating(true);
 
-    // Include selected artifacts in the suite creation
-    console.log("Creating suite with artifacts:", selectedArtifacts);
-
     // Simulate AI processing and redirect to suite workspace
     setTimeout(() => {
       toast({
         title: "Suite Created",
-        description: `"${suiteName}" has been created successfully with ${selectedArtifacts.length} artifacts`
+        description: `"${suiteName}" has been created successfully`
       });
       navigate(`/suite/new-${Date.now()}`);
     }, 1500);
@@ -259,7 +254,7 @@ export default function CreateSuite() {
         <div className="w-full max-w-4xl mx-auto">
           
           {/* Hero Section */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-12">
             <div className="w-20 h-20 mx-auto mb-6 bg-primary/10 rounded-full flex items-center justify-center">
               <MessageSquare className="h-10 w-10 text-primary" />
             </div>
@@ -268,11 +263,6 @@ export default function CreateSuite() {
               Describe what you want to test, mention relevant documents, or upload files to get started. 
               Our AI will help you create comprehensive test artifacts.
             </p>
-          </div>
-
-          {/* Artifact Selection Chips */}
-          <div className="mb-8 max-w-2xl mx-auto">
-            <ArtifactSelectionChips onSelectionChange={setSelectedArtifacts} />
           </div>
 
           {/* Central Chat Input */}
