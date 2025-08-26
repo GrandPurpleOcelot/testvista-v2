@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Send, Bot, User, Upload, Zap, Target, Plus, Lightbulb, ArrowUp, AtSign, MessageSquare, Clock, FileText, File } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
-import { ArtifactSelectionModal } from "./artifact-selection-modal";
+import { ArtifactSelectionChips } from "./artifact-selection-chips";
 import { Logo } from "@/components/ui/logo";
 import { VersionActionChips } from "./version-action-chips";
 import { VersionAction } from "@/types/version";
@@ -65,7 +65,7 @@ export function ChatPanel({
 }: ChatPanelProps) {
   const [input, setInput] = useState("");
   const [showCommands, setShowCommands] = useState(false);
-  const [showArtifactModal, setShowArtifactModal] = useState(false);
+  
   const [showFileMention, setShowFileMention] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -163,16 +163,11 @@ export function ChatPanel({
               
               <div className={cn("max-w-[80%] rounded-lg p-3 text-sm", message.role === "user" ? "bg-primary text-primary-foreground" : "bg-card border border-border/50 text-card-foreground")}>
                 {message.type === "artifact-selection" ? (
-                  <div className="space-y-3">
-                    <p className="font-medium">Configure your test suite artifacts:</p>
-                    <Button 
-                      onClick={() => setShowArtifactModal(true)}
-                      className="w-full"
-                      variant="outline"
-                    >
-                      Select Artifacts to Generate
-                    </Button>
-                  </div>
+                  <ArtifactSelectionChips
+                    onConfirm={(selectedArtifacts) => {
+                      onSendMessage(`ARTIFACT_SELECTION:${selectedArtifacts.join(',')}`);
+                    }}
+                  />
                 ) : (
                   <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-2 prose-ul:my-2 prose-li:my-0">
                     <ReactMarkdown>{message.content}</ReactMarkdown>
@@ -344,12 +339,5 @@ export function ChatPanel({
         </div>
       </div>
 
-      <ArtifactSelectionModal
-        isOpen={showArtifactModal}
-        onClose={() => setShowArtifactModal(false)}
-        onConfirm={(selectedArtifacts) => {
-          onSendMessage(`ARTIFACT_SELECTION:${selectedArtifacts.join(',')}`);
-        }}
-      />
     </TooltipProvider>;
 }
