@@ -335,17 +335,17 @@ export default function CreateSuite() {
                                <Upload className="h-4 w-4 mr-2" />
                                Upload
                              </Button>
-                             <Button
-                               variant="outline"
-                               size="sm"
-                               asChild
-                               className="shrink-0"
-                             >
-                               <Link to="/reference-files?from=my-space">
-                                 <ExternalLink className="h-4 w-4 mr-2" />
-                                 Link Files
-                               </Link>
-                             </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                asChild
+                                className="shrink-0"
+                              >
+                                <Link to="/reference-files?from=my-space">
+                                  <ExternalLink className="h-4 w-4 mr-2" />
+                                  View Uploaded Files
+                                </Link>
+                              </Button>
                            </div>
                           
                           <div className="max-h-48 overflow-y-auto space-y-1">
