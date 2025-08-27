@@ -265,7 +265,7 @@ export function ArtifactsPanel({
         {/* Tab Headers */}
         <div className="border-b border-border/50 bg-card px-4 pt-4 flex-shrink-0">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-card-foreground">Test Artifacts</h2>
+            <h2 className="font-semibold text-card-foreground">Deliverables</h2>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" className="gap-2" onClick={() => onExport("csv")}>
                 <Download className="h-4 w-4" />
@@ -287,7 +287,7 @@ export function ArtifactsPanel({
                       Full Screen
                     </Button>
                   </FullScreenModalTrigger>
-                  <FullScreenModalContent title="Test Artifacts - Full Screen View">
+                  <FullScreenModalContent title="Deliverables - Full Screen View">
                     <ArtifactsPanel
                       requirements={requirements}
                       viewpoints={viewpoints}

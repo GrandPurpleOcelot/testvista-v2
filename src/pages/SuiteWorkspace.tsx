@@ -761,7 +761,7 @@ export default function SuiteWorkspace() {
       {
         id: "context-acknowledgment",
         role: "ai",
-        content: "Perfect! I've received your test suite description and I'm ready to help you generate comprehensive test artifacts. Let me set up your workspace with the initial structure.",
+        content: "Perfect! I've received your test suite description and I'm ready to help you generate comprehensive deliverables. Let me set up your workspace with the initial structure.",
         timestamp: new Date(),
         type: "normal"
       },
@@ -1066,7 +1066,7 @@ export default function SuiteWorkspace() {
       else {
         const responses = [
           "I'm here to help you create comprehensive test suites. I can analyze requirements, create testing viewpoints, generate test cases, and establish traceability links. What would you like to work on?",
-          "I can assist with building structured test artifacts based on your requirements. Feel free to describe your testing needs or use commands like /sample, /viewpoints, or /upload.",
+          "I can assist with building structured deliverables based on your requirements. Feel free to describe your testing needs or use commands like /sample, /viewpoints, or /upload.",
           "Let me know what testing artifacts you need and I'll create an implementation plan. I can generate requirements, viewpoints, test cases, and ensure proper coverage.",
           "I'm ready to help with test suite development. Describe your testing objectives and I'll plan the appropriate artifacts and traceability links.",
           "Feel free to describe your testing requirements or upload documents. I'll analyze them and propose a structured approach for comprehensive test coverage."

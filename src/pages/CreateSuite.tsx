@@ -289,7 +289,7 @@ export default function CreateSuite() {
             <h1 className="text-3xl font-bold mb-4">Start creating your test cases</h1>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
               Describe what you want to test, mention relevant documents, or upload files to get started. 
-              Our AI will help you create comprehensive test artifacts.
+              Our AI will help you create comprehensive deliverables.
             </p>
           </div>
 
