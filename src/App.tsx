@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import AllProjects from "./pages/AllProjects";
 import MySpace from "./pages/MySpace";
 import ProjectManagement from "./pages/ProjectManagement";
 import ProjectFolders from "./pages/ProjectFolders";
@@ -23,9 +23,9 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<AllProjects />} />
           <Route path="/my-space" element={<MySpace />} />
-          <Route path="/projects" element={<ProjectManagement />} />
+          <Route path="/shared-projects" element={<ProjectManagement />} />
           <Route path="/project/:projectId/folders" element={<ProjectFolders />} />
           <Route path="/create-suite" element={<CreateSuite />} />
           <Route path="/suites" element={<TestSuites />} />
