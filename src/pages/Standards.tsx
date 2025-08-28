@@ -26,7 +26,7 @@ interface StandardTemplate {
   id: string;
   name: string;
   description: string;
-  category: string;
+  category: "test-case" | "viewpoint" | "requirement" | "coverage" | "other";
   content: string;
   createdBy: string;
   createdAt: string;
@@ -128,79 +128,66 @@ const mockTemplates: StandardTemplate[] = [
   },
   {
     id: "3",
-    name: "Test Scenario Template.md",
-    description: "Template for defining test scenarios with specific context and conditions",
-    category: "test-scenario",
-    content: `# Test Scenario Template
+    name: "Requirement Analysis Template.md",
+    description: "Template for analyzing and breaking down requirements for test coverage",
+    category: "requirement",
+    content: `# Requirement Analysis Template
 
-## Scenario Overview
-- **Scenario ID**: TS-[XXX]
-- **Feature Area**: [Specify the feature or module]
-- **Business Context**: [Real-world context this scenario represents]
-- **Priority**: [High/Medium/Low]
+## Requirement Overview
+- **Requirement ID**: REQ-[XXX]
+- **Source Document**: [Link to original requirement]
+- **Priority**: [Must Have/Should Have/Could Have]
+- **Complexity**: [Simple/Medium/Complex]
 
-## Scenario Description
-### Background:
-- [Context and setup for this scenario]
-- [Business conditions that trigger this scenario]
-- [User personas involved]
+## Functional Breakdown
+### Primary Functions:
+- [Function 1: Description]
+- [Function 2: Description]
+- [Function 3: Description]
 
-### Scenario Steps:
-1. [Given: Initial conditions]
-2. [When: Actions taken]
-3. [Then: Expected outcomes]
-
-## Test Conditions
-### Positive Scenarios:
-- [Valid business flow 1]
-- [Valid business flow 2]
-- [Edge case handling]
-
-### Negative Scenarios:
-- [Invalid input handling]
-- [Error condition responses]
-- [System failure recovery]
+### Dependencies:
+- [System dependencies]
+- [Data dependencies]
+- [External service dependencies]
 
 ## Acceptance Criteria
-- [Specific measurable outcome 1]
-- [Specific measurable outcome 2]
-- [Performance expectations]
+- [Criteria 1: Specific, measurable condition]
+- [Criteria 2: Specific, measurable condition]
+- [Criteria 3: Specific, measurable condition]
 
-## Dependencies & Prerequisites
-- [System dependencies]
-- [Data requirements]
-- [External service availability]`,
+## Test Coverage Areas
+- **Happy Path**: [Normal flow scenarios]
+- **Alternative Paths**: [Alternative valid flows]
+- **Error Handling**: [Error scenarios to test]
+- **Edge Cases**: [Boundary and edge conditions]`,
     createdBy: "Mike Johnson",
     createdAt: "2024-01-10",
     lastModified: "2024-01-16",
-    tags: ["test-scenario", "business", "context"]
+    tags: ["requirement", "analysis", "coverage"]
   }
 ];
 
-const defaultCategories = ["viewpoint", "test-case", "test-scenario"];
-
-const categoryLabels: Record<string, string> = {
-  "viewpoint": "Viewpoint",
-  "test-case": "Test Case", 
-  "test-scenario": "Test Scenario"
+const categoryLabels = {
+  "test-case": "Test Case",
+  "viewpoint": "Viewpoint", 
+  "requirement": "Requirement",
+  "coverage": "Coverage",
+  "other": "Other"
 };
 
 export default function Standards() {
   const [templates, setTemplates] = useState<StandardTemplate[]>(mockTemplates);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [customCategories, setCustomCategories] = useState<string[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isAddCategoryDialogOpen, setIsAddCategoryDialogOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<StandardTemplate | null>(null);
   const [editingTemplate, setEditingTemplate] = useState<StandardTemplate | null>(null);
-  const [newCategoryName, setNewCategoryName] = useState("");
   const [newTemplate, setNewTemplate] = useState({
     name: "",
     description: "",
-    category: "viewpoint",
+    category: "other" as StandardTemplate["category"],
     content: ""
   });
 
@@ -212,28 +199,13 @@ export default function Standards() {
     return matchesSearch && matchesCategory;
   });
 
-  const allCategories = [...defaultCategories, ...customCategories];
-
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case "viewpoint": return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
       case "test-case": return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
-      case "test-scenario": return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";
+      case "viewpoint": return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+      case "requirement": return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";
+      case "coverage": return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300";
       default: return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
-    }
-  };
-
-  const getCategoryLabel = (category: string) => {
-    return categoryLabels[category] || category.charAt(0).toUpperCase() + category.slice(1);
-  };
-
-  const handleAddCategory = () => {
-    if (newCategoryName.trim() && !allCategories.includes(newCategoryName.toLowerCase())) {
-      const categoryKey = newCategoryName.toLowerCase().replace(/\s+/g, '-');
-      setCustomCategories([...customCategories, categoryKey]);
-      categoryLabels[categoryKey] = newCategoryName;
-      setNewCategoryName("");
-      setIsAddCategoryDialogOpen(false);
     }
   };
 
@@ -249,7 +221,7 @@ export default function Standards() {
         tags: []
       };
       setTemplates([...templates, template]);
-      setNewTemplate({ name: "", description: "", category: "viewpoint", content: "" });
+      setNewTemplate({ name: "", description: "", category: "other", content: "" });
       setIsCreateDialogOpen(false);
     }
   };
@@ -352,22 +324,14 @@ export default function Standards() {
                     <label className="text-sm font-medium">Category</label>
                     <select
                       value={newTemplate.category}
-                      onChange={(e) => {
-                        if (e.target.value === "add-new") {
-                          setIsAddCategoryDialogOpen(true);
-                        } else {
-                          setNewTemplate({...newTemplate, category: e.target.value});
-                        }
-                      }}
+                      onChange={(e) => setNewTemplate({...newTemplate, category: e.target.value as StandardTemplate["category"]})}
                       className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     >
-                      {defaultCategories.map(cat => (
-                        <option key={cat} value={cat}>{getCategoryLabel(cat)}</option>
-                      ))}
-                      {customCategories.map(cat => (
-                        <option key={cat} value={cat}>{getCategoryLabel(cat)}</option>
-                      ))}
-                      <option value="add-new">+ Add New Category...</option>
+                      <option value="test-case">Test Case</option>
+                      <option value="viewpoint">Viewpoint</option>
+                      <option value="requirement">Requirement</option>
+                      <option value="coverage">Coverage</option>
+                      <option value="other">Other</option>
                     </select>
                   </div>
                   <div>
@@ -413,12 +377,11 @@ export default function Standards() {
               className="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
             >
               <option value="all">All Categories</option>
-              {defaultCategories.map(cat => (
-                <option key={cat} value={cat}>{getCategoryLabel(cat)}</option>
-              ))}
-              {customCategories.map(cat => (
-                <option key={cat} value={cat}>{getCategoryLabel(cat)}</option>
-              ))}
+              <option value="test-case">Test Case</option>
+              <option value="viewpoint">Viewpoint</option>
+              <option value="requirement">Requirement</option>
+              <option value="coverage">Coverage</option>
+              <option value="other">Other</option>
             </select>
           </div>
 
@@ -430,7 +393,7 @@ export default function Standards() {
                   <div className="flex items-start justify-between">
                     <FileText className="h-8 w-8 text-primary" />
                     <Badge className={`text-xs ${getCategoryColor(template.category)}`}>
-                      {getCategoryLabel(template.category)}
+                      {categoryLabels[template.category]}
                     </Badge>
                   </div>
                   
@@ -537,7 +500,7 @@ export default function Standards() {
             <div className="space-y-4">
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <Badge className={`${getCategoryColor(selectedTemplate.category)}`}>
-                  {getCategoryLabel(selectedTemplate.category)}
+                  {categoryLabels[selectedTemplate.category]}
                 </Badge>
                 <span>Created by {selectedTemplate.createdBy}</span>
                 <span>Last modified: {new Date(selectedTemplate.lastModified).toLocaleDateString()}</span>
@@ -617,25 +580,17 @@ export default function Standards() {
                   <label className="text-sm font-medium">Category</label>
                   <select
                     value={editingTemplate.category}
-                    onChange={(e) => {
-                      if (e.target.value === "add-new") {
-                        setIsAddCategoryDialogOpen(true);
-                      } else {
-                        setEditingTemplate({
-                          ...editingTemplate,
-                          category: e.target.value
-                        });
-                      }
-                    }}
+                    onChange={(e) => setEditingTemplate({
+                      ...editingTemplate,
+                      category: e.target.value as StandardTemplate["category"]
+                    })}
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
-                    {defaultCategories.map(cat => (
-                      <option key={cat} value={cat}>{getCategoryLabel(cat)}</option>
-                    ))}
-                    {customCategories.map(cat => (
-                      <option key={cat} value={cat}>{getCategoryLabel(cat)}</option>
-                    ))}
-                    <option value="add-new">+ Add New Category...</option>
+                    <option value="test-case">Test Case</option>
+                    <option value="viewpoint">Viewpoint</option>
+                    <option value="requirement">Requirement</option>
+                    <option value="coverage">Coverage</option>
+                    <option value="other">Other</option>
                   </select>
                 </div>
               </div>
@@ -681,40 +636,6 @@ export default function Standards() {
               </div>
             </div>
           )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Add Category Dialog */}
-      <Dialog open={isAddCategoryDialogOpen} onOpenChange={setIsAddCategoryDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Add New Category</DialogTitle>
-            <DialogDescription>
-              Create a new category for organizing your templates
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium">Category Name</label>
-              <Input
-                placeholder="e.g., Performance Testing"
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
-              />
-            </div>
-            <div className="flex gap-2 justify-end">
-              <Button variant="outline" onClick={() => {
-                setNewCategoryName("");
-                setIsAddCategoryDialogOpen(false);
-              }}>
-                Cancel
-              </Button>
-              <Button onClick={handleAddCategory} disabled={!newCategoryName.trim()}>
-                Add Category
-              </Button>
-            </div>
-          </div>
         </DialogContent>
       </Dialog>
     </div>
