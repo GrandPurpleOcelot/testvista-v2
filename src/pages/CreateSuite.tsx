@@ -352,87 +352,97 @@ export default function CreateSuite() {
                           <span className="text-sm">Add content</span>
                         </Button>
                       </PopoverTrigger>
-                       <PopoverContent className="w-[calc(100vw-3rem)] max-w-4xl p-3 bg-background border shadow-md z-50" align="start" side="bottom" sideOffset={16} alignOffset={-16}>
-                         <div className="space-y-3">
-                           {/* Header with search bar and buttons */}
-                           <div className="flex items-center gap-2">
-                             <div className="relative flex-1">
-                               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                               <input
-                                 type="text"
-                                 placeholder="Search documents to mention..."
-                                 className="w-full pl-8 pr-4 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-                                 value={searchTerm}
-                                 onChange={(e) => setSearchTerm(e.target.value)}
-                               />
-                             </div>
+                      <PopoverContent className="w-[calc(100vw-3rem)] max-w-4xl p-3 bg-background border shadow-md z-50" align="start" side="bottom" sideOffset={16} alignOffset={-16}>
+                        <div className="space-y-3">
+                          {/* Header with search bar and buttons */}
+                          <div className="flex items-center gap-2">
+                            <div className="relative flex-1">
+                              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                              <input
+                                type="text"
+                                placeholder="Search documents to mention..."
+                                className="w-full pl-8 pr-4 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                              />
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => fileInputRef.current?.click()}
+                              className="shrink-0"
+                            >
+                              <Upload className="h-4 w-4 mr-2" />
+                              Upload
+                            </Button>
                              <Button
                                variant="outline"
                                size="sm"
-                               onClick={() => fileInputRef.current?.click()}
+                               asChild
                                className="shrink-0"
                              >
-                               <Upload className="h-4 w-4 mr-2" />
-                               Upload
+                               <Link to="/reference-files?from=my-space">
+                                 <ExternalLink className="h-4 w-4 mr-2" />
+                                 View Uploaded Files
+                               </Link>
                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                asChild
-                                className="shrink-0"
-                              >
-                                <Link to="/reference-files?from=my-space">
-                                  <ExternalLink className="h-4 w-4 mr-2" />
-                                  View Uploaded Files
-                                </Link>
-                              </Button>
+                          </div>
+                         
+                          <div className="max-h-48 overflow-y-auto space-y-1">
+                            {filteredFiles.map((file) => {
+                              const isSelected = mentionedFiles.includes(file.id);
+                              return (
+                                <button
+                                  key={file.id}
+                                  onClick={() => handleMentionFile(file)}
+                                  className={cn(
+                                    "w-full text-left px-3 py-2 rounded-md transition-colors group",
+                                    isSelected 
+                                      ? "bg-primary/10 hover:bg-primary/15 border border-primary/20" 
+                                      : "hover:bg-accent/50"
+                                  )}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <div className={`p-1.5 rounded ${file.category === 'Reference' ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'}`}>
+                                      <FileText className="h-3 w-3" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
+                                      <p className="text-xs text-muted-foreground capitalize">{file.category}</p>
+                                    </div>
+                                    {isSelected && (
+                                      <div className="flex-shrink-0">
+                                        <Check className="h-4 w-4 text-primary" />
+                                      </div>
+                                    )}
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                         
+                         {filteredFiles.length === 0 && (
+                           <div className="text-center py-4 text-sm text-muted-foreground">
+                             No documents found
                            </div>
-                          
-                           <div className="max-h-48 overflow-y-auto space-y-1">
-                             {filteredFiles.map((file) => {
-                               const isSelected = mentionedFiles.includes(file.id);
-                               return (
-                                 <button
-                                   key={file.id}
-                                   onClick={() => handleMentionFile(file)}
-                                   className={cn(
-                                     "w-full text-left px-3 py-2 rounded-md transition-colors group",
-                                     isSelected 
-                                       ? "bg-primary/10 hover:bg-primary/15 border border-primary/20" 
-                                       : "hover:bg-accent/50"
-                                   )}
-                                 >
-                                   <div className="flex items-center gap-2">
-                                     <div className={`p-1.5 rounded ${file.category === 'Reference' ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'}`}>
-                                       <FileText className="h-3 w-3" />
-                                     </div>
-                                     <div className="flex-1 min-w-0">
-                                       <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
-                                       <p className="text-xs text-muted-foreground capitalize">{file.category}</p>
-                                     </div>
-                                     {isSelected && (
-                                       <div className="flex-shrink-0">
-                                         <Check className="h-4 w-4 text-primary" />
-                                       </div>
-                                     )}
-                                   </div>
-                                 </button>
-                               );
-                             })}
-                           </div>
-                          
-                          {filteredFiles.length === 0 && (
-                            <div className="text-center py-4 text-sm text-muted-foreground">
-                              No documents found
-                            </div>
-                          )}
-                        </div>
-                      </PopoverContent>
+                         )}
+                       </div>
+                     </PopoverContent>
                     </Popover>
+                    
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      title="Test Level"
+                      className="h-8 px-2 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span className="text-sm">Test level</span>
+                    </Button>
                   </div>
 
                   {/* Send button - positioned on the right */}
-                  <Button 
+                  <Button
                     onClick={handleChatSubmit} 
                     disabled={!chatInput.trim() || isCreating} 
                     size="sm" 
