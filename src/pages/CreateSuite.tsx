@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, X, ArrowLeft, Plus, ArrowUp, FileText, MessageSquare, AtSign, PaperclipIcon, Search, ExternalLink, Check } from "lucide-react";
+import { Upload, X, ArrowLeft, Plus, ArrowUp, FileText, MessageSquare, AtSign, PaperclipIcon, Search, ExternalLink, Check, Info } from "lucide-react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -29,6 +29,12 @@ interface StandardFile {
   category: string;
   uploadedDate: string;
 }
+
+interface TestLevel {
+  id: string;
+  name: string;
+  description: string;
+}
 export default function CreateSuite() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -43,6 +49,8 @@ export default function CreateSuite() {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [mentionedFiles, setMentionedFiles] = useState<string[]>([]);
   const [showMentionDropdown, setShowMentionDropdown] = useState(false);
+  const [showTestLevelDropdown, setShowTestLevelDropdown] = useState(false);
+  const [selectedTestLevel, setSelectedTestLevel] = useState<TestLevel | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -107,6 +115,25 @@ export default function CreateSuite() {
     ...f,
     category: f.category
   }))];
+
+  // Test levels data
+  const testLevels: TestLevel[] = [
+    {
+      id: "component",
+      name: "Component Test",
+      description: "Unit testing of individual components in isolation to verify their functionality, logic, and behavior independently from other parts of the system."
+    },
+    {
+      id: "integration", 
+      name: "Integration Test",
+      description: "Testing the interaction between integrated components or services to ensure they work together correctly and data flows properly between modules."
+    },
+    {
+      id: "system",
+      name: "System Test", 
+      description: "End-to-end testing of the complete system functionality to verify that all components work together as intended in a production-like environment."
+    }
+  ];
 
   // Filter files based on search term
   const filteredFiles = allAvailableFiles.filter(file =>
@@ -224,6 +251,16 @@ export default function CreateSuite() {
   const getMentionedFileObjects = () => {
     return mentionedFiles.map(id => allAvailableFiles.find(f => f.id === id)).filter(Boolean);
   };
+
+  const handleTestLevelSelect = (testLevel: TestLevel) => {
+    setSelectedTestLevel(testLevel);
+    setShowTestLevelDropdown(false);
+    chatInputRef.current?.focus();
+  };
+
+  const removeTestLevel = () => {
+    setSelectedTestLevel(null);
+  };
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(true);
@@ -297,8 +334,8 @@ export default function CreateSuite() {
           <TooltipProvider>
             <div className="relative bg-background/50 border border-border/30 rounded-xl hover:border-border/50 transition-colors duration-200 focus-within:border-primary/50 focus-within:bg-background mb-8 shadow-lg">
               <div className="flex flex-col p-4 gap-3">
-                {/* Selected Files Chips */}
-                {getMentionedFileObjects().length > 0 && (
+                 {/* Selected Files and Test Level Chips */}
+                {(getMentionedFileObjects().length > 0 || selectedTestLevel) && (
                   <div className="flex flex-wrap gap-2 pb-2 border-b border-border/30">
                     {getMentionedFileObjects().map((file) => (
                       <div
@@ -316,6 +353,18 @@ export default function CreateSuite() {
                         </button>
                       </div>
                     ))}
+                    {selectedTestLevel && (
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-secondary/50 text-secondary-foreground text-xs rounded-md border border-secondary/20">
+                        <span className="font-medium">{selectedTestLevel.name}</span>
+                        <button
+                          onClick={removeTestLevel}
+                          className="ml-1 hover:bg-secondary/20 rounded-sm p-0.5 transition-colors"
+                          title="Remove test level"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -430,15 +479,50 @@ export default function CreateSuite() {
                      </PopoverContent>
                     </Popover>
                     
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      title="Test Level"
-                      className="h-8 px-2 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
-                    >
-                      <Plus className="h-4 w-4" />
-                      <span className="text-sm">Test level</span>
-                    </Button>
+                     <Popover open={showTestLevelDropdown} onOpenChange={setShowTestLevelDropdown}>
+                       <PopoverTrigger asChild>
+                         <Button 
+                           variant="ghost" 
+                           size="sm"
+                           title="Select Test Level"
+                           className="h-8 px-2 hover:bg-accent/50 text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                         >
+                           <Plus className="h-4 w-4" />
+                           <span className="text-sm">Test level</span>
+                         </Button>
+                       </PopoverTrigger>
+                       <PopoverContent className="w-80 p-3 bg-background border shadow-md z-50" align="start" side="bottom" sideOffset={8}>
+                         <div className="space-y-1">
+                           <div className="px-3 py-2 text-sm font-medium text-foreground border-b border-border/30 mb-2">
+                             Select Test Level
+                           </div>
+                           {testLevels.map((level) => (
+                             <button
+                               key={level.id}
+                               onClick={() => handleTestLevelSelect(level)}
+                               className={cn(
+                                 "w-full text-left px-3 py-2 rounded-md transition-colors hover:bg-accent/50",
+                                 selectedTestLevel?.id === level.id && "bg-primary/10 border border-primary/20"
+                               )}
+                             >
+                               <div className="flex items-start gap-2">
+                                 <div className="flex-1">
+                                   <p className="text-sm font-medium text-foreground">{level.name}</p>
+                                 </div>
+                                 <Tooltip>
+                                   <TooltipTrigger asChild>
+                                     <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors cursor-help mt-0.5" />
+                                   </TooltipTrigger>
+                                   <TooltipContent side="right" className="max-w-xs p-3">
+                                     <p className="text-sm">{level.description}</p>
+                                   </TooltipContent>
+                                 </Tooltip>
+                               </div>
+                             </button>
+                           ))}
+                         </div>
+                       </PopoverContent>
+                     </Popover>
                   </div>
 
                   {/* Send button - positioned on the right */}
