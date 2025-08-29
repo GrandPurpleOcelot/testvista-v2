@@ -174,15 +174,215 @@ const mockTemplates: StandardTemplate[] = [
     createdAt: "2024-01-10",
     lastModified: "2024-01-16",
     tags: ["test-scenario", "business", "context"]
+  },
+  {
+    id: "4",
+    name: "Component Test Template.md",
+    description: "Template for unit testing individual components in isolation to verify functionality and behavior",
+    category: "component-test",
+    content: `# Component Test Template
+
+## Test Objective
+- **Component Under Test**: [Component name/module]
+- **Testing Goal**: Verify individual component functionality in isolation
+- **Scope**: Unit-level testing without external dependencies
+
+## Component Analysis
+### Component Purpose:
+- [What this component is designed to do]
+- [Core functionality and responsibilities]
+- [Input/output specifications]
+
+### Dependencies:
+- [List external dependencies to be mocked]
+- [Data dependencies]
+- [Service dependencies]
+
+## Test Strategy
+### Isolation Approach:
+- Mock all external dependencies
+- Test component logic independently
+- Focus on single responsibility verification
+
+### Test Categories:
+1. **Functional Tests**: Core business logic validation
+2. **Input Validation**: Parameter and data validation
+3. **Error Handling**: Exception and edge case scenarios
+4. **State Management**: Internal state changes and transitions
+
+## Test Case Structure
+### Test Case: [TC-COMP-XXX]
+**Given**: [Component initial state and setup]
+**When**: [Action performed on component]
+**Then**: [Expected component behavior/output]
+
+### Test Data Requirements:
+- [Valid input data sets]
+- [Invalid input scenarios]
+- [Boundary value conditions]
+
+## Assertions & Verification
+- [Output validation criteria]
+- [State change verification]
+- [Error response validation]
+- [Performance benchmarks if applicable]
+
+## Coverage Requirements
+- **Code Coverage**: Minimum 90% line coverage
+- **Branch Coverage**: Test all decision paths
+- **Edge Cases**: Boundary conditions and error scenarios`,
+    createdBy: "Sarah Wilson",
+    createdAt: "2024-01-20",
+    lastModified: "2024-01-22",
+    tags: ["component-test", "unit-testing", "isolation"]
+  },
+  {
+    id: "5", 
+    name: "Integration Test Template.md",
+    description: "Template for testing interactions between integrated components and services",
+    category: "integration-test",
+    content: `# Integration Test Template
+
+## Test Objective
+- **Integration Scope**: [Define components/services being integrated]
+- **Testing Goal**: Verify proper interaction and data flow between components
+- **Integration Level**: [API, Database, Service-to-Service, etc.]
+
+## Integration Points
+### Components Involved:
+- [Component A - Role and responsibilities]
+- [Component B - Role and responsibilities]
+- [Data flow direction and format]
+
+### Interface Specifications:
+- [API endpoints or communication protocols]
+- [Data formats and schemas]
+- [Authentication and authorization requirements]
+
+## Test Strategy
+### Integration Approach:
+- [Big Bang, Incremental, Top-down, Bottom-up]
+- [Test environment configuration]
+- [Data synchronization requirements]
+
+### Test Scenarios:
+1. **Happy Path Integration**: Normal operational flow
+2. **Error Propagation**: How errors are handled across components
+3. **Data Consistency**: Ensuring data integrity across systems
+4. **Performance Integration**: Response times and throughput
+
+## Test Case Structure
+### Integration Test: [IT-XXX]
+**Pre-conditions**: [System state before integration test]
+**Test Steps**:
+1. [Setup integrated environment]
+2. [Trigger integration point]
+3. [Verify data flow and processing]
+**Expected Results**: [End-to-end verification criteria]
+
+### Data Requirements:
+- [Test datasets for integration scenarios]
+- [Database state requirements]
+- [External service configurations]
+
+## Verification Points
+- [Data transformation validation]
+- [Communication protocol compliance]
+- [Error handling across component boundaries]
+- [Transaction integrity and rollback scenarios]
+
+## Dependencies & Environment
+- [Required test environment setup]
+- [External service availability]
+- [Database configuration and test data]
+- [Network connectivity requirements]`,
+    createdBy: "David Chen",
+    createdAt: "2024-01-18",
+    lastModified: "2024-01-21",
+    tags: ["integration-test", "component-interaction", "data-flow"]
+  },
+  {
+    id: "6",
+    name: "System Test Template.md", 
+    description: "Template for end-to-end testing of complete system functionality in production-like environment",
+    category: "system-test",
+    content: `# System Test Template
+
+## Test Objective
+- **System Scope**: [Complete system/application under test]
+- **Testing Goal**: Validate end-to-end business scenarios in production-like environment
+- **Business Context**: [Real-world use cases being validated]
+
+## System Configuration
+### Environment Requirements:
+- [Production-like infrastructure]
+- [Complete data sets and realistic volumes]
+- [All integrated systems and dependencies]
+- [Security and access controls]
+
+### User Personas:
+- [Different user types and their roles]
+- [Access levels and permissions]
+- [Workflow variations by user type]
+
+## Test Strategy
+### End-to-End Approach:
+- [Complete business process validation]
+- [Cross-functional workflow testing]
+- [Multi-user scenario testing]
+
+### Test Categories:
+1. **Business Process Tests**: Complete workflow validation
+2. **User Journey Tests**: End-to-end user experience
+3. **Performance Tests**: System behavior under load
+4. **Security Tests**: Access control and data protection
+5. **Compatibility Tests**: Browser/device/platform testing
+
+## Test Scenario Structure
+### System Test: [ST-XXX]
+**Business Scenario**: [Real-world business case]
+**User Story**: [As a [user], I want to [action] so that [benefit]]
+
+**Test Flow**:
+1. [User authentication and setup]
+2. [Primary business process execution]
+3. [Data validation across all systems]
+4. [Business outcome verification]
+
+### Success Criteria:
+- [Business objectives achieved]
+- [Data consistency across all systems]
+- [Performance within acceptable limits]
+- [Security requirements met]
+
+## Validation Points
+- [Business rule compliance]
+- [Data integrity across the entire system]
+- [User interface consistency and usability]
+- [System reliability and error recovery]
+- [Audit trail and logging verification]
+
+## Production Readiness
+- [Performance benchmarks met]
+- [Security vulnerabilities addressed]
+- [Disaster recovery scenarios tested]
+- [Monitoring and alerting validated]`,
+    createdBy: "Emily Rodriguez",
+    createdAt: "2024-01-19",
+    lastModified: "2024-01-23",
+    tags: ["system-test", "end-to-end", "production-validation"]
   }
 ];
 
-const defaultCategories = ["viewpoint", "test-case", "test-scenario"];
+const defaultCategories = ["viewpoint", "test-case", "test-scenario", "component-test", "integration-test", "system-test"];
 
 const categoryLabels: Record<string, string> = {
   "viewpoint": "Viewpoint",
   "test-case": "Test Case", 
-  "test-scenario": "Test Scenario"
+  "test-scenario": "Test Scenario",
+  "component-test": "Component Test",
+  "integration-test": "Integration Test", 
+  "system-test": "System Test"
 };
 
 export default function Standards() {
@@ -219,6 +419,9 @@ export default function Standards() {
       case "viewpoint": return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
       case "test-case": return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
       case "test-scenario": return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";
+      case "component-test": return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300";
+      case "integration-test": return "bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-300";
+      case "system-test": return "bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-300";
       default: return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
     }
   };

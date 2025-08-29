@@ -496,31 +496,44 @@ export default function CreateSuite() {
                            <div className="px-3 py-2 text-sm font-medium text-foreground border-b border-border/30 mb-2">
                              Select Test Level
                            </div>
-                           {testLevels.map((level) => (
-                             <button
-                               key={level.id}
-                               onClick={() => handleTestLevelSelect(level)}
-                               className={cn(
-                                 "w-full text-left px-3 py-2 rounded-md transition-colors hover:bg-accent/50",
-                                 selectedTestLevel?.id === level.id && "bg-primary/10 border border-primary/20"
-                               )}
-                             >
-                               <div className="flex items-start gap-2">
-                                 <div className="flex-1">
-                                   <p className="text-sm font-medium text-foreground">{level.name}</p>
-                                 </div>
-                                 <Tooltip>
-                                   <TooltipTrigger asChild>
-                                     <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors cursor-help mt-0.5" />
-                                   </TooltipTrigger>
-                                   <TooltipContent side="right" className="max-w-xs p-3">
-                                     <p className="text-sm">{level.description}</p>
-                                   </TooltipContent>
-                                 </Tooltip>
-                               </div>
-                             </button>
-                           ))}
-                         </div>
+                            {testLevels.map((level) => (
+                              <button
+                                key={level.id}
+                                onClick={() => handleTestLevelSelect(level)}
+                                className={cn(
+                                  "w-full text-left px-3 py-2 rounded-md transition-colors hover:bg-accent/50",
+                                  selectedTestLevel?.id === level.id && "bg-primary/10 border border-primary/20"
+                                )}
+                              >
+                                <div className="flex items-start gap-2">
+                                  <div className="flex-1">
+                                    <p className="text-sm font-medium text-foreground">{level.name}</p>
+                                  </div>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors cursor-help mt-0.5" />
+                                    </TooltipTrigger>
+                                    <TooltipContent side="right" className="max-w-xs p-3">
+                                      <p className="text-sm">{level.description}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </div>
+                              </button>
+                            ))}
+                            <div className="pt-2 border-t border-border/30 mt-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                asChild
+                                className="w-full"
+                              >
+                                <Link to="/standards" onClick={() => setShowTestLevelDropdown(false)}>
+                                  <ExternalLink className="h-4 w-4 mr-2" />
+                                  View Templates
+                                </Link>
+                              </Button>
+                            </div>
+                          </div>
                        </PopoverContent>
                      </Popover>
                   </div>
