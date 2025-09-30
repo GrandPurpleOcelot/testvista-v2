@@ -14,10 +14,13 @@ import {
   User,
   ChevronDown,
   ChevronRight,
-  Share2
+  Share2,
+  Folder
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { mockProjects } from "@/data/mockProjects";
+import { mockTestSuites } from "@/data/mockTestSuites";
 
 interface SidebarProps {
   className?: string;
@@ -28,34 +31,82 @@ interface NavigationItem {
   href: string;
   icon: any;
   children?: NavigationItem[];
+  level?: number;
 }
 
-const navigation: NavigationItem[] = [
-  { 
-    name: "All Projects", 
-    href: "", // Pure container, not clickable
-    icon: Users,
-    children: [
-      { name: "My Space", href: "/project/my-space/folders", icon: User },
-      { 
-        name: "Shared Projects", 
-        href: "", // Pure container, not clickable
-        icon: Share2,
-        children: [
-          { name: "Project A", href: "/project/p1/folders", icon: FolderOpen },
-          { name: "Project B", href: "/project/p2/folders", icon: FolderOpen },
-          { name: "Project C", href: "/project/p3/folders", icon: FolderOpen },
-          { name: "Project D", href: "/project/p4/folders", icon: FolderOpen },
-        ]
-      },
-    ]
-  },
-];
+// Build navigation from mock data
+const buildNavigation = (): NavigationItem[] => {
+  const mySpaceProject = mockProjects.find(p => p.id === "my-space");
+  const sharedProjects = mockProjects.filter(p => p.type === "shared");
+  
+  const mySpaceNav: NavigationItem = {
+    name: "My Space",
+    href: "/project/my-space/folders",
+    icon: User,
+    level: 1,
+    children: mySpaceProject?.folders?.map(folder => ({
+      name: folder.name,
+      href: "", // Container for suites
+      icon: Folder,
+      level: 2,
+      children: mockTestSuites
+        .filter(suite => suite.projectId === "my-space" && suite.folderId === folder.id)
+        .map(suite => ({
+          name: suite.name,
+          href: `/suite/${suite.id}`,
+          icon: CheckSquare,
+          level: 3
+        }))
+    })) || []
+  };
+  
+  const sharedProjectsNav: NavigationItem = {
+    name: "Shared Projects",
+    href: "",
+    icon: Share2,
+    level: 1,
+    children: sharedProjects.map(project => ({
+      name: project.name,
+      href: `/project/${project.id}/folders`,
+      icon: FolderOpen,
+      level: 2,
+      children: project.folders?.map(folder => ({
+        name: folder.name,
+        href: "",
+        icon: Folder,
+        level: 3,
+        children: mockTestSuites
+          .filter(suite => suite.projectId === project.id && suite.folderId === folder.id)
+          .map(suite => ({
+            name: suite.name,
+            href: `/suite/${suite.id}`,
+            icon: CheckSquare,
+            level: 4
+          }))
+      })) || []
+    }))
+  };
+  
+  return [
+    { 
+      name: "All Projects", 
+      href: "",
+      icon: Users,
+      level: 0,
+      children: [mySpaceNav, sharedProjectsNav]
+    }
+  ];
+};
 
 export function Sidebar({ className }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
-  const [expandedItems, setExpandedItems] = useState<string[]>(["All Projects"]);
+  const [expandedItems, setExpandedItems] = useState<string[]>(["All Projects", "My Space"]);
+  const [navigation, setNavigation] = useState<NavigationItem[]>([]);
   const location = useLocation();
+  
+  useEffect(() => {
+    setNavigation(buildNavigation());
+  }, []);
 
   const toggleExpanded = (itemName: string) => {
     setExpandedItems(prev => 
@@ -70,28 +121,64 @@ export function Sidebar({ className }: SidebarProps) {
     if (!item.children || item.children.length === 0) {
       if (!item.href) return false; // Empty href items are never active
       if (location.pathname === item.href) return true;
-      if (item.href === "/project/my-space/folders" && location.pathname.startsWith("/project/my-space")) return true;
+      // Check for suite workspace
+      if (item.href.startsWith("/suite/") && location.pathname === item.href) return true;
+      // Check for project folders
+      if (item.href.startsWith("/project/") && location.pathname.startsWith(item.href)) return true;
       return false;
     }
     
     // For parent items with children, never highlight them - only highlight leaf items
     return false;
   };
+  
+  // Auto-expand parent items when child is active
+  useEffect(() => {
+    const findParentPath = (items: NavigationItem[], targetHref: string, path: string[] = []): string[] | null => {
+      for (const item of items) {
+        const currentPath = [...path, item.name];
+        if (item.href === targetHref) {
+          return currentPath;
+        }
+        if (item.children) {
+          const found = findParentPath(item.children, targetHref, currentPath);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+    
+    // Find and expand all parents of active item
+    for (const item of navigation) {
+      const activePath = findParentPath([item], location.pathname);
+      if (activePath) {
+        setExpandedItems(prev => {
+          const newExpanded = new Set([...prev, ...activePath]);
+          return Array.from(newExpanded);
+        });
+        break;
+      }
+    }
+  }, [location.pathname, navigation]);
 
   const renderNavigationItem = (item: NavigationItem, level = 0) => {
     const isActive = isItemActive(item);
     const isExpanded = expandedItems.includes(item.name);
     const hasChildren = item.children && item.children.length > 0;
+    const isLeaf = !hasChildren && item.href;
+
+    // Calculate indentation based on actual level
+    const indentClass = level === 0 ? "" : level === 1 ? "ml-4" : level === 2 ? "ml-8" : level === 3 ? "ml-12" : "ml-16";
 
     return (
-      <div key={item.name}>
+      <div key={`${item.name}-${level}`}>
         {hasChildren ? (
           <Button
             variant={isActive ? "default" : "ghost"}
             className={cn(
-              "w-full justify-start gap-3 h-10",
+              "w-full justify-start gap-2 h-9 text-sm",
               collapsed && "px-2",
-              level > 0 && "ml-4",
+              !collapsed && indentClass,
               isActive && "bg-primary text-primary-foreground shadow-sm"
             )}
             onClick={() => !collapsed && toggleExpanded(item.name)}
@@ -99,31 +186,31 @@ export function Sidebar({ className }: SidebarProps) {
             <item.icon className="h-4 w-4 flex-shrink-0" />
             {!collapsed && (
               <>
-                <span className="flex-1 text-left">{item.name}</span>
+                <span className="flex-1 text-left truncate">{item.name}</span>
                 {isExpanded ? 
-                  <ChevronDown className="h-4 w-4" /> : 
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronDown className="h-3 w-3 flex-shrink-0" /> : 
+                  <ChevronRight className="h-3 w-3 flex-shrink-0" />
                 }
               </>
             )}
           </Button>
-        ) : (
+        ) : isLeaf ? (
           <Button
             variant={isActive ? "default" : "ghost"}
             className={cn(
-              "w-full justify-start gap-3 h-10",
+              "w-full justify-start gap-2 h-9 text-sm",
               collapsed && "px-2",
-              level > 0 && "ml-4",
+              !collapsed && indentClass,
               isActive && "bg-primary text-primary-foreground shadow-sm"
             )}
             asChild
           >
             <Link to={item.href}>
               <item.icon className="h-4 w-4 flex-shrink-0" />
-              {!collapsed && <span>{item.name}</span>}
+              {!collapsed && <span className="truncate">{item.name}</span>}
             </Link>
           </Button>
-        )}
+        ) : null}
 
         {hasChildren && isExpanded && !collapsed && (
           <div className="mt-1 space-y-1">
@@ -164,9 +251,9 @@ export function Sidebar({ className }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         <div className="space-y-1">
-          {navigation.map((item) => renderNavigationItem(item))}
+          {navigation.map((item) => renderNavigationItem(item, 0))}
         </div>
       </nav>
 
